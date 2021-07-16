@@ -16,6 +16,7 @@ library(ggplot2)
 
 ###Passo 02: selecionar o ano e os demais marcos de tempo ----
 
+base_trimestral <- readRDS("~\\Boletim_sdpa/data-raw/base_trimestral.RDS")
 ano_referencia <- 2021
 base_trimestral <- base_trimestral %>% 
   mutate(
@@ -30,85 +31,28 @@ base_crimes <- base_trimestral %>%
   
 
 
-###Passo 03: Criando os tabelas----
-# Tabelas de Grandes Regiões
-hd_vitima <- base_crimes %>% 
-  filter(cod_reg==10|cod_reg==20|cod_reg==30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t50))
+###Passo 03: Criando os tabelas de crimes----
 
-lat_vitima <- base_crimes %>% 
-  filter(cod_reg==10|cod_reg==20|cod_reg==30) %>% 
+tab_crimes <- base_crimes %>% 
   group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t49))
+  summarise(hd_vitima = sum(t50),
+            lat_vitima =sum(t49),
+            tot_estupro =sum(t201),
+            estupro_vuln =sum(t202),
+            roubo_outros =sum(t77),
+            roubo_veic = sum(t80),
+            ap_armas =sum(t1),
+            prisoes =sum(t75)
+            )
 
-tot_estupro <- base_crimes %>% 
-  filter(cod_reg==10|cod_reg==20|cod_reg==30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t201))
 
-estupro_vuln <- base_crimes %>% 
-  filter(cod_reg==10|cod_reg==20|cod_reg==30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t202))
 
-roubo_outros <- base_crimes %>% 
-  filter(cod_reg==10|cod_reg==20|cod_reg==30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t77))
+###Passo 04: Criando os tabelas de população----
+base_pop <- readRDS("~\\Boletim_sdpa/data-raw/pop_munic.RDS")
+base_pop <- base_pop %>% 
+  filter(Ano>(ano_referencia-3)) %>% 
+  group_by(deinter, Ano) %>% 
+  summarise(sum(Pop))
 
-RV <- base_crimes %>% 
-  filter(cod_reg==10|cod_reg==20|cod_reg==30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t80))
 
-ap_armas <- base_crimes %>% 
-  filter(cod_reg==10|cod_reg==20|cod_reg==30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t1))
-
-prisoes <- base_crimes %>% 
-  filter(cod_reg==10|cod_reg==20|cod_reg==30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t75))
-
-# Tabelas de DEINTER
-hd_vitima_Deinter <- base_crimes %>% 
-  filter(cod_reg > 30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t50))
-
-lat_vitima_Deinter <- base_crimes %>% 
-  filter(cod_reg > 30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t49))
-
-tot_estupro_Deinter <- base_crimes %>% 
-  filter(cod_reg > 30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t201))
-
-estupro_vuln_Deinter <- base_crimes %>% 
-  filter(cod_reg > 30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t202))
-
-roubo_outros_Deinter <- base_crimes %>% 
-  filter(cod_reg > 30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t77))
-
-RV_Deinter <- base_crimes %>% 
-  filter(cod_reg > 30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t80))
-
-ap_armas_Deinter <- base_crimes %>% 
-  filter(cod_reg > 30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t1))
-
-prisoes_Deinter <- base_crimes %>% 
-  filter(cod_reg > 30) %>% 
-  group_by(cod_reg,ano, semestre) %>% 
-  summarise(sum(t75))
+tab_taxa
