@@ -31,7 +31,7 @@ base_crimes <- base_trimestral %>%
   
 
 
-###Passo 03: Criando os tabelas de crimes----
+###Passo 03: Criando as tabelas de crimes----
 
 tab_crimes <- base_crimes %>% 
   group_by(cod_reg,ano, semestre) %>% 
@@ -49,10 +49,30 @@ tab_crimes <- base_crimes %>%
 
 ###Passo 04: Criando os tabelas de população----
 base_pop <- readRDS("~\\Boletim_sdpa/data-raw/pop_munic.RDS")
+base_pop <- rename(base_pop, ano = Ano)
 base_pop <- base_pop %>% 
   filter(Ano>(ano_referencia-3)) %>% 
-  group_by(deinter, Ano) %>% 
+  group_by(deinter, ano) %>% 
   summarise(sum(Pop))
 
+# Padronizando os códigos de Deinter e regiões, note que aqui nao tem Interior
+base_pop <- base_pop %>% 
+  mutate(
+    cod_reg = case_when(
+      deinter == "Capital" ~ 10,
+      deinter == "Grande São Paulo" ~ 20,
+      deinter == "São José dos Campos" ~ 31,
+      deinter == "Campinas" ~ 32,
+      deinter == "Ribeirão Preto" ~ 33,
+      deinter == "Bauru" ~ 34,
+      deinter == "São José do Rio Preto" ~ 35,
+      deinter == "Santos" ~ 36,
+      deinter == "Sorocaba" ~ 37,
+      deinter == "Presidente Prudente" ~ 38,
+      deinter == "Piracicaba" ~ 39,
+      deinter == "Araçatuba" ~ 40)
+  )
 
-tab_taxa
+#### Passo 05: Juntando população e crimes ----
+
+tab_crimes2 <- left_join(tab_crimes, base_pop, by = "cod_reg", "ano")
