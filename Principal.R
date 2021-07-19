@@ -16,7 +16,7 @@ library(ggplot2)
 
 ###Passo 02: selecionar o ano e os demais marcos de tempo ----
 
-base_trimestral <- readRDS("~\\Boletim_sdpa/data-raw/base_trimestral.RDS")
+base_trimestral <- readRDS("../Boletim_sdpa/data-raw/base_trimestral.RDS")
 ano_referencia <- 2021
 base_trimestral <- base_trimestral %>% 
   mutate(
@@ -30,7 +30,6 @@ base_crimes <- base_trimestral %>%
          t49,t50,t75,t77,t80,t201,t202,t203)
   
 
-
 ###Passo 03: Criando as tabelas de crimes----
 
 base_crimes <- base_crimes %>% 
@@ -43,7 +42,14 @@ base_crimes <- base_crimes %>%
             roubo_veic = sum(t80),
             ap_armas =sum(t1),
             prisoes =sum(t75)
-            )
+            ) %>% 
+  mutate(regiao = case_when(cod_reg == 10 ~ "Capital", #cria coluna macroregião
+                            cod_reg == 20 ~ "Grande São Paulo",
+                            cod_reg > 20 ~ "Interior")) %>% 
+  unite(ano_semestre, c(ano, semestre), sep = " ", remove = FALSE)
+  
+  
+
 
 base_crimes <- base_crimes %>% 
   unite(
@@ -54,7 +60,7 @@ base_crimes <- base_crimes %>%
   )
 
 ###Passo 04: Criando os tabelas de população----
-base_pop <- readRDS("~\\Boletim_sdpa/data-raw/pop_munic.RDS")
+base_pop <- readRDS("../Boletim_sdpa/data-raw/pop_munic.RDS")
 base_pop <- rename(base_pop, ano = Ano)
 base_pop <- base_pop %>% 
   mutate(
@@ -88,11 +94,11 @@ base_pop <- base_pop %>%
 
 #### Passo 05: Juntando população e crimes ----
 
-   base_crimes <- left_join(base_crimes, base_pop, by = "reg_ano")
+base_crimes <- left_join(base_crimes, base_pop, by = "reg_ano")
 
 
 #### Passo 06: Criando a tabela de letalidade e vit policial ----
-base_corregedoria <- readRDS("~\\Boletim_sdpa/data-raw/base_corregedoria.RDS") %>% 
+base_corregedoria <- readRDS("../Boletim_sdpa/data-raw/base_corregedoria.RDS") %>% 
 mutate(
   let_ser = c1+c3,
   let_fol = c2+c4,
@@ -136,3 +142,37 @@ base_corregedoria <- base_corregedoria %>%
             let_fol = sum(let_fol),
             mort_ser = sum(mort_ser),
             mort_fol = sum(mort_fol))
+
+###Passo 07: Criando os gráficos----
+
+# Criar tema SDPA
+
+theme_sdpa <- theme_void()+
+  theme(legend.position = "bottom",
+        axis.text.x=element_text(size=10),
+        legend.title = element_blank())
+# definir formato e tamanho do titulo
+
+macroregiao <- c("Capital", "Grande São Paulo", "Interior")
+p <- ggplot(theTable, aes(x = Position)) + scale_x_discrete(limits = positions)
+
+cores <- c("#cec8c4", "#be9068","#042e3f")
+
+# Criar gráfico crimes por ano_semestre/macroregião
+
+base_crimes %>% 
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital" )), y= hd_vitima, x= ano_semestre)) + 
+  geom_bar(position="stack", stat="identity") + 
+  geom_text(aes(x=ano_semestre, y=hd_vitima, group=regiao, 
+                label=hd_vitima), position = position_stack(vjust = 0.5)) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text", vjust = - 1) +
+  scale_fill_manual(values = cores) +
+  theme_sdpa
+
+ggplot(aes(x= reorder(subtipo_agreg, (Total1)), y= Total1, fill=subtipo_agreg)) + 
+  geom_bar(position = position_fill(reverse = TRUE))
+
+# resolver os rótulos com os números 
+# colocar a legenda da capital em branco
+
