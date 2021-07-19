@@ -33,7 +33,7 @@ base_crimes <- base_trimestral %>%
 
 ###Passo 03: Criando as tabelas de crimes----
 
-tab_crimes <- base_crimes %>% 
+base_crimes <- base_crimes %>% 
   group_by(cod_reg,ano, semestre) %>% 
   summarise(hd_vitima = sum(t50),
             lat_vitima =sum(t49),
@@ -45,17 +45,17 @@ tab_crimes <- base_crimes %>%
             prisoes =sum(t75)
             )
 
-
+base_crimes <- base_crimes %>% 
+  unite(
+    col = "reg_ano",
+    cod_reg,ano,
+    sep = "-",
+    remove = FALSE
+  )
 
 ###Passo 04: Criando os tabelas de população----
 base_pop <- readRDS("~\\Boletim_sdpa/data-raw/pop_munic.RDS")
 base_pop <- rename(base_pop, ano = Ano)
-base_pop <- base_pop %>% 
-  filter(Ano>(ano_referencia-3)) %>% 
-  group_by(deinter, ano) %>% 
-  summarise(sum(Pop))
-
-# Padronizando os códigos de Deinter e regiões, note que aqui nao tem Interior
 base_pop <- base_pop %>% 
   mutate(
     cod_reg = case_when(
@@ -70,9 +70,69 @@ base_pop <- base_pop %>%
       deinter == "Sorocaba" ~ 37,
       deinter == "Presidente Prudente" ~ 38,
       deinter == "Piracicaba" ~ 39,
-      deinter == "Araçatuba" ~ 40)
+      deinter == "Araçatuba" ~ 40),
+      Pop = as.double(Pop)
   )
+base_pop <- base_pop %>% 
+filter(ano >(ano_referencia-3)) %>% 
+  unite(
+    col = "reg_ano",
+    cod_reg,ano,
+    sep = "-"
+  )
+
+base_pop <- base_pop %>% 
+  group_by(reg_ano) %>% 
+  summarise(pop = sum(Pop))
+
 
 #### Passo 05: Juntando população e crimes ----
 
-tab_crimes2 <- left_join(tab_crimes, base_pop, by = "cod_reg", "ano")
+   base_crimes <- left_join(base_crimes, base_pop, by = "reg_ano")
+
+
+#### Passo 06: Criando a tabela de letalidade e vit policial ----
+base_corregedoria <- readRDS("~\\Boletim_sdpa/data-raw/base_corregedoria.RDS") %>% 
+mutate(
+  let_ser = c1+c3,
+  let_fol = c2+c4,
+  mort_ser = c14,
+  mort_fol = c15,
+  cod_reg = case_when(
+    departa == "Decap" ~ 10,
+    departa == "Demacro" ~ 20,
+    departa == "Deinter 1" ~ 31,
+    departa == "Deinter 2" ~ 32,
+    departa == "Deinter 3" ~ 33,
+    departa == "Deinter 4" ~ 34,
+    departa == "Deinter 5" ~ 35,
+    departa == "Deinter 6" ~ 36,
+    departa == "Deinter 7" ~ 37,
+    departa == "Deinter 8" ~ 38,
+    departa == "Deinter 9" ~ 39,
+    departa == "Deinter 10" ~ 40),
+  trimestre = case_when(
+    cod_mes == 1 ~ 1,
+    cod_mes == 2 ~ 1,
+    cod_mes == 3 ~ 1,
+    cod_mes == 4 ~ 2,
+    cod_mes == 5 ~ 2,
+    cod_mes == 6 ~ 2,
+    cod_mes == 7 ~ 3,
+    cod_mes == 8 ~ 3,
+    cod_mes == 9 ~ 3,
+    cod_mes == 10 ~ 4,
+    cod_mes == 11 ~ 4,
+    cod_mes == 12 ~ 4),
+  semestre = case_when(
+    cod_mes <7 ~ 1,
+    TRUE  ~  2)
+)  
+
+base_corregedoria <- base_corregedoria %>%
+  filter(cod_ano >(ano_referencia-3)) %>% 
+  group_by(cod_reg,semestre, cod_ano) %>% 
+  summarise(let_ser = sum(let_ser),
+            let_fol = sum(let_fol),
+            mort_ser = sum(mort_ser),
+            mort_fol = sum(mort_fol))
