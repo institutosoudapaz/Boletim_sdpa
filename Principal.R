@@ -153,11 +153,18 @@ theme_sdpa <- theme_void()+
         legend.title = element_blank())
 # definir formato e tamanho do titulo
 
+<<<<<<< HEAD
+=======
+macroregiao <- c("Capital", "Grande São Paulo", "Interior")
+p <- ggplot(theTable, aes(x = Position)) + scale_x_discrete(limits = positions)
+
+>>>>>>> b3119e8830a928def031dae7a0156485f73b263c
 cores <- c("#cec8c4", "#be9068","#042e3f")
 
 # Criar gráfico crimes por ano_semestre/macroregião
 
 base_crimes %>% 
+<<<<<<< HEAD
   filter(cod_reg<31) %>% 
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
              y= hd_vitima, x= ano_semestre)) + 
@@ -170,3 +177,20 @@ base_crimes %>%
   scale_fill_manual(values = cores) +
   guides(color = "none")+
   theme_sdpa
+=======
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital" )), y= hd_vitima, x= ano_semestre)) + 
+  geom_bar(position="stack", stat="identity") + 
+  geom_text(aes(x=ano_semestre, y=hd_vitima, group=regiao, 
+                label=hd_vitima), position = position_stack(vjust = 0.5)) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text", vjust = - 1) +
+  scale_fill_manual(values = cores) +
+  theme_sdpa
+
+ggplot(aes(x= reorder(subtipo_agreg, (Total1)), y= Total1, fill=subtipo_agreg)) + 
+  geom_bar(position = position_fill(reverse = TRUE))
+
+# resolver os rótulos com os números 
+# colocar a legenda da capital em branco
+
+>>>>>>> b3119e8830a928def031dae7a0156485f73b263c
