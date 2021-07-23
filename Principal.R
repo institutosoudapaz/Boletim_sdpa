@@ -157,7 +157,6 @@ cores <- c("#cec8c4", "#be9068","#042e3f")
 
 # Criar gráfico crimes por ano_semestre/macroregião
 
-
 grafico_semestre <- function(crime, titulo) {
 
 p <- base_crimes %>% 
@@ -173,7 +172,6 @@ p <- base_crimes %>%
   scale_fill_manual(values = cores) +
   guides(color = "none")+
   theme_sdpa
-
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                  textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -199,8 +197,4 @@ base_crimes %>%
   theme_sdpa
 
   geom_text(aes(label = taxa, position=position_stack(vjust=0.5))) +
-
-
-
-
 
