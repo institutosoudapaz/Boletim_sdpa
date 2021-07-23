@@ -48,8 +48,6 @@ base_crimes <- base_crimes %>%
                             cod_reg > 20 ~ "Interior")) %>% 
   unite(ano_semestre, c(ano, semestre), sep = " ", remove = FALSE)
   
-  
-
 
 base_crimes <- base_crimes %>% 
   unite(
@@ -170,3 +168,4 @@ base_crimes %>%
   scale_fill_manual(values = cores) +
   guides(color = "none")+
   theme_sdpa
+
