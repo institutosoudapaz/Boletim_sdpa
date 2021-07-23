@@ -149,23 +149,42 @@ theme_sdpa <- theme_void()+
   theme(legend.position = "bottom",
         axis.text.x=element_text(size=10),
         legend.title = element_blank())
-# definir formato e tamanho do titulo
 
 cores <- c("#cec8c4", "#be9068","#042e3f")
 
 # Criar gráfico crimes por ano_semestre/macroregião
 
+<<<<<<< HEAD
 base_crimes %>% 
+=======
+grafico_semestre <- function(crime, titulo) {
+
+p <- base_crimes %>% 
+>>>>>>> 048bcde1a2ca1ca0152b23b241b012166cfc02e5
   filter(cod_reg<31) %>% 
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
-             y= hd_vitima, x= ano_semestre)) + 
+             y= {{crime}}, x= ano_semestre)) + 
   geom_bar(position="stack", stat="identity") +
-  geom_text(aes(label = hd_vitima, colour =ifelse(cod_reg>11, "black", "white")), 
+  geom_text(aes(label = {{crime}}, colour =ifelse(cod_reg>11, "black", "white")), 
             position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
   stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
                geom = "text", vjust = -0.5) +
   scale_fill_manual(values = cores) +
   guides(color = "none")+
+<<<<<<< HEAD
   theme_sdpa
+=======
+  theme_sdpa 
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                 textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                          fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+grafico_semestre(tot_estupro, "Total Estupros")
+>>>>>>> 048bcde1a2ca1ca0152b23b241b012166cfc02e5
 
