@@ -1,0 +1,230 @@
+---
+title: "Boletim Sou da Paz Analisa 2021 - 1 Semestre"
+author: "ISDP"
+date: "04/08/2021"
+output: pdf_document
+fontfamily: arev
+fontsize: 9pt
+geometry: "left=2cm,right=2cm,top=1.5cm,bottom=2cm"
+header-includes: 
+      - \usepackage{graphicx}
+      - \usepackage{fancyhdr}
+      - \pagestyle{fancy}
+      - \fancyhead{}
+      - \renewcommand{\headrule}{}
+      - \fancyfoot[R]{\includegraphics{rodape.png}}
+
+---
+
+#criar pagina principal
+#criar numero de pg
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+
+# Carregar bases
+
+base_crimes <- readRDS("base_crimes.rds")
+
+ano_referencia <- 2021
+
+# Definir temas e cores
+
+theme_sdpa_macroreg <- theme_void()+
+  theme(legend.position = "bottom",
+        axis.text.x=element_text(size=10),
+        legend.title = element_blank(), 
+        aspect.ratio=8.5/20)
+
+cores <- c("#cec8c4", "#be9068","#042e3f")
+
+# Criar função de gráfico crimes por ano_semestre/macroregião
+
+grafico_semestre <- function(crime, titulo) { #selecionar o tipo de crime e titulo
+                                              # do gráfico
+p <- base_crimes %>% 
+  filter(cod_reg<31) %>% 
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
+             y= {{crime}}, x= ano_semestre)) + 
+  geom_bar(position="stack", stat="identity", size=.3, colour="black") +
+  geom_text(aes(label = {{crime}}, colour =ifelse(cod_reg>11, "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text",size=4, vjust = -0.5) +
+  scale_fill_manual(values = cores) +
+  guides(color = "none")+
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                 textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                          fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+# Criar gráfico taxa de crimes por ano_semestre/deinter
+
+theme_sdpa_deinter <- theme_classic()+
+  theme(legend.position = "bottom",
+        axis.text.y=element_text(size=11),
+        legend.title = element_blank(), 
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        aspect.ratio=8.7/20)
+
+grafico_deinter <- function(crime, titulo, limite) {  #selecionar o tipo de crime, titulo
+                                                      # do gráfico e limite do eixo x
+p <- base_crimes %>% 
+  filter(ano>=(ano_referencia - 1)) %>% 
+  filter(cod_reg>30) %>% 
+  mutate(taxa = round(({{crime}}/pop * 100000),1)) %>%
+  ggplot(aes(fill=ano_semestre, y= taxa, x= deinter)) + 
+  geom_bar(position="dodge", stat="identity", size=.3, colour="black") +
+  geom_text(aes(label = taxa), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+  scale_fill_manual(values = cores) +
+  guides(color = "none")+
+  coord_flip(ylim=c(0, {{limite}})) +
+  theme_sdpa_deinter+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                    decimal.mark = ','),
+                     expand = c(0, 0), n.breaks = 8)
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+```
+
+## Apresentação
+
+O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela
+Secretaria da Segurança Pública de São Paulo (SSP/SP) desde 2012, a fim de
+contribuir para a melhor compreensão das dinâmicas criminais e atividades
+policiais no estado de São Paulo e em suas grandes regiões - Capital, Grande São
+Paulo e Interior. Além dos dados mensalmente divulgados pela SSP/SP, são
+consideradas informações produzidas pelas Corregedorias das Polícias Civil e
+Militar do Estado de São Paulo publicadas no Diário Oficial e dados obtidos via Lei
+de Acesso à Informação (LAI), fornecidos pela Coordenadoria de Análise e
+Planejamento (CAP) da SSP/SP e pela Polícia Civil.
+
+O boletim Sou da Paz Analisa tem uma periodicidade trimestral e, nesta edição
+referente ao primeiro semestre de 2020, aborda os crimes de homicídio, latrocínio,
+estupro, roubo (outros e de veículos), além dos homicídios e agressões contra
+mulheres no estado. Em relação às atividades policiais, foram analisadas as
+apreensões de armas e prisões realizadas no período, além da letalidade e
+vitimização policial.
+
+Devido à pandemia que assola o Brasil e o mundo desde o início de 2020, esta
+edição do Boletim Sou da Paz Analisa inclui também uma análise comparativa
+entre o número de mortes causadas por Covid-19, por homicídios dolosos e
+aquelas decorrentes de intervenção policial. Esta análise visa não somente apontar
+as regiões onde essas mortes se concentram, mas, principalmente, ressaltar a
+gravidade da pandemia de Covid-19 no estado, e como o número de mortes pela
+doença é muitas vezes mais elevado que a soma dos homicídios e mortes
+cometidas pelas polícias, que por sua vez, também cresceram significativamente
+no 1º semestre de 2020.
+
+\newpage
+
+```{r homicidios e latrocinios macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_semestre(hd_ocorr, "Homicídios Dolosos")  
+
+
+
+grafico_semestre(lat_ocorr, "Latrocínios")  
+```
+
+As ocorrências de homicídio doloso tiveram queda de 3% no primeiro semestre de 2021 comparado ao mesmo período no ano anterior. Porém, ao considerarmos as regiões, a Grande São Paulo e a Capital apresentaram queda de 20% e 11%, respectivamente, enquanto no Interior os casos aumentaram em 9% no primeiro semestre de 2021. Por sua vez, os casos de latrocínio tiveram redução de 8% no primeiro semestre de 2021 comparado ao mesmo período do ano anterior. De todo o Estado, o Interior teve uma redução expressiva, e registrou no primeiro semestre do ano o mesmo número de latrocínios que a capital.
+
+\newpage
+
+```{r homicidios e latrocinios deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 7.5)
+
+
+grafico_deinter(lat_ocorr, "Latrocínios (taxa por 100 mil habitantes)", 0.5)  
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+
+\newpage
+
+```{r estupros macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_semestre(tot_estupro, "Total de Estupros")  
+
+
+
+grafico_semestre(estupro_vuln, "Estupros de vulneráveis")  
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto exto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+
+\newpage
+
+```{r estupros deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(tot_estupro, "Estupros (taxa por 100 mil habitantes)", 22)
+
+
+grafico_deinter(estupro_vuln, "Estupros de Vulneráveis (taxa por 100 mil habitantes)", 20.5)  
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+
+\newpage
+
+```{r roubos macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_semestre(roubo_outros, "Roubo (Outros)")  
+
+
+
+grafico_semestre(roubo_veic, "Roubo (Veículos)")  
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto exto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+
+\newpage
+
+```{r roubos deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 310)
+
+
+grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 42)  
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+
+\newpage

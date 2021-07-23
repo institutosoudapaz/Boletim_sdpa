@@ -7,7 +7,6 @@
 
 ###Passo 00: Carregar os pacotes ----
 library(tidyverse)
-library(dplyr)
 library(ggplot2)
 library(gridExtra)
 library(grid)
@@ -36,7 +35,9 @@ base_crimes <- base_trimestral %>%
 
 base_crimes <- base_crimes %>% 
   group_by(cod_reg,ano, semestre) %>% 
-  summarise(hd_vitima = sum(t50),
+  summarise(hd_ocorr = sum(t21),
+            hd_vitima = sum(t50),
+            lat_ocorr = sum(t23),
             lat_vitima =sum(t49),
             tot_estupro =sum(t201),
             estupro_vuln =sum(t202),
@@ -48,8 +49,20 @@ base_crimes <- base_crimes %>%
   mutate(regiao = case_when(cod_reg == 10 ~ "Capital", #cria coluna macroregião
                             cod_reg == 20 ~ "Grande São Paulo",
                             cod_reg > 20 ~ "Interior")) %>% 
-  unite(ano_semestre, c(ano, semestre), sep = " ", remove = FALSE)
-  
+  mutate(deinter = case_when(cod_reg == 31 ~ "Deinter 01",
+                             cod_reg == 32 ~ "Deinter 02",
+                             cod_reg == 33 ~ "Deinter 03",
+                             cod_reg == 34 ~ "Deinter 04",
+                             cod_reg == 35 ~ "Deinter 05",
+                             cod_reg == 36 ~ "Deinter 06",
+                             cod_reg == 37 ~ "Deinter 07",
+                             cod_reg == 38 ~ "Deinter 08",
+                             cod_reg == 39 ~ "Deinter 09",
+                             cod_reg == 40 ~ "Deinter 10")) %>% 
+  unite(ano_semestre, c(ano, semestre), sep = " / ", remove = FALSE) 
+
+base_crimes$ano_semestre <- paste(base_crimes$ano_semestre, 'º Semestre', sep='')
+
 
 base_crimes <- base_crimes %>% 
   unite(
@@ -107,15 +120,15 @@ mutate(
   cod_reg = case_when(
     departa == "Decap" ~ 10,
     departa == "Demacro" ~ 20,
-    departa == "Deinter 1" ~ 31,
-    departa == "Deinter 2" ~ 32,
-    departa == "Deinter 3" ~ 33,
-    departa == "Deinter 4" ~ 34,
-    departa == "Deinter 5" ~ 35,
-    departa == "Deinter 6" ~ 36,
-    departa == "Deinter 7" ~ 37,
-    departa == "Deinter 8" ~ 38,
-    departa == "Deinter 9" ~ 39,
+    departa == "Deinter 01" ~ 31,
+    departa == "Deinter 02" ~ 32,
+    departa == "Deinter 03" ~ 33,
+    departa == "Deinter 04" ~ 34,
+    departa == "Deinter 05" ~ 35,
+    departa == "Deinter 06" ~ 36,
+    departa == "Deinter 07" ~ 37,
+    departa == "Deinter 08" ~ 38,
+    departa == "Deinter 09" ~ 39,
     departa == "Deinter 10" ~ 40),
   trimestre = case_when(
     cod_mes == 1 ~ 1,
@@ -143,11 +156,15 @@ base_corregedoria <- base_corregedoria %>%
             mort_ser = sum(mort_ser),
             mort_fol = sum(mort_fol))
 
+saveRDS(base_crimes, "base_crimes.rds") 
+saveRDS(base_corregedoria, "base_corregedoria.rds") 
+
+
 ###Passo 07: Criando os gráficos----
 
 # Criar tema SDPA
 
-theme_sdpa <- theme_void()+
+theme_sdpa_macroreg <- theme_void()+
   theme(legend.position = "bottom",
         axis.text.x=element_text(size=10),
         legend.title = element_blank(), 
@@ -157,8 +174,8 @@ cores <- c("#cec8c4", "#be9068","#042e3f")
 
 # Criar gráfico crimes por ano_semestre/macroregião
 
-
-grafico_semestre <- function(crime, titulo) {
+grafico_semestre <- function(crime, titulo) { #selecionar o tipo de crime e titulo
+                                              # do gráfico
 
 p <- base_crimes %>% 
   filter(cod_reg<31) %>% 
@@ -172,8 +189,7 @@ p <- base_crimes %>%
                geom = "text",size=4, vjust = -0.5) +
   scale_fill_manual(values = cores) +
   guides(color = "none")+
-  theme_sdpa
-
+  theme_sdpa_macroreg
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                  textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -183,22 +199,51 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
-grafico_semestre(tot_estupro, "Total Estupros")  # Teste da função
+grafico_semestre(prisoes, "Prisões")  # Teste da função
 
 # Criar gráfico taxa de crimes por ano_semestre/deinter
 
-base_crimes %>% 
+theme_sdpa_deinter <- theme_classic()+
+  theme(legend.position = "bottom",
+        axis.text.y=element_text(size=11),
+        legend.title = element_blank(), 
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        aspect.ratio=8.7/20)
+
+grafico_deinter <- function(crime, titulo, limite) {  #selecionar o tipo de crime, titulo
+                                                      # do gráfico e limite do eixo x
+  
+p <- base_crimes %>% 
   filter(ano>=(ano_referencia - 1)) %>% 
   filter(cod_reg>30) %>% 
-  mutate (taxa = round((hd_vitima/pop * 100000),2)) %>% 
-  ggplot(aes(fill=ano_semestre, y= taxa, x= cod_reg)) + 
-  geom_bar(position="dodge", stat="identity") +
+  mutate(taxa = round(({{crime}}/pop * 100000),1)) %>%
+  ggplot(aes(fill=ano_semestre, y= taxa, x= deinter)) + 
+  geom_bar(position="dodge", stat="identity", size=.3, colour="black") +
+  geom_text(aes(label = taxa), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
   scale_fill_manual(values = cores) +
   guides(color = "none")+
-  coord_flip() +
-  theme_sdpa
+  coord_flip(ylim=c(0, {{limite}})) +
+  theme_sdpa_deinter+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                    decimal.mark = ','),
+                     expand = c(0, 0), n.breaks = 8)
 
-  geom_text(aes(label = taxa, position=position_stack(vjust=0.5))) +
+
+# mudar o separador das taxas de '." para ","
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+
+
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 310)
 
 
 
