@@ -151,46 +151,34 @@ theme_sdpa <- theme_void()+
   theme(legend.position = "bottom",
         axis.text.x=element_text(size=10),
         legend.title = element_blank())
-# definir formato e tamanho do titulo
 
-<<<<<<< HEAD
-=======
-macroregiao <- c("Capital", "Grande São Paulo", "Interior")
-p <- ggplot(theTable, aes(x = Position)) + scale_x_discrete(limits = positions)
-
->>>>>>> b3119e8830a928def031dae7a0156485f73b263c
 cores <- c("#cec8c4", "#be9068","#042e3f")
 
 # Criar gráfico crimes por ano_semestre/macroregião
 
-base_crimes %>% 
-<<<<<<< HEAD
+grafico_semestre <- function(crime, titulo) {
+
+p <- base_crimes %>% 
   filter(cod_reg<31) %>% 
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
-             y= hd_vitima, x= ano_semestre)) + 
+             y= {{crime}}, x= ano_semestre)) + 
   geom_bar(position="stack", stat="identity") +
-  geom_text(aes(label = hd_vitima, colour =ifelse(cod_reg>11, "black", "white")), 
+  geom_text(aes(label = {{crime}}, colour =ifelse(cod_reg>11, "black", "white")), 
             position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
   stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
                geom = "text", vjust = -0.5) +
   scale_fill_manual(values = cores) +
   guides(color = "none")+
-  theme_sdpa
-=======
-  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital" )), y= hd_vitima, x= ano_semestre)) + 
-  geom_bar(position="stack", stat="identity") + 
-  geom_text(aes(x=ano_semestre, y=hd_vitima, group=regiao, 
-                label=hd_vitima), position = position_stack(vjust = 0.5)) +
-  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
-               geom = "text", vjust = - 1) +
-  scale_fill_manual(values = cores) +
-  theme_sdpa
+  theme_sdpa 
 
-ggplot(aes(x= reorder(subtipo_agreg, (Total1)), y= Total1, fill=subtipo_agreg)) + 
-  geom_bar(position = position_fill(reverse = TRUE))
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                 textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                          fontface="bold")))
 
-# resolver os rótulos com os números 
-# colocar a legenda da capital em branco
+grid.arrange(g, p, heights=c(1,9))
 
->>>>>>> b3119e8830a928def031dae7a0156485f73b263c
+}
+
+grafico_semestre(tot_estupro, "Total Estupros")
+
