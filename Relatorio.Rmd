@@ -15,7 +15,6 @@ header-includes:
       - \fancyfoot[R]{\includegraphics{rodape.png}}
 
 ---
-
 #criar pagina principal
 #criar numero de pg
 
