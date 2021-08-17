@@ -119,9 +119,9 @@ de Acesso à Informação (LAI), fornecidos pela Coordenadoria de Análise e
 Planejamento (CAP) da SSP/SP e pela Polícia Civil.
 
 O boletim Sou da Paz Analisa tem uma periodicidade trimestral e, nesta edição
-referente ao primeiro semestre de 2020, aborda os crimes de homicídio, latrocínio,
-estupro, roubo (outros e de veículos), além dos homicídios e agressões contra
-mulheres no estado. Em relação às atividades policiais, foram analisadas as
+referente ao primeiro semestre de 2021, aborda os crimes de homicídio, latrocínio,
+estupro, roubo (outros e de veículos), além dos homicídios e *agressões contra
+mulheres* no estado. Em relação às atividades policiais, foram analisadas as
 apreensões de armas e prisões realizadas no período, além da letalidade e
 vitimização policial.
 
@@ -134,6 +134,59 @@ gravidade da pandemia de Covid-19 no estado, e como o número de mortes pela
 doença é muitas vezes mais elevado que a soma dos homicídios e mortes
 cometidas pelas polícias, que por sua vez, também cresceram significativamente
 no 1º semestre de 2020.
+
+\newpage
+
+## Destaques
+
+O 1º semestre de 2020 foi marcado pela pandemia de Covid-19, que até o momento matou mais de 107 mil
+pessoas nas cidades brasileiras. O estado de São Paulo foi particularmente afetado, com cerca de um quarto
+de todas as mortes pela doença em todo o país. Além das dezenas de milhares de mortes, a pandemia e as
+medidas de isolamento social afetaram diretamente a circulação de pessoas nas cidades paulistas e as
+dinâmicas dos fenômenos criminais, ainda que nem sempre da mesma forma.
+
+Quatro das seis categorias de crimes violentos no estado de São Paulo tiveram redução em relação ao 1º
+semestre de 2019. Os únicos aumentos se deram nos crimes contra a vida, homicídios dolosos e latrocínios,
+que aumentaram respectivamente 4,7% e 6,9%. É importante ressaltar que os homicídios vinham em uma
+tendência de queda desde o ano de 2012 no estado, e o 1º semestre de 2020 aponta para uma ruptura neste
+processo de diminuição da violência letal.
+
+Já o crime de estupro, cujas ocorrências aumentaram 27% entre os anos de 2015 e 2019, subitamente reduziu
+14,9% no 1º semestre de 2020 em comparação ao mesmo período de 2019. É importante destacar que 74,5%
+dos estupros cometidos no estado nos primeiros seis meses de 2020 tiveram como vítimas vulneráveis -
+menores de 14 anos de idade ou pessoas cujas condições de saúde as impedem de discernir ou resistir ao ato
+sexual. Nesse sentido, é essencial compreendermos se com a pandemia e as medidas de isolamento social
+houve uma redução efetiva do crime de estupro ou de sua denúncia e notificação às autoridades.
+
+Outro ponto de alerta foi o aumento da letalidade policial no estado. Policiais foram responsáveis por 514
+mortes no 1º semestre de 2020, 95 mortes a mais que no mesmo período do ano anterior, um aumento de
+22,6% e maior número registrado em um semestre desde o início da série histórica, em 2001. Das 514 mortes
+cometidas pelas polícias paulistas, 437 foram durante o serviço (21,7%) e 77 em período de folga (28,3%). O
+montante de pessoas mortas pelas polícias de São Paulo equivale a dizer que as forças policiais mataram 2,8
+pessoas por dia no estado. No 1º semestre de 2020 policiais em folga ou em serviço mataram 514 pessoas de
+um total de 2.203 mortes violentas no estado, ou seja, 23,3% deste montante. No entanto, a proporção é muito
+mais elevada na capital paulista: as polícias mataram 222 pessoas de um total de 624 vítimas de mortes
+violentas na cidade, 35,5% de todas as mortes violentas. Isso significa dizer que aproximadamente um a cada
+três mortes violentas intencionais cometidas na cidade de São Paulo foi cometida por um policial.
+
+ vitimização de policiais também aumentou no 1º semestre de 2020, passando de 14 policiais mortos nos
+primeiros seis meses de 2019 para 24 policiais assassinados no mesmo período de 2020. É importante notar
+que o aumento significativo das mortes de policiais no estado ocorreu de forma homogênea entre policiais em
+serviço e de folga.
+
+Por sua vez os roubos (outros) e roubos de veículos, que estavam em um processo forte redução no estado
+desde o ano de 2016, tiveram uma queda ainda mais intensa nos primeiro seis meses de 2020. Os roubos
+(outros) – todos os roubos, excluídos os de veículo, carga e banco – tiveram uma queda de -8,3%, uma média
+de 645 roubos por dia. Os roubos de veículos tiveram uma redução ainda mais intensa, de -29%. Essa intensa
+redução ocorreu de forma similar em todas as macrorregiões do estado e reflete a redução de circulação de
+pessoas e veículos devido às medidas de isolamento social de combate à Covid-19.
+
+As análises apresentadas a seguir demonstram não apenas os intensos impactos da pandemia e das medidas
+de isolamento social sobre as dinâmicas criminais, mas também que esses impactos se deram de formas muito
+distintas em cada tipo de crime. Em paralelo à redução dos registros de estupros e de roubos, e do aumento
+dos homicídios no estado, a letalidade das polícias paulistas bateu novos recordes, e evidencia a necessidade
+de implementar medidas voltadas à redução da letalidade policial no estado de São Paulo, sobretudo na capital
+paulista.
 
 \newpage
 
