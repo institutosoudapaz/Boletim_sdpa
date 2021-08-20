@@ -1,0 +1,282 @@
+---
+title: "Boletim Sou da Paz Analisa 2021 - 1 Semestre"
+author: "ISDP"
+date: "04/08/2021"
+output: pdf_document
+fontfamily: arev
+fontsize: 9pt
+geometry: "left=2cm,right=2cm,top=1.5cm,bottom=2cm"
+header-includes: 
+      - \usepackage{graphicx}
+      - \usepackage{fancyhdr}
+      - \pagestyle{fancy}
+      - \fancyhead{}
+      - \renewcommand{\headrule}{}
+      - \fancyfoot[R]{\includegraphics{rodape.png}}
+
+---
+#criar pagina principal
+#criar numero de pg
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+
+# Carregar bases
+
+base_crimes <- readRDS("base_crimes.rds")
+
+ano_referencia <- 2021
+
+# Definir temas e cores
+
+theme_sdpa_macroreg <- theme_void()+
+  theme(legend.position = "bottom",
+        axis.text.x=element_text(size=10),
+        legend.title = element_blank(), 
+        aspect.ratio=8.5/20)
+
+cores <- c("#cec8c4", "#be9068","#042e3f")
+
+# Criar função de gráfico crimes por ano_semestre/macroregião
+
+grafico_semestre <- function(crime, titulo) { #selecionar o tipo de crime e titulo
+                                              # do gráfico
+p <- base_crimes %>% 
+  filter(cod_reg<31) %>% 
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
+             y= {{crime}}, x= ano_semestre)) + 
+  geom_bar(position="stack", stat="identity", size=.3, colour="black") +
+  geom_text(aes(label = {{crime}}, colour =ifelse(cod_reg>11, "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text",size=4, vjust = -0.5) +
+  scale_fill_manual(values = cores) +
+  guides(color = "none")+
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                 textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                          fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+# Criar gráfico taxa de crimes por ano_semestre/deinter
+
+theme_sdpa_deinter <- theme_classic()+
+  theme(legend.position = "bottom",
+        axis.text.y=element_text(size=11),
+        legend.title = element_blank(), 
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        aspect.ratio=8.7/20)
+
+grafico_deinter <- function(crime, titulo, limite) {  #selecionar o tipo de crime, titulo
+                                                      # do gráfico e limite do eixo x
+p <- base_crimes %>% 
+  filter(ano>=(ano_referencia - 1)) %>% 
+  filter(cod_reg>30) %>% 
+  mutate(taxa = round(({{crime}}/pop * 100000),1)) %>%
+  ggplot(aes(fill=ano_semestre, y= taxa, x= deinter)) + 
+  geom_bar(position="dodge", stat="identity", size=.3, colour="black") +
+  geom_text(aes(label = taxa), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+  scale_fill_manual(values = cores) +
+  guides(color = "none")+
+  coord_flip(ylim=c(0, {{limite}})) +
+  theme_sdpa_deinter+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                    decimal.mark = ','),
+                     expand = c(0, 0), n.breaks = 8)
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+```
+
+## Apresentação
+
+O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela
+Secretaria da Segurança Pública de São Paulo (SSP/SP) desde 2012, a fim de
+contribuir para a melhor compreensão das dinâmicas criminais e atividades
+policiais no estado de São Paulo e em suas grandes regiões - Capital, Grande São
+Paulo e Interior. Além dos dados mensalmente divulgados pela SSP/SP, são
+consideradas informações produzidas pelas Corregedorias das Polícias Civil e
+Militar do Estado de São Paulo publicadas no Diário Oficial e dados obtidos via Lei
+de Acesso à Informação (LAI), fornecidos pela Coordenadoria de Análise e
+Planejamento (CAP) da SSP/SP e pela Polícia Civil.
+
+O boletim Sou da Paz Analisa tem uma periodicidade trimestral e, nesta edição
+referente ao primeiro semestre de 2021, aborda os crimes de homicídio, latrocínio,
+estupro, roubo (outros e de veículos), além dos homicídios e *agressões contra
+mulheres* no estado. Em relação às atividades policiais, foram analisadas as
+apreensões de armas e prisões realizadas no período, além da letalidade e
+vitimização policial.
+
+Devido à pandemia que assola o Brasil e o mundo desde o início de 2020, esta
+edição do Boletim Sou da Paz Analisa inclui também uma análise comparativa
+entre o número de mortes causadas por Covid-19, por homicídios dolosos e
+aquelas decorrentes de intervenção policial. Esta análise visa não somente apontar
+as regiões onde essas mortes se concentram, mas, principalmente, ressaltar a
+gravidade da pandemia de Covid-19 no estado, e como o número de mortes pela
+doença é muitas vezes mais elevado que a soma dos homicídios e mortes
+cometidas pelas polícias, que por sua vez, também cresceram significativamente
+no 1º semestre de 2020.
+
+\newpage
+
+## Destaques
+
+O 1º semestre de 2020 foi marcado pela pandemia de Covid-19, que até o momento matou mais de 107 mil
+pessoas nas cidades brasileiras. O estado de São Paulo foi particularmente afetado, com cerca de um quarto
+de todas as mortes pela doença em todo o país. Além das dezenas de milhares de mortes, a pandemia e as
+medidas de isolamento social afetaram diretamente a circulação de pessoas nas cidades paulistas e as
+dinâmicas dos fenômenos criminais, ainda que nem sempre da mesma forma.
+
+Quatro das seis categorias de crimes violentos no estado de São Paulo tiveram redução em relação ao 1º
+semestre de 2019. Os únicos aumentos se deram nos crimes contra a vida, homicídios dolosos e latrocínios,
+que aumentaram respectivamente 4,7% e 6,9%. É importante ressaltar que os homicídios vinham em uma
+tendência de queda desde o ano de 2012 no estado, e o 1º semestre de 2020 aponta para uma ruptura neste
+processo de diminuição da violência letal.
+
+Já o crime de estupro, cujas ocorrências aumentaram 27% entre os anos de 2015 e 2019, subitamente reduziu
+14,9% no 1º semestre de 2020 em comparação ao mesmo período de 2019. É importante destacar que 74,5%
+dos estupros cometidos no estado nos primeiros seis meses de 2020 tiveram como vítimas vulneráveis -
+menores de 14 anos de idade ou pessoas cujas condições de saúde as impedem de discernir ou resistir ao ato
+sexual. Nesse sentido, é essencial compreendermos se com a pandemia e as medidas de isolamento social
+houve uma redução efetiva do crime de estupro ou de sua denúncia e notificação às autoridades.
+
+Outro ponto de alerta foi o aumento da letalidade policial no estado. Policiais foram responsáveis por 514
+mortes no 1º semestre de 2020, 95 mortes a mais que no mesmo período do ano anterior, um aumento de
+22,6% e maior número registrado em um semestre desde o início da série histórica, em 2001. Das 514 mortes
+cometidas pelas polícias paulistas, 437 foram durante o serviço (21,7%) e 77 em período de folga (28,3%). O
+montante de pessoas mortas pelas polícias de São Paulo equivale a dizer que as forças policiais mataram 2,8
+pessoas por dia no estado. No 1º semestre de 2020 policiais em folga ou em serviço mataram 514 pessoas de
+um total de 2.203 mortes violentas no estado, ou seja, 23,3% deste montante. No entanto, a proporção é muito
+mais elevada na capital paulista: as polícias mataram 222 pessoas de um total de 624 vítimas de mortes
+violentas na cidade, 35,5% de todas as mortes violentas. Isso significa dizer que aproximadamente um a cada
+três mortes violentas intencionais cometidas na cidade de São Paulo foi cometida por um policial.
+
+ vitimização de policiais também aumentou no 1º semestre de 2020, passando de 14 policiais mortos nos
+primeiros seis meses de 2019 para 24 policiais assassinados no mesmo período de 2020. É importante notar
+que o aumento significativo das mortes de policiais no estado ocorreu de forma homogênea entre policiais em
+serviço e de folga.
+
+Por sua vez os roubos (outros) e roubos de veículos, que estavam em um processo forte redução no estado
+desde o ano de 2016, tiveram uma queda ainda mais intensa nos primeiro seis meses de 2020. Os roubos
+(outros) – todos os roubos, excluídos os de veículo, carga e banco – tiveram uma queda de -8,3%, uma média
+de 645 roubos por dia. Os roubos de veículos tiveram uma redução ainda mais intensa, de -29%. Essa intensa
+redução ocorreu de forma similar em todas as macrorregiões do estado e reflete a redução de circulação de
+pessoas e veículos devido às medidas de isolamento social de combate à Covid-19.
+
+As análises apresentadas a seguir demonstram não apenas os intensos impactos da pandemia e das medidas
+de isolamento social sobre as dinâmicas criminais, mas também que esses impactos se deram de formas muito
+distintas em cada tipo de crime. Em paralelo à redução dos registros de estupros e de roubos, e do aumento
+dos homicídios no estado, a letalidade das polícias paulistas bateu novos recordes, e evidencia a necessidade
+de implementar medidas voltadas à redução da letalidade policial no estado de São Paulo, sobretudo na capital
+paulista.
+
+\newpage
+
+```{r homicidios e latrocinios macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_semestre(hd_ocorr, "Homicídios Dolosos")  
+
+
+
+grafico_semestre(lat_ocorr, "Latrocínios")  
+```
+
+As ocorrências de homicídio doloso tiveram queda de 3% no primeiro semestre de 2021 comparado ao mesmo período no ano anterior. Porém, ao considerarmos as regiões, a Grande São Paulo e a Capital apresentaram queda de 20% e 11%, respectivamente, enquanto no Interior os casos aumentaram em 9% no primeiro semestre de 2021. Por sua vez, os casos de latrocínio tiveram redução de 8% no primeiro semestre de 2021 comparado ao mesmo período do ano anterior. De todo o Estado, o Interior teve uma redução expressiva, e registrou no primeiro semestre do ano o mesmo número de latrocínios que a capital.
+
+\newpage
+
+```{r homicidios e latrocinios deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 7.5)
+
+
+grafico_deinter(lat_ocorr, "Latrocínios (taxa por 100 mil habitantes)", 0.5)  
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+
+\newpage
+
+```{r estupros macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_semestre(tot_estupro, "Total de Estupros")  
+
+
+
+grafico_semestre(estupro_vuln, "Estupros de vulneráveis")  
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto exto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+
+\newpage
+
+```{r estupros deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(tot_estupro, "Estupros (taxa por 100 mil habitantes)", 22)
+
+
+grafico_deinter(estupro_vuln, "Estupros de Vulneráveis (taxa por 100 mil habitantes)", 20.5)  
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+
+\newpage
+
+```{r roubos macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_semestre(roubo_outros, "Roubo (Outros)")  
+
+
+
+grafico_semestre(roubo_veic, "Roubo (Veículos)")  
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto exto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+
+\newpage
+
+```{r roubos deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 310)
+
+
+grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 42)  
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+
+\newpage
