@@ -11,7 +11,6 @@ library(ggplot2)
 library(gridExtra)
 library(grid)
 library(stringr)
-library(tidyr)
 
 ###Passo 01: Baixar os dados trimestrais da SSP e consolidar a base_trimestral: ----
   #Aqui vale pensar em rever o código para torna-lo mais eficiente, não vamos baixar tudo, 
@@ -166,8 +165,6 @@ base_corregedoria$ano_semestre <- paste(base_corregedoria$ano_semestre, 'º Seme
 saveRDS(base_crimes, "base_crimes.rds") 
 saveRDS(base_corregedoria, "base_corregedoria.rds") 
 
-writexl::write_xlsx(base_corregedoria, "base_corregedoria.xlsx")
-
 ###Passo 07: Criando base de crimes e letalidade violenta----
 
 base_letalidade <- left_join(base_crimes, base_corregedoria, by=c("ano_semestre", "cod_reg")) %>% 
@@ -186,23 +183,25 @@ base_letalidade$Total <- rowSums(base_letalidade[2:6])
 base_letalidade_long <- base_letalidade %>% 
   pivot_longer(!ano_semestre, names_to = "morte", values_to = "count")
 
-###Passo 08: Dados violência contra a mulher----
-viol_mulher <- readRDS("../Boletim_sdpa/data-raw/viol_mulher.RDS")
-  
-base_viol_mulher <- viol_mulher %>% 
-  filter(Ano >(ano_referencia-3)) 
-  
-base_viol_mulher <- subset(base_viol_mulher, select = -Total)
-base_viol_mulher <- base_viol_mulher %>% 
-  pivot_longer(
-    cols = Capital:Interior,
-    names_to = "area",
-    values_to = "qdte"
-  )
-  
+base_crimes_long <- base_crimes %>% 
+  select(reg_ano, ano, cod_reg, ano_semestre, roubo_outros, roubo_veic, lat_ocorr, hd_ocorr, 
+         extor_seq, tot_estupro) %>% 
+  filter(ano >(ano_referencia-2)) %>% 
+  filter(cod_reg!="30") %>%
+  group_by(ano_semestre) %>% 
+  summarise(roubo_outros = sum(roubo_outros),
+            roubo_veic = sum(roubo_veic),
+            lat_ocorr = sum(lat_ocorr),
+            hd_ocorr = sum(hd_ocorr),
+            extor_seq = sum(extor_seq),
+            tot_estupro = sum(tot_estupro))
 
-  
-###Passo 09: Criando os gráficos----
+base_crimes_long$Total <- rowSums(base_crimes_long[2:7])
+
+base_crimes_long <- base_crimes_long %>% 
+  pivot_longer(!ano_semestre, names_to = "crime", values_to = "count")
+
+###Passo 08: Criando os gráficos----
 
 # Definir tema letalidade violenta e cores
 
@@ -221,7 +220,7 @@ p <- base_letalidade_long %>%
   ggplot(aes(fill=factor(ano_semestre,  levels=c("2021 / 1º Semestre", "2020 / 1º Semestre")), y= count, 
              x= factor(morte, levels = c(
                "Total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol")))) + 
-  geom_bar(position="dodge", stat="identity", size=.3, colour="black") +
+  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
   geom_text(aes(label = count), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
   scale_fill_manual(values = cores_2) +
@@ -236,6 +235,32 @@ p <- base_letalidade_long %>%
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
                                                             fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+
+# Criar gráfico crimes violentos
+
+p <- base_crimes_long %>% 
+  filter(ano_semestre!="2020 / 2º Semestre") %>% 
+  ggplot(aes(fill=factor(ano_semestre,  levels=c("2021 / 1º Semestre", "2020 / 1º Semestre")), y= count, 
+             x= factor(crime, levels = c(
+               "Total", "tot_estupro", "extor_seq", "hd_ocorr", "lat_ocorr", "roubo_veic", 
+               "roubo_outros")))) + 
+  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
+  geom_text(aes(label = count), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("Total de ocorrências", "Estupro", "Extorsão mediante sequestro", "Homicídio doloso", 
+      "Latrocínio", "Roubo de veículo", "Roubo (outros)"), width = 24))+
+  theme_sdpa_let +
+  coord_flip(ylim=c(100, 145000))
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Crimes Violentos", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                                                           fontface="bold")))
 
 grid.arrange(g, p, heights=c(1,9))
 
@@ -259,7 +284,7 @@ p <- base_crimes %>%
   filter(cod_reg<31) %>% 
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
              y= {{crime}}, x= ano_semestre)) + 
-  geom_bar(position="stack", stat="identity", size=.3, colour="black") +
+  geom_bar(position="stack", stat="identity", size=.7, colour="light grey") +
   geom_text(aes(label = {{crime}}, colour =ifelse(cod_reg>11, "black", "white")), 
             position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
@@ -277,7 +302,7 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
-grafico_semestre(prisoes, "Prisões")  # Teste da função
+grafico_semestre(hd_ocorr, "Prisões")  # Teste da função
 
 # Criar gráfico taxa de crimes por ano_semestre/deinter
 
@@ -297,7 +322,7 @@ p <- base_crimes %>%
   filter(cod_reg>30) %>% 
   mutate(taxa = round(({{crime}}/pop * 100000),1)) %>%
   ggplot(aes(fill=ano_semestre, y= taxa, x= deinter)) + 
-  geom_bar(position="dodge", stat="identity", size=.3, colour="black") +
+  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
   geom_text(aes(label = taxa), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
   scale_fill_manual(values = cores) +
@@ -319,5 +344,20 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
-grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 310)
+grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 330)
+
+#### O que falta ----
+# criar grafico vitimizaçao letalidade policial
+# Inserir numeração das pgs (.rmd)
+# cabeçalho apresentação
+# cabeçalho destaque
+
+
+# aumentar espaçamento texto apresentaçào e destaque (.rmd)
+# aumentar o espaçamento entre as barras dos gráficos
+# mudar linha de contorno para cinza claro
+# aumentar fonte da legenda e descer a legenda
+
+## inserir variação porcentagens
+
 
