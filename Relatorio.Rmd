@@ -210,10 +210,10 @@ grafico_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 7.5)
 grafico_deinter(lat_ocorr, "Latrocínios (taxa por 100 mil habitantes)", 0.5)  
 ```
 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+No interior, dentre os 10 Departamentos de Polícia Judiciária do Interior (Deinter), oito apresentaram um
+aumento em suas taxas de homicídios em comparação com o 1º semestre de 2020, somente o Deinter 10 – Araçatuba e o Deinter 2 – Campinas apresentaram redução.
+
+No que diz respeito às taxas de latrocínios por 100 mil habitantes vemos certa estabilidade nas taxas, onde se destaca o Deinter 2 - Campinas com sucessivas reduções no periodo analisado.
 
 \newpage
 
@@ -226,11 +226,11 @@ grafico_semestre(tot_estupro, "Total de Estupros")
 grafico_semestre(estupro_vuln, "Estupros de vulneráveis")  
 ```
 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto exto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+No primeiro semestre de 2021 o crime de estupro apresentou aumento de 13,5%no estado em comparação com o primeiro semestre de 2020, com destaque a Grande São Paulo com aumento de 20%.
+
+Em relação aos estupros de vulneráveis (com vítimas que sejam menores de 14
+anos ou pessoas cujas condições de saúde as impedem de discernir ou resistir ao ato sexual) vale destacar que eles responderam por 77% do total de estupros. Nos últimos semestres esse percentual pouco variou.
+
 
 \newpage
 
@@ -242,10 +242,10 @@ grafico_deinter(tot_estupro, "Estupros (taxa por 100 mil habitantes)", 22)
 grafico_deinter(estupro_vuln, "Estupros de Vulneráveis (taxa por 100 mil habitantes)", 20.5)  
 ```
 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+Quando olhamos a taxa de estupros e de estupros de vulneráveis por Deinter chama atenção que em nenhum deles houve redução quando comparamos com o primeiro semestre de 2020.Há uma grande variação entre os departamentos, onde o Deinter 9 - Piracicaba - Sorocaba apresentou a menor taxa - 10,6 - enquanto o Deinter 7 apresentou a maior, com 18,9.
+
+Vale lembrar que em muitos casos a vítima acaba nao notificando a polícia, essa subnotificação é um desafio para as políticas públicas.
+
 
 \newpage
 
@@ -258,12 +258,11 @@ grafico_semestre(roubo_outros, "Roubo (Outros)")
 grafico_semestre(roubo_veic, "Roubo (Veículos)")  
 ```
 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto exto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+Durante o 1º semestre de 2021, o crime de roubo (outros) – todos os roubos, excluídos os de
+carga e banco – teve uma redução de 6,3%. Foram 108.698 nos primeiros seis meses de 2021,
+contra 116.084 no mesmo período de 2020, uma média de 598 roubos por dia. 
 
+Os roubos de veículos tiveram uma redução de 7% no estado durante os primeiros seis meses de 2021, foram 15.028, enquanto no mesmo período de 2020 foram 16.222, sendo que essa redução ocorreu com mais intensidade na capital, com redução de 13%. 
 \newpage
 
 ```{r roubos deinter, echo=FALSE, fig.dim = c(10, 6)}
@@ -274,9 +273,8 @@ grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 31
 grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 42)  
 ```
 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto 
+Observando o Interior segundo Deinter vemos que a taxa de Roubo (Outros) por 100 mil habitantes diminuiu no primeiro semestre de 2021 em relação ao mesmo período de 2020 todos os Deintes com exceção do Deinter 10 - Araçatuba. 
+
+Quando olhamos as taxa de Roubo de Veículos temos que a maior parte dos departamentos apresentou redução, somente o Deinter 8 - Presidente Prudente e o Deinter 3 - Ribeirão Preto tiveram aumento em relação ao primeiro semestre de 2020
 
 \newpage
