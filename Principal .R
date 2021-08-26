@@ -11,6 +11,7 @@ library(ggplot2)
 library(gridExtra)
 library(grid)
 library(stringr)
+library(tidyr)
 
 ###Passo 01: Baixar os dados trimestrais da SSP e consolidar a base_trimestral: ----
   #Aqui vale pensar em rever o código para torna-lo mais eficiente, não vamos baixar tudo, 
@@ -201,7 +202,23 @@ base_crimes_long$Total <- rowSums(base_crimes_long[2:7])
 base_crimes_long <- base_crimes_long %>% 
   pivot_longer(!ano_semestre, names_to = "crime", values_to = "count")
 
-###Passo 08: Criando os gráficos----
+###Passo 08: Dados violência contra a mulher----
+viol_mulher <- readRDS("../Boletim_sdpa/data-raw/viol_mulher.RDS")
+
+base_viol_mulher <- viol_mulher %>% 
+  filter(Ano >(ano_referencia-3)) 
+
+base_viol_mulher <- subset(base_viol_mulher, select = -Total)
+base_viol_mulher <- base_viol_mulher %>% 
+  pivot_longer(
+    cols = Capital:Interior,
+    names_to = "area",
+    values_to = "qdte"
+  )
+
+
+
+###Passo 09: Criando os gráficos----
 
 # Definir tema letalidade violenta e cores
 
