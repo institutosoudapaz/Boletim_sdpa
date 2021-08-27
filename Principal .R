@@ -202,6 +202,24 @@ base_crimes_long$Total <- rowSums(base_crimes_long[2:7])
 base_crimes_long <- base_crimes_long %>% 
   pivot_longer(!ano_semestre, names_to = "crime", values_to = "count")
 
+base_corregedoria_long <- base_corregedoria %>% 
+  filter(cod_ano >(ano_referencia-2)) %>% 
+  select(cod_reg, ano_semestre, let_ser, let_fol, mort_ser, mort_fol) %>% 
+  filter(cod_reg!="30") %>%
+  group_by(ano_semestre) %>% 
+  summarise(let_ser = sum(let_ser),
+            let_fol = sum(let_fol),
+            mort_ser = sum(mort_ser),
+            mort_fol = sum(mort_fol))
+
+base_corregedoria_long <- base_corregedoria_long%>% 
+  pivot_longer(!ano_semestre, names_to = "let_vit", values_to = "count")
+
+
+saveRDS(base_letalidade_long, "base_letalidade_long.rds") 
+saveRDS(base_crimes_long, "base_crimes_long.rds") 
+saveRDS(base_corregedoria_long, "base_corregedoria_long.rds") 
+
 ###Passo 08: Dados violência contra a mulher----
 viol_mulher <- readRDS("../Boletim_sdpa/data-raw/viol_mulher.RDS")
 
@@ -215,7 +233,6 @@ base_viol_mulher <- base_viol_mulher %>%
     names_to = "area",
     values_to = "qdte"
   )
-
 
 
 ###Passo 09: Criando os gráficos----
@@ -362,6 +379,10 @@ grid.arrange(g, p, heights=c(1,9))
 }
 
 grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 330)
+
+# Criar gráfico letalidade/vitimização policial
+
+
 
 #### O que falta ----
 # criar grafico vitimizaçao letalidade policial
