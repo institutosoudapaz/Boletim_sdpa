@@ -345,3 +345,31 @@ Observando o Interior segundo Deinter vemos que a taxa de Roubo (Outros) por 100
 Quando olhamos as taxa de Roubo de Veículos temos que a maior parte dos departamentos apresentou redução, somente o Deinter 8 - Presidente Prudente e o Deinter 3 - Ribeirão Preto tiveram aumento em relação ao primeiro semestre de 2020
 
 \newpage
+Parte de Letalidade
+\(bold) Vítimas\
+
+\newpage
+
+```{r produtiv macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_semestre(ap_armas, "Apreensões de armas")  
+
+
+
+grafico_semestre(prisoes, "Prisões")  
+```
+
+O número de armas apreendidas no estado de São Paulo nesse primeiro semestre de 2021 foi muito parecido com o que foi observado no primeiro semestr de 2020 resultado da establidade em suas grandes regiões.  . 
+
+Quando observamos o número de prisões, - considerando as prisões em flagrante e também por mandado - vemos que nesse primeiro semestre de 2021 foi ligeiramente maior ao observado no mesmo período do ano anterior, onde nenhuma as grandes regiões apresentou variação significativa  . 
+
+```{r produtiv deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(ap_armas, "Apreensões de armas (taxa por 100 mil habitantes)", 25)
+
+
+grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 350)  
+```
+O interior segundo Deinter apresentou diferentes tendências, seis deles tiveram diminuição na taxa por cem mil habitantes de armas apreendidas. Dos quatro Deinter que aumentaram a taxa, destaque para o Deinter 6 - Santos, com a maior taxa observada.
+
+Já a taxa de prisões por cem mil habitantes tem por destaque a taxa do Deinter 8 - Presidente Prudente, a maior em todos os períodos considerados. Em comparação com o primeiro semestre de 2021 somente três Deinter apresentaram redução.
