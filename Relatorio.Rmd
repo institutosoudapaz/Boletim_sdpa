@@ -28,6 +28,8 @@ library(grid)
 # Carregar bases
 
 base_crimes <- readRDS("base_crimes.rds")
+base_letalidade_long <- readRDS("base_letalidade_long.rds")
+base_crimes_long <- readRDS("base_crimes_long.rds")
 
 ano_referencia <- 2021
 
@@ -39,7 +41,14 @@ theme_sdpa_macroreg <- theme_void()+
         legend.title = element_blank(), 
         aspect.ratio=8.5/20)
 
+theme_sdpa_let <- theme_void()+
+  theme(legend.position = "bottom",
+        axis.text.y=element_text(size=7.8),
+        legend.title = element_blank(),
+        aspect.ratio=11/20)
+
 cores <- c("#cec8c4", "#be9068","#042e3f")
+cores_2 <- c("#042e3f", "#be9068")
 
 # Criar função de gráfico crimes por ano_semestre/macroregião
 
@@ -49,7 +58,7 @@ p <- base_crimes %>%
   filter(cod_reg<31) %>% 
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
              y= {{crime}}, x= ano_semestre)) + 
-  geom_bar(position="stack", stat="identity", size=.3, colour="black") +
+  geom_bar(position="stack", stat="identity", size=.7, colour="light grey") +
   geom_text(aes(label = {{crime}}, colour =ifelse(cod_reg>11, "black", "white")), 
             position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
@@ -84,7 +93,7 @@ p <- base_crimes %>%
   filter(cod_reg>30) %>% 
   mutate(taxa = round(({{crime}}/pop * 100000),1)) %>%
   ggplot(aes(fill=ano_semestre, y= taxa, x= deinter)) + 
-  geom_bar(position="dodge", stat="identity", size=.3, colour="black") +
+  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
   geom_text(aes(label = taxa), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
   scale_fill_manual(values = cores) +
@@ -186,6 +195,64 @@ distintas em cada tipo de crime. Em paralelo à redução dos registros de estup
 dos homicídios no estado, a letalidade das polícias paulistas bateu novos recordes, e evidencia a necessidade
 de implementar medidas voltadas à redução da letalidade policial no estado de São Paulo, sobretudo na capital
 paulista.
+
+\newpage
+
+```{r letalidade violenta e crimes violentos, echo=FALSE, fig.dim = c(10, 6)}
+
+# Criar gráfico letalidade violenta
+
+p <- base_letalidade_long %>% 
+  filter(ano_semestre!="2020 / 2º Semestre") %>% 
+  ggplot(aes(fill=factor(ano_semestre,  levels=c("2021 / 1º Semestre", "2020 / 1º Semestre")), y= count, 
+             x= factor(morte, levels = c(
+               "Total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol")))) + 
+  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
+  geom_text(aes(label = count), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("Total de vítimas", "Homicídio doloso", "Latrocínio", "Lesão corporal seguida de morte", 
+    "Mortos pela Polícia Civil e Militar em serviço", "Mortos pela Polícia Civil e Militar fora de 
+    serviço"), width = 24))+
+  theme_sdpa_let +
+  coord_flip(ylim=c(100, 2300))
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                                            fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+
+# Criar gráfico crimes violentos
+
+p <- base_crimes_long %>% 
+  filter(ano_semestre!="2020 / 2º Semestre") %>% 
+  ggplot(aes(fill=factor(ano_semestre,  levels=c("2021 / 1º Semestre", "2020 / 1º Semestre")), y= count, 
+             x= factor(crime, levels = c(
+               "Total", "tot_estupro", "extor_seq", "hd_ocorr", "lat_ocorr", "roubo_veic", 
+               "roubo_outros")))) + 
+  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
+  geom_text(aes(label = count), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("Total de ocorrências", "Estupro", "Extorsão mediante sequestro", "Homicídio doloso", 
+      "Latrocínio", "Roubo de veículo", "Roubo (outros)"), width = 24))+
+  theme_sdpa_let +
+  coord_flip(ylim=c(100, 145000))
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Crimes Violentos", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                                                           fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9)) 
+```
+
+texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
 
 \newpage
 
