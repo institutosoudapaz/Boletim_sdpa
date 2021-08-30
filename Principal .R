@@ -232,8 +232,28 @@ base_viol_mulher <- base_viol_mulher %>%
     cols = Capital:Interior,
     names_to = "area",
     values_to = "qdte"
-  )
+  ) 
+  
+base_viol_mulher <- base_viol_mulher %>% 
+  unite(ano_semestre, c(Ano, Sem), sep = " / ", remove = FALSE) %>% 
+  select(ano_semestre, item, area, qdte)
 
+base_viol_mulher$ano_semestre <- paste(base_viol_mulher$ano_semestre, 'º Semestre', sep='')
+
+base_viol_mulher_long <- base_viol_mulher %>% 
+  filter(item =="HOMICÍDIO DOLOSO - TOTAL"| item =="LESÃO CORPORAL DOLOSA") %>% 
+  group_by(ano_semestre, item, area) %>% 
+  summarise(qtde = sum(qtde)) 
+
+
+base_viol_mulher_long <- base_viol_mulher_long %>%
+  pivot_wider(
+    names_from = item,
+    values_from = qtde)
+
+base_viol_mulher_long$area [base_viol_mulher_long$area =="Demacro"] <- "Grande São Paulo"
+
+saveRDS(base_viol_mulher_long, "base_viol_mulher_long.rds") 
 
 ###Passo 09: Criando os gráficos----
 
@@ -241,7 +261,7 @@ base_viol_mulher <- base_viol_mulher %>%
 
 theme_sdpa_let <- theme_void()+
   theme(legend.position = "bottom",
-        axis.text.y=element_text(size=7.8),
+        axis.text.y=element_text(size=12),
         legend.title = element_blank(),
         aspect.ratio=11/20)
 
@@ -254,7 +274,7 @@ p <- base_letalidade_long %>%
   ggplot(aes(fill=factor(ano_semestre,  levels=c("2021 / 1º Semestre", "2020 / 1º Semestre")), y= count, 
              x= factor(morte, levels = c(
                "Total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol")))) + 
-  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = count), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
   scale_fill_manual(values = cores_2) +
@@ -281,7 +301,7 @@ p <- base_crimes_long %>%
              x= factor(crime, levels = c(
                "Total", "tot_estupro", "extor_seq", "hd_ocorr", "lat_ocorr", "roubo_veic", 
                "roubo_outros")))) + 
-  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = count), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
   scale_fill_manual(values = cores_2) +
@@ -318,7 +338,7 @@ p <- base_crimes %>%
   filter(cod_reg<31) %>% 
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
              y= {{crime}}, x= ano_semestre)) + 
-  geom_bar(position="stack", stat="identity", size=.7, colour="light grey") +
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = {{crime}}, colour =ifelse(cod_reg>11, "black", "white")), 
             position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
@@ -356,7 +376,7 @@ p <- base_crimes %>%
   filter(cod_reg>30) %>% 
   mutate(taxa = round(({{crime}}/pop * 100000),1)) %>%
   ggplot(aes(fill=ano_semestre, y= taxa, x= deinter)) + 
-  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = taxa), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
   scale_fill_manual(values = cores) +
@@ -380,22 +400,157 @@ grid.arrange(g, p, heights=c(1,9))
 
 grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 330)
 
-# Criar gráfico letalidade/vitimização policial
+# Criar gráfico letalidade policial
+
+cores_3 <- c("#be9068", "#042e3f")
+
+p <- base_corregedoria_long %>% 
+  filter(ano_semestre != "2020 / 2º Semestre") %>% 
+  filter(let_vit == "let_ser" | let_vit == "let_fol") %>% 
+  ggplot(aes(fill=let_vit, x=ano_semestre, y= count))+
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = count, colour =ifelse(let_vit == "let_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
+                    values = cores_3) +
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Letalidade Policial", x = 0.03, hjust = 0, 
+                       gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+# Criar gráfico vitimização policial
+
+p <- base_corregedoria_long %>% 
+  filter(ano_semestre != "2020 / 2º Semestre") %>% 
+  filter(let_vit == "mort_ser" | let_vit == "mort_fol") %>% 
+  ggplot(aes(fill=let_vit, x=ano_semestre, y= count))+
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = count, colour =ifelse(let_vit == "mort_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Policiais mortos fora de serviço", "Policiais mortos em serviço"), 
+                    values = cores_3) +
+  scale_y_continuous(limits = c(0, 40))+
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Vitimização Policial", x = 0.03, hjust = 0, 
+                       gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+# Criar gráficos violencia contra mulher
+
+grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e titulo
+  # do gráfico
+  
+  p <- base_viol_mulher_long %>% 
+    ggplot(aes(fill=factor(area, levels=c("Interior","Grande São Paulo","Capital")),
+               y= {{crime}}, x= ano_semestre)) + 
+    geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+    geom_text(aes(label = {{crime}}, colour =ifelse(area == "Capital",  "white", "black")),
+              position=position_stack(vjust=0.5)) +
+    scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+                 geom = "text",size=4, vjust = -0.5) +
+    scale_fill_manual(values = cores) +
+    guides(color = "none")+
+    theme_sdpa_macroreg
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=20, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
+grafico_viol_mulher (`LESÃO CORPORAL DOLOSA`, "Violência Contra a Mulher: Lesão Corporal Dolosa")  # Teste da função
+
+
+# Criar tabela letalidade e vitimização policial 
+# (ALERTA DE GAMBIARRA: NÃO TERMINAMOS A TABELA, INSERIR COMO IMAGEM NO BOLETIM 2021 1 SEM)
+
+base_corregedoria_estado <- base_corregedoria %>% 
+  filter(ano_semestre == "2020 / 1º Semestre"|ano_semestre == "2021 / 1º Semestre") %>% 
+  select(cod_reg, ano_semestre, let_ser,let_fol,mort_ser,mort_fol) %>% 
+  filter(cod_reg!="30") %>%
+  group_by(ano_semestre) %>% 
+  summarise(let_ser = sum(let_ser),
+            let_fol = sum(let_fol),
+            mort_ser = sum(mort_ser),
+            mort_fol = sum(mort_fol)) %>% 
+  pivot_longer(
+    cols = ano_semestre,
+    names_to = "região",
+    values_to = "ano_semestre"
+  )
+base_corregedoria_estado$região <- "Estado"
+
+base_corregedoria_capital <- base_corregedoria %>% 
+  filter(ano_semestre == "2020 / 1º Semestre"|ano_semestre == "2021 / 1º Semestre") %>% 
+  select(cod_reg, ano_semestre, let_ser,let_fol,mort_ser,mort_fol) %>% 
+  filter(cod_reg=="10") %>%
+  group_by(ano_semestre) %>% 
+  summarise(let_ser = sum(let_ser),
+            let_fol = sum(let_fol),
+            mort_ser = sum(mort_ser),
+            mort_fol = sum(mort_fol)) %>% 
+  pivot_longer(
+    cols = ano_semestre,
+    names_to = "região",
+    values_to = "ano_semestre"
+  )
+
+base_corregedoria_capital$região <- "Capital"
+
+base_corregedoria_tabela <- rbind(base_corregedoria_estado,base_corregedoria_capital)
+
+base_corregedoria_tabela <- base_corregedoria_tabela %>% 
+  group_by(região) %>% 
+  mutate(razao_ser = let_ser/mort_ser) %>% 
+  mutate(razao_fol = let_fol/mort_fol) %>% 
+
+base_corregedoria_tabela%>% 
+  knitr::kable()
+
+# Criar módulo de títulos sem os gráficos anexos
+
+
+titulo <- function(titulo) { #selecionar o titulo
+
+  t <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(t, heights=c(1,9), clipGrob(1,1))
+  
+}
+
+titulo("Destaques") 
 
 
 
 #### O que falta ----
-# criar grafico vitimizaçao letalidade policial
-# Inserir numeração das pgs (.rmd)
-# cabeçalho apresentação
-# cabeçalho destaque
 
+# Escrever Apresentação
+# Escrever Destaques
+# Escrever Considerações Finais
+
+# Inserir numeração das pgs (.rmd)
 
 # aumentar espaçamento texto apresentaçào e destaque (.rmd)
 # aumentar o espaçamento entre as barras dos gráficos
-# mudar linha de contorno para cinza claro
 # aumentar fonte da legenda e descer a legenda
 
 ## inserir variação porcentagens
-
-

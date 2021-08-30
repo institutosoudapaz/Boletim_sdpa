@@ -4,7 +4,7 @@ author: "ISDP"
 date: "04/08/2021"
 output: pdf_document
 fontfamily: arev
-fontsize: 9pt
+fontsize: 8.5pt
 geometry: "left=2cm,right=2cm,top=1.5cm,bottom=2cm"
 header-includes: 
       - \usepackage{graphicx}
@@ -12,11 +12,10 @@ header-includes:
       - \pagestyle{fancy}
       - \fancyhead{}
       - \renewcommand{\headrule}{}
-      - \fancyfoot[R]{\includegraphics{rodape.png}}
+      - \fancyfoot[R]{\includegraphics{./imgs/rodape.png}}
 
 ---
-#criar pagina principal
-#criar numero de pg
+
 
 ```{r setup, include=FALSE}
 
@@ -29,7 +28,10 @@ library(grid)
 
 base_crimes <- readRDS("base_crimes.rds")
 base_letalidade_long <- readRDS("base_letalidade_long.rds")
+base_corregedoria<- readRDS("base_corregedoria.rds")
+base_corregedoria_long <- readRDS("base_corregedoria_long.rds")
 base_crimes_long <- readRDS("base_crimes_long.rds")
+base_viol_mulher_long <- readRDS("base_viol_mulher_long.rds")
 
 ano_referencia <- 2021
 
@@ -43,12 +45,13 @@ theme_sdpa_macroreg <- theme_void()+
 
 theme_sdpa_let <- theme_void()+
   theme(legend.position = "bottom",
-        axis.text.y=element_text(size=7.8),
+        axis.text.y=element_text(size=12),
         legend.title = element_blank(),
         aspect.ratio=11/20)
 
 cores <- c("#cec8c4", "#be9068","#042e3f")
 cores_2 <- c("#042e3f", "#be9068")
+cores_3 <- c("#be9068", "#042e3f")
 
 # Criar função de gráfico crimes por ano_semestre/macroregião
 
@@ -58,7 +61,7 @@ p <- base_crimes %>%
   filter(cod_reg<31) %>% 
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
              y= {{crime}}, x= ano_semestre)) + 
-  geom_bar(position="stack", stat="identity", size=.7, colour="light grey") +
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = {{crime}}, colour =ifelse(cod_reg>11, "black", "white")), 
             position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
@@ -93,7 +96,7 @@ p <- base_crimes %>%
   filter(cod_reg>30) %>% 
   mutate(taxa = round(({{crime}}/pop * 100000),1)) %>%
   ggplot(aes(fill=ano_semestre, y= taxa, x= deinter)) + 
-  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = taxa), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
   scale_fill_manual(values = cores) +
@@ -112,9 +115,41 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
+# Criar gráficos violencia contra mulher
+
+grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e titulo
+  # do gráfico
+  
+  p <- base_viol_mulher_long %>% 
+    ggplot(aes(fill=factor(area, levels=c("Interior","Grande São Paulo","Capital")),
+               y= {{crime}}, x= ano_semestre)) + 
+    geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+    geom_text(aes(label = {{crime}}, colour =ifelse(area == "Capital",  "white", "black")),
+              position=position_stack(vjust=0.5)) +
+    scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+                 geom = "text",size=4, vjust = -0.5) +
+    scale_fill_manual(values = cores) +
+    guides(color = "none")+
+    theme_sdpa_macroreg
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=20, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
 ```
 
-## Apresentação
+## Capa
+
+\newpage
+
+![](imgs\tit_apres.jpg)
+
+\
 
 O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela
 Secretaria da Segurança Pública de São Paulo (SSP/SP) desde 2012, a fim de
@@ -145,7 +180,8 @@ no 1º semestre de 2020.
 
 \newpage
 
-## Destaques
+![](imgs\tit_destaques.jpg)
+\
 
 O 1º semestre de 2020 foi marcado pela pandemia de Covid-19, que até o momento matou mais de 107 mil
 pessoas nas cidades brasileiras. O estado de São Paulo foi particularmente afetado, com cerca de um quarto
@@ -198,6 +234,7 @@ paulista.
 
 \newpage
 
+
 ```{r letalidade violenta e crimes violentos, echo=FALSE, fig.dim = c(10, 6)}
 
 # Criar gráfico letalidade violenta
@@ -207,7 +244,7 @@ p <- base_letalidade_long %>%
   ggplot(aes(fill=factor(ano_semestre,  levels=c("2021 / 1º Semestre", "2020 / 1º Semestre")), y= count, 
              x= factor(morte, levels = c(
                "Total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol")))) + 
-  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = count), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
   scale_fill_manual(values = cores_2) +
@@ -234,7 +271,7 @@ p <- base_crimes_long %>%
              x= factor(crime, levels = c(
                "Total", "tot_estupro", "extor_seq", "hd_ocorr", "lat_ocorr", "roubo_veic", 
                "roubo_outros")))) + 
-  geom_bar(position="dodge", stat="identity", size=.7, colour="light grey") +
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = count), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
   scale_fill_manual(values = cores_2) +
@@ -252,7 +289,12 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 grid.arrange(g, p, heights=c(1,9)) 
 ```
 
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
+No 1º semestre de 2021, o número de vítimas de violência letal no estado teve uma redução de -11,6%, 
+com 257 pessoas mortas a menos que nos primeiros seis meses de 2020. Chama a atenção a intensa redução 
+de aumento de -36,3% nas mortes cometidas pelas polícias em serviço, e de -23,6% no número de pessoas 
+mortas po policiais fora de serviço. Por sua vez, os homicídios tiveram redução de -2,5% neste semestre. Em relação às ocorrências de crimes violentos, no 1º semestre de 2021 houve uma redução de -5,7%
+no total de ocorrências. O destaque negativo foi o aumento de 13,5% nas ocorrências de estupros.
+
 
 \newpage
 
@@ -293,10 +335,10 @@ grafico_semestre(tot_estupro, "Total de Estupros")
 grafico_semestre(estupro_vuln, "Estupros de vulneráveis")  
 ```
 
-No primeiro semestre de 2021 o crime de estupro apresentou aumento de 13,5%no estado em comparação com o primeiro semestre de 2020, com destaque a Grande São Paulo com aumento de 20%.
+No primeiro semestre de 2021 o crime de estupro apresentou aumento de 13,5% no estado em comparação com o primeiro semestre de 2020, com destaque a Grande São Paulo com aumento de 20%.
 
-Em relação aos estupros de vulneráveis (com vítimas que sejam menores de 14
-anos ou pessoas cujas condições de saúde as impedem de discernir ou resistir ao ato sexual) vale destacar que eles responderam por 77% do total de estupros. Nos últimos semestres esse percentual pouco variou.
+Em relação aos estupros de vulneráveis (com vítimas que sejam menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir ou resistir ao ato sexual) vale destacar que eles 
+responderam por 77% do total de estupros. Nos últimos semestres esse percentual pouco variou.
 
 
 \newpage
@@ -313,6 +355,20 @@ Quando olhamos a taxa de estupros e de estupros de vulneráveis por Deinter cham
 
 Vale lembrar que em muitos casos a vítima acaba nao notificando a polícia, essa subnotificação é um desafio para as políticas públicas.
 
+\newpage
+
+```{r violencia contra mulher, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_viol_mulher (`HOMICÍDIO DOLOSO - TOTAL`, "Violência Contra a Mulher: Homicídio (incluindo Feminicídio)")
+
+grafico_viol_mulher (`LESÃO CORPORAL DOLOSA`, "Violência Contra a Mulher: Lesão Corporal Dolosa") 
+```
+
+No 1º semestre de 2021, houve um aumento de 2,6% dos homicídios contra mulheres (incluindo os
+feminicídios), cuja soma no mesmo período de 2020 foi de 196 vítimas, e em 2021 de 210 mulheres
+assassinadas. O aumento mais intenso se deu na região do Interior, com um crescimento de 9,7%
+nos casos. Já nos casos de lesão corporal dolosa, ou seja, agressões intencionais contra mulheres, o aumento foi de 5,4% no 1º semestre de 2021 em comparação com o mesmo período do
+ano anterior, com um crescimento ainda mais acentuado, de 8,4%, nos municípios da Grande São Paulo.
 
 \newpage
 
@@ -345,8 +401,43 @@ Observando o Interior segundo Deinter vemos que a taxa de Roubo (Outros) por 100
 Quando olhamos as taxa de Roubo de Veículos temos que a maior parte dos departamentos apresentou redução, somente o Deinter 8 - Presidente Prudente e o Deinter 3 - Ribeirão Preto tiveram aumento em relação ao primeiro semestre de 2020
 
 \newpage
-Parte de Letalidade
-\(bold) Vítimas\
+
+![](imgs\tit_let_vit_pol.jpg)
+![](imgs\tabela let_vit_policial_2021_1sem.jpg)
+
+```{r letalidade e vitimização policial, echo=FALSE, fig.dim = c(10, 6)}
+
+p <- base_corregedoria_long %>% 
+  filter(ano_semestre != "2020 / 2º Semestre") %>% 
+  filter(let_vit == "let_ser" | let_vit == "let_fol") %>% 
+  ggplot(aes(fill=let_vit, x=ano_semestre, y= count))+
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = count, colour =ifelse(let_vit == "let_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
+                    values = cores_3) +
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Letalidade Policial", x = 0.03, hjust = 0, 
+                       gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+```
+Em relação tanto à letalidade como a vitimização policial, os primeiros seis meses de 2021 foram
+significativamente menos violentos em comparação com o mesmo período de 2020. No 1º semestre de 2021
+os policiais de São Paulo mataram 351 pessoas, uma redução de -34,1% em relação ao 1º semestre 2020, que teve o maior número registrado desde o início da série histórica, em 2001. Destas 351 mortes
+cometidas pelas polícias paulistas, 283 foram durante o serviço (80,6%) e 68 em período de folga (19,4%).
+É importante destacar quue a Capital registrou um aumento de 9,1% no número de pessoas mortas pelas polícias fora de serviço.
+
+A vitimização de policiais também teve grande redução no 1º semestre de 2021, passando de
+28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de
+2021 (-60,7%). Se destaca que nenhum policial no estado de São Paulo foi morto durante o serviço nos primeiros seis meses de 2021.
 
 \newpage
 
@@ -359,9 +450,7 @@ grafico_semestre(ap_armas, "Apreensões de armas")
 grafico_semestre(prisoes, "Prisões")  
 ```
 
-O número de armas apreendidas no estado de São Paulo nesse primeiro semestre de 2021 foi muito parecido com o que foi observado no primeiro semestr de 2020 resultado da establidade em suas grandes regiões.  . 
-
-Quando observamos o número de prisões, - considerando as prisões em flagrante e também por mandado - vemos que nesse primeiro semestre de 2021 foi ligeiramente maior ao observado no mesmo período do ano anterior, onde nenhuma as grandes regiões apresentou variação significativa  . 
+O número de armas apreendidas no estado de São Paulo nesse primeiro semestre de 2021 foi muito parecido com o que foi observado no primeiro semestre de 2020, resultado da establidade em suas grandes regiões. Quando observamos o número de prisões, - considerando as prisões em flagrante e também por mandado - vemos que nesse primeiro semestre de 2021 foi ligeiramente maior ao observado no mesmo período do ano anterior, onde nenhuma as grandes regiões apresentou variação significativa. 
 
 ```{r produtiv deinter, echo=FALSE, fig.dim = c(10, 6)}
 
