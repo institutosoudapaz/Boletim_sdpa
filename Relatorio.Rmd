@@ -29,7 +29,9 @@ library(grid)
 
 base_crimes <- readRDS("base_crimes.rds")
 base_letalidade_long <- readRDS("base_letalidade_long.rds")
+base_corregedoria_long <- readRDS("base_corregedoria_long.rds")
 base_crimes_long <- readRDS("base_crimes_long.rds")
+
 
 ano_referencia <- 2021
 
@@ -49,6 +51,7 @@ theme_sdpa_let <- theme_void()+
 
 cores <- c("#cec8c4", "#be9068","#042e3f")
 cores_2 <- c("#042e3f", "#be9068")
+cores_3 <- c("#be9068", "#042e3f")
 
 # Criar função de gráfico crimes por ano_semestre/macroregião
 
@@ -345,8 +348,52 @@ Observando o Interior segundo Deinter vemos que a taxa de Roubo (Outros) por 100
 Quando olhamos as taxa de Roubo de Veículos temos que a maior parte dos departamentos apresentou redução, somente o Deinter 8 - Presidente Prudente e o Deinter 3 - Ribeirão Preto tiveram aumento em relação ao primeiro semestre de 2020
 
 \newpage
-Parte de Letalidade
-\(bold) Vítimas\
+```{r letalidade e vitimização policial, echo=FALSE, fig.dim = c(10, 6)}
+
+p <- base_corregedoria_long %>% 
+  filter(ano_semestre != "2020 / 2º Semestre") %>% 
+  filter(let_vit == "let_ser" | let_vit == "let_fol") %>% 
+  ggplot(aes(fill=let_vit, x=ano_semestre, y= count))+
+  geom_bar(position="stack", stat="identity", size=.7, colour="light grey") +
+  geom_text(aes(label = count, colour =ifelse(let_vit == "let_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
+                    values = cores_3) +
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Letalidade Policial", x = 0.03, hjust = 0, 
+                       gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+
+p <- base_corregedoria_long %>% 
+  filter(ano_semestre != "2020 / 2º Semestre") %>% 
+  filter(let_vit == "mort_ser" | let_vit == "mort_fol") %>% 
+  ggplot(aes(fill=let_vit, x=ano_semestre, y= count))+
+  geom_bar(position="stack", stat="identity", size=.7, colour="light grey") +
+  geom_text(aes(label = count, colour =ifelse(let_vit == "mort_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Policiais mortos fora de serviço", "Policiais mortos em serviço"), 
+                    values = cores_3) +
+  scale_y_continuous(limits = c(0, 40))+
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Vitimização Policial", x = 0.03, hjust = 0, 
+                       gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+```
 
 \newpage
 
@@ -361,7 +408,7 @@ grafico_semestre(prisoes, "Prisões")
 
 O número de armas apreendidas no estado de São Paulo nesse primeiro semestre de 2021 foi muito parecido com o que foi observado no primeiro semestr de 2020 resultado da establidade em suas grandes regiões.  . 
 
-Quando observamos o número de prisões, - considerando as prisões em flagrante e também por mandado - vemos que nesse primeiro semestre de 2021 foi ligeiramente maior ao observado no mesmo período do ano anterior, onde nenhuma as grandes regiões apresentou variação significativa  . 
+Quando observamos o número de prisões, - considerando as prisões em flagrante e também por mandado - vemos que nesse primeiro semestre de 2021 foi ligeiramente maior ao observado no mesmo período do ano anterior, onde nenhuma as grandes regiões apresentou variação significativa. 
 
 ```{r produtiv deinter, echo=FALSE, fig.dim = c(10, 6)}
 

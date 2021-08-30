@@ -380,8 +380,55 @@ grid.arrange(g, p, heights=c(1,9))
 
 grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 330)
 
-# Criar gráfico letalidade/vitimização policial
+# Criar gráfico letalidade policial
 
+
+cores_3 <- c("#be9068", "#042e3f")
+
+p <- base_corregedoria_long %>% 
+  filter(ano_semestre != "2020 / 2º Semestre") %>% 
+  filter(let_vit == "let_ser" | let_vit == "let_fol") %>% 
+  ggplot(aes(fill=let_vit, x=ano_semestre, y= count))+
+  geom_bar(position="stack", stat="identity", size=.7, colour="light grey") +
+  geom_text(aes(label = count, colour =ifelse(let_vit == "let_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
+                    values = cores_3) +
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Letalidade Policial", x = 0.03, hjust = 0, 
+                       gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+# Criar gráfico vitimização policial
+
+p <- base_corregedoria_long %>% 
+  filter(ano_semestre != "2020 / 2º Semestre") %>% 
+  filter(let_vit == "mort_ser" | let_vit == "mort_fol") %>% 
+  ggplot(aes(fill=let_vit, x=ano_semestre, y= count))+
+  geom_bar(position="stack", stat="identity", size=.7, colour="light grey") +
+  geom_text(aes(label = count, colour =ifelse(let_vit == "mort_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Policiais mortos fora de serviço", "Policiais mortos em serviço"), 
+                    values = cores_3) +
+  scale_y_continuous(limits = c(0, 40))+
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Vitimização Policial", x = 0.03, hjust = 0, 
+                       gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
 
 
 #### O que falta ----
@@ -390,10 +437,8 @@ grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 330)
 # cabeçalho apresentação
 # cabeçalho destaque
 
-
 # aumentar espaçamento texto apresentaçào e destaque (.rmd)
 # aumentar o espaçamento entre as barras dos gráficos
-# mudar linha de contorno para cinza claro
 # aumentar fonte da legenda e descer a legenda
 
 ## inserir variação porcentagens
