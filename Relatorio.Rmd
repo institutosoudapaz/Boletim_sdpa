@@ -182,6 +182,7 @@ no 1º semestre de 2020.
 
 ![](imgs\tit_destaques.jpg)
 
+\
 
 O 1º semestre de 2020 foi marcado pela pandemia de Covid-19, que até o momento matou mais de 107 mil
 pessoas nas cidades brasileiras. O estado de São Paulo foi particularmente afetado, com cerca de um quarto
@@ -462,3 +463,10 @@ grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 350)
 O interior segundo Deinter apresentou diferentes tendências, seis deles tiveram diminuição na taxa por cem mil habitantes de armas apreendidas. Dos quatro Deinter que aumentaram a taxa, destaque para o Deinter 6 - Santos, com a maior taxa observada.
 
 Já a taxa de prisões por cem mil habitantes tem por destaque a taxa do Deinter 8 - Presidente Prudente, a maior em todos os períodos considerados. Em comparação com o primeiro semestre de 2021 somente três Deinter apresentaram redução.
+
+\newpage
+
+![](imgs\tit_consideracoes_finais.jpg)
+
+\
+
