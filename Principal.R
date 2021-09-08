@@ -539,8 +539,6 @@ titulo <- function(titulo) { #selecionar o titulo
 
 titulo("Destaques") 
 
-
-
 #### O que falta ----
 
 # Escrever Apresentação
