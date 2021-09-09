@@ -39,15 +39,28 @@ ano_referencia <- 2021
 
 theme_sdpa_macroreg <- theme_void()+
   theme(legend.position = "bottom",
-        axis.text.x=element_text(size=10),
+        legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=12),
+        axis.text.x=element_text(size=12),
         legend.title = element_blank(), 
         aspect.ratio=8.5/20)
 
 theme_sdpa_let <- theme_void()+
   theme(legend.position = "bottom",
+        legend.text=element_text(size=12),
         axis.text.y=element_text(size=12),
         legend.title = element_blank(),
         aspect.ratio=11/20)
+
+theme_sdpa_deinter <- theme_classic()+
+  theme(legend.position = "bottom",
+        axis.text.y=element_text(size=12),
+        legend.title = element_blank(), 
+        legend.text=element_text(size=12),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        aspect.ratio=8.7/20)
 
 cores <- c("#cec8c4", "#be9068","#042e3f")
 cores_2 <- c("#042e3f", "#be9068")
@@ -80,14 +93,6 @@ grid.arrange(g, p, heights=c(1,9))
 }
 
 # Criar gráfico taxa de crimes por ano_semestre/deinter
-
-theme_sdpa_deinter <- theme_classic()+
-  theme(legend.position = "bottom",
-        axis.text.y=element_text(size=11),
-        legend.title = element_blank(), 
-        axis.title.x=element_blank(),
-        axis.title.y=element_blank(),
-        aspect.ratio=8.7/20)
 
 grafico_deinter <- function(crime, titulo, limite) {  #selecionar o tipo de crime, titulo
                                                       # do gráfico e limite do eixo x
@@ -148,7 +153,6 @@ grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e t
 \newpage
 
 ![](imgs\tit_apres.jpg)
-
 \
 
 O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela
@@ -161,22 +165,17 @@ Militar do Estado de São Paulo publicadas no Diário Oficial e dados obtidos vi
 de Acesso à Informação (LAI), fornecidos pela Coordenadoria de Análise e
 Planejamento (CAP) da SSP/SP e pela Polícia Civil.
 
-O boletim Sou da Paz Analisa tem uma periodicidade trimestral e, nesta edição
-referente ao primeiro semestre de 2021, aborda os crimes de homicídio, latrocínio,
-estupro, roubo (outros e de veículos), além dos homicídios e *agressões contra
-mulheres* no estado. Em relação às atividades policiais, foram analisadas as
-apreensões de armas e prisões realizadas no período, além da letalidade e
-vitimização policial.
 
-Devido à pandemia que assola o Brasil e o mundo desde o início de 2020, esta
-edição do Boletim Sou da Paz Analisa inclui também uma análise comparativa
-entre o número de mortes causadas por Covid-19, por homicídios dolosos e
-aquelas decorrentes de intervenção policial. Esta análise visa não somente apontar
-as regiões onde essas mortes se concentram, mas, principalmente, ressaltar a
-gravidade da pandemia de Covid-19 no estado, e como o número de mortes pela
-doença é muitas vezes mais elevado que a soma dos homicídios e mortes
-cometidas pelas polícias, que por sua vez, também cresceram significativamente
-no 1º semestre de 2020.
+O Boletim Sou da Paz Analisa tem uma periodicidade trimestral e, nesta edição
+referente ao primeiro semestre de 2021, aborda os crimes de homicídio, latrocínio,
+estupro, roubo (outros e de veículos), além dos homicídios e agressões contra
+mulheres no estado. Em relação às atividades policiais, foram analisadas as
+apreensões de armas e prisões realizadas no período, além da letalidade e
+vitimização policial. Dessa forma, as páginas a seguir trazem análises das ocorrências criminais 
+e de atuação das policias paulistas tanto por macrorregião, como também suas taxas por 100 mil 
+habitantes para cada um dos 10 Departamentos de Polícia Judiciária de São Paulo Interior, de forma
+a possibilitar a análise de como estes fenômenos se distribuem pelo interior do estado.
+
 
 \newpage
 
@@ -184,54 +183,17 @@ no 1º semestre de 2020.
 
 \
 
-O 1º semestre de 2020 foi marcado pela pandemia de Covid-19, que até o momento matou mais de 107 mil
-pessoas nas cidades brasileiras. O estado de São Paulo foi particularmente afetado, com cerca de um quarto
-de todas as mortes pela doença em todo o país. Além das dezenas de milhares de mortes, a pandemia e as
-medidas de isolamento social afetaram diretamente a circulação de pessoas nas cidades paulistas e as
-dinâmicas dos fenômenos criminais, ainda que nem sempre da mesma forma.
+O 1º semestre de 2021 foi novamente marcado pela pandemia de Covid-19, que até o final de junho deste ano matou mais de 510 mil pessoas nas cidades brasileiras. O estado de São Paulo foi particularmente afetado, com mais de um quarto de todas as mortes pela doença em todo o país. Além das centenas de milhares de mortes, a pandemia e as medidas de isolamento social afetaram diretamente a circulação de pessoas nas cidades paulistas e as dinâmicas dos fenômenos criminais, ainda que nem sempre da mesma forma, sobretudo com a chamada terceira onda da pandemia, que teve seu pico no mês de março de 2021, e demandou um recrudescimento das medidas de isolamento social, ainda que de forma extremamente heterogênea no estado.
 
-Quatro das seis categorias de crimes violentos no estado de São Paulo tiveram redução em relação ao 1º
-semestre de 2019. Os únicos aumentos se deram nos crimes contra a vida, homicídios dolosos e latrocínios,
-que aumentaram respectivamente 4,7% e 6,9%. É importante ressaltar que os homicídios vinham em uma
-tendência de queda desde o ano de 2012 no estado, e o 1º semestre de 2020 aponta para uma ruptura neste
-processo de diminuição da violência letal.
+Quatro das seis categorias de crimes violentos no estado de São Paulo tiveram redução em relação ao 1º semestre de 2020. Os únicos aumentos se deram nos crimes de extorsão mediante sequestro, que permanece em uma frequência bastante reduzida, e dos estupros, com um significativo aumento de 13,5% nas ocorrências de registradas nos primeiros seis meses de 2021. O total de ocorrências dos chamados crimes violentos foi reduzido, de 138.934 ocorrências destes crimes no 1º semestre de 2020, para 130.999 ocorrências no 1º semestre deste ano, uma redução de -5,7%.
 
-Já o crime de estupro, cujas ocorrências aumentaram 27% entre os anos de 2015 e 2019, subitamente reduziu
-14,9% no 1º semestre de 2020 em comparação ao mesmo período de 2019. É importante destacar que 74,5%
-dos estupros cometidos no estado nos primeiros seis meses de 2020 tiveram como vítimas vulneráveis -
-menores de 14 anos de idade ou pessoas cujas condições de saúde as impedem de discernir ou resistir ao ato
-sexual. Nesse sentido, é essencial compreendermos se com a pandemia e as medidas de isolamento social
-houve uma redução efetiva do crime de estupro ou de sua denúncia e notificação às autoridades.
+Os crimes de estupro vinham em uma tendência significa de aumento no estado entre os anos de 2015 e 2019, com uma súbita redução no 1º semestre de 2020, justamente no início da pandemia de Covid-19.  No entanto, os registros de estupro voltaram a aumentar no estado de São Paulo em 2021, particularmente no Interior (crescimento de 13,1%) e nos municípios da grande São Paulo (19,5%). Infelizmente o mesmo movimento de queda no início de 2020 e subsequente aumento se repetiu com os estupros de vulneráveis, que tiveram um crescimento de 17,5% no estado: no 1º semestre de 2020 foram registradas 3.780 ocorrências de estupros de vulneráveis, enquanto nos primeiros seis meses de 2021 foram 4.441 ocorrências deste crime, que correspondem a 77% dos estupros registrados no estado. 
 
-Outro ponto de alerta foi o aumento da letalidade policial no estado. Policiais foram responsáveis por 514
-mortes no 1º semestre de 2020, 95 mortes a mais que no mesmo período do ano anterior, um aumento de
-22,6% e maior número registrado em um semestre desde o início da série histórica, em 2001. Das 514 mortes
-cometidas pelas polícias paulistas, 437 foram durante o serviço (21,7%) e 77 em período de folga (28,3%). O
-montante de pessoas mortas pelas polícias de São Paulo equivale a dizer que as forças policiais mataram 2,8
-pessoas por dia no estado. No 1º semestre de 2020 policiais em folga ou em serviço mataram 514 pessoas de
-um total de 2.203 mortes violentas no estado, ou seja, 23,3% deste montante. No entanto, a proporção é muito
-mais elevada na capital paulista: as polícias mataram 222 pessoas de um total de 624 vítimas de mortes
-violentas na cidade, 35,5% de todas as mortes violentas. Isso significa dizer que aproximadamente um a cada
-três mortes violentas intencionais cometidas na cidade de São Paulo foi cometida por um policial.
+Por outro lado, houve uma intensa redução tanto da letalidade como da vitimização policial no estado nestes primeiros seis meses de 2021. Policiais foram responsáveis por 351 mortes no 1º semestre de 2021, 182 mortes a menos que no mesmo período do ano anterior, uma intensa redução de -34,1%. Dentre essas 351 mortes cometidas pelas polícias paulistas, 283 foram durante o serviço (80,6%) e 68 em período de folga (19,4%). No 1º semestre de 2021 policiais em folga ou em serviço mataram 351 pessoas de um total de 1.966 mortes violentas no estado, ou seja, 17,9% deste montante. A vitimização de policiais também reduziu significativamente no 1º semestre de 2021, passando de 28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de 2021, uma importante redução de -60,7%. 
 
- vitimização de policiais também aumentou no 1º semestre de 2020, passando de 14 policiais mortos nos
-primeiros seis meses de 2019 para 24 policiais assassinados no mesmo período de 2020. É importante notar
-que o aumento significativo das mortes de policiais no estado ocorreu de forma homogênea entre policiais em
-serviço e de folga.
+Por sua vez os roubos (outros) e roubos de veículos, que estavam em um processo forte redução no estado desde o ano de 2016, mantiveram a queda nos primeiro seis meses de 2021. Os roubos (outros) – todos os roubos, excluídos os de veículo, carga e banco – tiveram uma queda de  -6,3%, com uma média de cerca de 603 roubos por dia. Os roubos de veículos tiveram uma redução parecida, de -7%, que se concentrou especialmente na Capital, que teve uma queda de -12,9% nesse tipo de roubo. 
 
-Por sua vez os roubos (outros) e roubos de veículos, que estavam em um processo forte redução no estado
-desde o ano de 2016, tiveram uma queda ainda mais intensa nos primeiro seis meses de 2020. Os roubos
-(outros) – todos os roubos, excluídos os de veículo, carga e banco – tiveram uma queda de -8,3%, uma média
-de 645 roubos por dia. Os roubos de veículos tiveram uma redução ainda mais intensa, de -29%. Essa intensa
-redução ocorreu de forma similar em todas as macrorregiões do estado e reflete a redução de circulação de
-pessoas e veículos devido às medidas de isolamento social de combate à Covid-19.
-
-As análises apresentadas a seguir demonstram não apenas os intensos impactos da pandemia e das medidas
-de isolamento social sobre as dinâmicas criminais, mas também que esses impactos se deram de formas muito
-distintas em cada tipo de crime. Em paralelo à redução dos registros de estupros e de roubos, e do aumento
-dos homicídios no estado, a letalidade das polícias paulistas bateu novos recordes, e evidencia a necessidade
-de implementar medidas voltadas à redução da letalidade policial no estado de São Paulo, sobretudo na capital
-paulista.
+As análises apresentadas a seguir demonstram não apenas os intensos impactos da pandemia e das medidas de isolamento social sobre as dinâmicas criminais, mas também que esses impactos se deram de formas muito distintas em cada tipo de crime. Em paralelo ao aumento dos registros de estupros, e da redução continuada dos roubos no estado, a letalidade e a vitimização das polícias paulistas foram reduzidas significativamente nos primeiros seis meses do ano, e evidenciam a necessidade não apenas de implementar, mas de acompanhar e avaliar constantemente, as  medidas voltadas à redução da letalidade policial adotadas pelo governo do estado de São Paulo e suas forças policiais. 
 
 \newpage
 
@@ -290,11 +252,12 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 grid.arrange(g, p, heights=c(1,9)) 
 ```
 
-No 1º semestre de 2021, o número de vítimas de violência letal no estado teve uma redução de -11,6%, 
-com 257 pessoas mortas a menos que nos primeiros seis meses de 2020. Chama a atenção a intensa redução 
-de aumento de -36,3% nas mortes cometidas pelas polícias em serviço, e de -23,6% no número de pessoas 
-mortas po policiais fora de serviço. Por sua vez, os homicídios tiveram redução de -2,5% neste semestre. Em relação às ocorrências de crimes violentos, no 1º semestre de 2021 houve uma redução de -5,7%
-no total de ocorrências. O destaque negativo foi o aumento de 13,5% nas ocorrências de estupros.
+No 1º semestre de 2021, o número de vítimas de violência letal no estado teve uma redução de -11,6%,
+com 257 pessoas mortas a menos que nos primeiros seis meses de 2020. Chama a atenção a intensa 
+redução  de aumento de -36,3% nas mortes cometidas pelas polícias em serviço, e de -23,6% no número 
+de pessoas mortas por policiais fora de serviço. Por sua vez, os homicídios tiveram redução de -2,5% neste semestre. Em relação às ocorrências de crimes violentos, no 1º semestre de 2021 houve uma 
+redução de -5,7% no total de ocorrências. O destaque negativo foi o aumento de 13,5% nas ocorrências 
+de estupros.
 
 
 \newpage
@@ -308,7 +271,8 @@ grafico_semestre(hd_ocorr, "Homicídios Dolosos")
 grafico_semestre(lat_ocorr, "Latrocínios")  
 ```
 
-As ocorrências de homicídio doloso tiveram queda de 3% no primeiro semestre de 2021 comparado ao mesmo período no ano anterior. Porém, ao considerarmos as regiões, a Grande São Paulo e a Capital apresentaram queda de 20% e 11%, respectivamente, enquanto no Interior os casos aumentaram em 9% no primeiro semestre de 2021. Por sua vez, os casos de latrocínio tiveram redução de 8% no primeiro semestre de 2021 comparado ao mesmo período do ano anterior. De todo o Estado, o Interior teve uma redução expressiva, e registrou no primeiro semestre do ano o mesmo número de latrocínios que a capital.
+As ocorrências de homicídio doloso tiveram queda de -3% no primeiro semestre de 2021 comparado ao mesmo período no ano anterior. Porém, ao considerarmos as regiões, a Grande São Paulo e a Capital apresentaram queda de -20% e -11%, respectivamente, enquanto no Interior os casos aumentaram em 9% no primeiro semestre de 2021. Por sua vez, os casos de latrocínio tiveram redução de -8% no primeiro semestre de 2021 comparado ao mesmo período do ano anterior. De todo o Estado, o Interior teve uma redução expressiva, e registrou no primeiro semestre do ano o mesmo número de latrocínios que a capital.
+
 
 \newpage
 
@@ -320,10 +284,10 @@ grafico_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 7.5)
 grafico_deinter(lat_ocorr, "Latrocínios (taxa por 100 mil habitantes)", 0.5)  
 ```
 
-No interior, dentre os 10 Departamentos de Polícia Judiciária do Interior (Deinter), oito apresentaram um
-aumento em suas taxas de homicídios em comparação com o 1º semestre de 2020, somente o Deinter 10 – Araçatuba e o Deinter 2 – Campinas apresentaram redução.
+No interior, dentre os 10 Departamentos de Polícia Judiciária do Interior (Deinter), oito apresentaram um aumento em suas taxas de homicídios em comparação com o 1º semestre de 2020: somente o Deinter 10 – Araçatuba e o Deinter 2 – Campinas apresentaram redução.
 
-No que diz respeito às taxas de latrocínios por 100 mil habitantes vemos certa estabilidade nas taxas, onde se destaca o Deinter 2 - Campinas com sucessivas reduções no periodo analisado.
+No que diz respeito às taxas de latrocínios por 100 mil habitantes vemos certa estabilidade nas taxas, onde se destaca o Deinter 2 - Campinas com sucessivas reduções no período analisado.
+
 
 \newpage
 
@@ -338,8 +302,8 @@ grafico_semestre(estupro_vuln, "Estupros de vulneráveis")
 
 No primeiro semestre de 2021 o crime de estupro apresentou aumento de 13,5% no estado em comparação com o primeiro semestre de 2020, com destaque a Grande São Paulo com aumento de 20%.
 
-Em relação aos estupros de vulneráveis (com vítimas que sejam menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir ou resistir ao ato sexual) vale destacar que eles 
-responderam por 77% do total de estupros. Nos últimos semestres esse percentual pouco variou.
+Em relação aos estupros de vulneráveis (com vítimas que sejam menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir ou resistir ao ato sexual) vale destacar que eles  responderam por cerca de 77% do total de estupros registrados no estado.
+
 
 
 \newpage
@@ -352,9 +316,7 @@ grafico_deinter(tot_estupro, "Estupros (taxa por 100 mil habitantes)", 22)
 grafico_deinter(estupro_vuln, "Estupros de Vulneráveis (taxa por 100 mil habitantes)", 20.5)  
 ```
 
-Quando olhamos a taxa de estupros e de estupros de vulneráveis por Deinter chama atenção que em nenhum deles houve redução quando comparamos com o primeiro semestre de 2020.Há uma grande variação entre os departamentos, onde o Deinter 9 - Piracicaba - Sorocaba apresentou a menor taxa - 10,6 - enquanto o Deinter 7 apresentou a maior, com 18,9.
-
-Vale lembrar que em muitos casos a vítima acaba nao notificando a polícia, essa subnotificação é um desafio para as políticas públicas.
+Quando olhamos a taxa de estupros e de estupros de vulneráveis por Deinter chama atenção que em nenhum deles houve redução em comparação com o primeiro semestre de 2020. Há uma grande variação entre os departamentos, onde o Deinter 9 - Piracicaba apresentou a menor taxa  (10,6 por 100 mil), enquanto o Deinter 7 - Sorocaba apresentou a maior, de 18,9 ocorrências por 100 mil habitantes.
 
 \newpage
 
@@ -382,11 +344,10 @@ grafico_semestre(roubo_outros, "Roubo (Outros)")
 grafico_semestre(roubo_veic, "Roubo (Veículos)")  
 ```
 
-Durante o 1º semestre de 2021, o crime de roubo (outros) – todos os roubos, excluídos os de
-carga e banco – teve uma redução de 6,3%. Foram 108.698 nos primeiros seis meses de 2021,
-contra 116.084 no mesmo período de 2020, uma média de 598 roubos por dia. 
+Durante o 1º semestre de 2021, o crime de roubo (outros) – todos os roubos, excluídos os de carga e banco – teve uma redução de -6,3%. Foram 108.698 nos primeiros seis meses de 2021, contra 116.084 no mesmo período de 2020, uma média de 598 roubos por dia. 
 
-Os roubos de veículos tiveram uma redução de 7% no estado durante os primeiros seis meses de 2021, foram 15.028, enquanto no mesmo período de 2020 foram 16.222, sendo que essa redução ocorreu com mais intensidade na capital, com redução de 13%. 
+Os roubos de veículos tiveram uma redução de -7% no estado durante os primeiros seis meses de 2021, foram 15.028, enquanto no mesmo período de 2020 foram 16.222, sendo que essa redução ocorreu com mais intensidade na capital, com redução de -13%.
+
 \newpage
 
 ```{r roubos deinter, echo=FALSE, fig.dim = c(10, 6)}
@@ -397,9 +358,10 @@ grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 31
 grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 42)  
 ```
 
-Observando o Interior segundo Deinter vemos que a taxa de Roubo (Outros) por 100 mil habitantes diminuiu no primeiro semestre de 2021 em relação ao mesmo período de 2020 todos os Deintes com exceção do Deinter 10 - Araçatuba. 
+Observando o Interior de acordo com os Deinter, vemos que a taxa de Roubo (Outros) por 100 mil habitantes diminuiu no primeiro semestre de 2021 em relação ao mesmo período de 2020 em todos os departamentos, com exceção do Deinter 10 - Araçatuba. 
 
-Quando olhamos as taxa de Roubo de Veículos temos que a maior parte dos departamentos apresentou redução, somente o Deinter 8 - Presidente Prudente e o Deinter 3 - Ribeirão Preto tiveram aumento em relação ao primeiro semestre de 2020
+Em relação as taxas de Roubo de Veículos temos que a maior parte dos departamentos apresentou redução: somente o Deinter 8 - Presidente Prudente e o Deinter 3 - Ribeirão Preto tiveram aumento em relação ao primeiro semestre de 2020.
+
 
 \newpage
 
@@ -430,15 +392,10 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 grid.arrange(g, p, heights=c(1,9))
 
 ```
-Em relação tanto à letalidade como a vitimização policial, os primeiros seis meses de 2021 foram
-significativamente menos violentos em comparação com o mesmo período de 2020. No 1º semestre de 2021
-os policiais de São Paulo mataram 351 pessoas, uma redução de -34,1% em relação ao 1º semestre 2020, que teve o maior número registrado desde o início da série histórica, em 2001. Destas 351 mortes
-cometidas pelas polícias paulistas, 283 foram durante o serviço (80,6%) e 68 em período de folga (19,4%).
-É importante destacar quue a Capital registrou um aumento de 9,1% no número de pessoas mortas pelas polícias fora de serviço.
+Em relação tanto à letalidade como a vitimização policial, os primeiros seis meses de 2021 foram significativamente menos violentos em comparação com o mesmo período de 2020. No 1º semestre de 2021 os policiais de São Paulo mataram 351 pessoas, uma redução de -34,1% em relação ao 1º semestre 2020, que teve o maior número registrado desde o início da série histórica, em 2001. Destas 351 mortes cometidas pelas polícias paulistas, 283 foram durante o serviço (80,6%) e 68 em período de folga (19,4%). É importante destacar que a Capital registrou um aumento de 9,1% no número de pessoas mortas pelas polícias fora de serviço.
 
-A vitimização de policiais também teve grande redução no 1º semestre de 2021, passando de
-28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de
-2021 (-60,7%). Se destaca que nenhum policial no estado de São Paulo foi morto durante o serviço nos primeiros seis meses de 2021.
+A vitimização de policiais também teve grande redução no 1º semestre de 2021, passando de 28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de 2021 (-60,7%). Se destaca que nenhum policial no estado de São Paulo foi morto durante o serviço nos primeiros seis meses de 2021.
+
 
 \newpage
 
@@ -460,13 +417,24 @@ grafico_deinter(ap_armas, "Apreensões de armas (taxa por 100 mil habitantes)", 
 
 grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 350)  
 ```
-O interior segundo Deinter apresentou diferentes tendências, seis deles tiveram diminuição na taxa por cem mil habitantes de armas apreendidas. Dos quatro Deinter que aumentaram a taxa, destaque para o Deinter 6 - Santos, com a maior taxa observada.
+Os departamentos de polícia do Interior apresentaram diferentes tendências, seis deles tiveram diminuição na taxa por cem mil habitantes de armas apreendidas. Dos quatro Deinter que aumentaram a taxa, destaque para o Deinter 6 - Santos, com a maior taxa observada.
 
-Já a taxa de prisões por cem mil habitantes tem por destaque a taxa do Deinter 8 - Presidente Prudente, a maior em todos os períodos considerados. Em comparação com o primeiro semestre de 2021 somente três Deinter apresentaram redução.
+Já a taxa de 291 prisões por cem mil habitantes do Deinter 8 - Presidente Prudente, é a maior em todos os departamentos nos últimos três semestres. Em comparação com o primeiro semestre de 2021 somente três Deinter apresentaram redução da taxa de prisões.
 
 \newpage
 
 ![](imgs\tit_consideracoes_finais.jpg)
 
 \
+Os primeiros seis meses de 2021 foram marcados pelo redução significativa dos crimes violentos, especialmente aqueles com vítimas fatais. No 1º semestre de 2021, foram assassinadas 1.966 pessoas no estado de São Paulo, contra 2.223 vítimas letais nos primeiros seis meses de 2020, uma significativa queda de -11,6%. Os homicídios tiveram redução de -2,5% neste semestre, mas a maior responsável pela diminuição da letalidade violenta no estado se deu devido a queda do número de pessoas mortas pelas polícias: se nos primeiros seis meses de 2020 as polícias de São Paulo mataram, em serviço e fora dele,  533 pessoas, no 1º semestre de 2021 foram 351 vítimas, uma expressiva redução de -34,1%.
+
+Ainda assim, é importante analisarmos de maneira mais profunda como se deu esta redução da letalidade policial, e em que regiões do estado. Houve uma grande repercussão sobre a adoção em 18 batalhões da Polícia Militar do programa de câmeras portáteis no mês de junho, mas esta é apenas uma de uma série de ações tomadas pelas forças policiais do estado, e portanto, surge a necessidade de analisar o impacto de cada uma delas, e sobretudo, a manutenção, da redução na letalidade no estado. Além disso, é preciso manter atenção sobre os episódios de letalidade policial fora de serviço, que inclusive tiveram um aumento de 9,1% na capital no últimos semestre. 
+
+A tendência da queda nos roubos de veículos se manteve nos primeiros meses de 2021, com uma redução de -7% em relação ao mesmo período de 2020, e se tornando o semestre com menor número de ocorrências deste tipo na última década. Mesmo que não haja consenso sobre os motivos dessa redução, mantemos a indicação de alguns marcos que podem nos dar o caminho inicial dessa identificação, como, por exemplo, a Lei dos Desmanches (Lei nº 15.276, de 02 de janeiro de 2014), que normatiza o comércio de peças usadas e prevê maior estrutura de fiscalização e penalidades em caso de descumprimento das normas, como o fechamento do estabelecimento. Já os demais tipos de roubos, chamados aqui de roubo (outros), tiveram uma redução de -6,3% no estado em comparação com o 1º semestre de 2020, mas com um crescimento localizado de 3,8%, nos municípios da Grande São Paulo.
+
+Por sua vez os crimes de estupro retomaram a tendência de crescimento em São Paulo. Nos primeiros seis meses de 2021 houve um intenso aumento de 13,5% nos registros de estupros em comparação com o mesmo período de 2020, e um crescimento ainda mais acentuado de, 19,5%, nos municípios da Grande São Paulo. Os estupros de vulneráveis (com vítimas que sejam menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir ou resistir ao ato sexual) tiveram um aumento ainda mais expressivo no estado, de 17,5%, com um total de 4.441 registros – o que equivale a 24,6 estupros de vulneráveis notificados diariamente no estado de São Paulo. São necessárias análises e estudos mais aprofundados em relação aos crimes de estupro de forma a compreender se sua tendência de crescimento desde 2014 corresponde efetivamente a uma variação do fenômeno, de sua notificação às autoridades, ou ambos. 
+
+É importante ressaltar que o momento singular pelo qual o mundo passa devido a pandemia de COVID-19 e seus efeitos nas dinâmicas criminais e nas ações das instituições de segurança pública. Análises preliminares apontam mudanças nas dinâmicas criminais durante a quarentena no estado, tais como o aumento das violências contra mulheres. No 1º semestre de 2021 os homicídios contra mulheres (incluindo feminicídios) tiveram aumento de 2,6% no estado, e ainda com mais intensidade nos municípios do Interior, com aumento de 9,7%. As agressões intencionais contra mulheres também tiveram um aumento em comparação com o mesmo período de 2020: o crescimento foi de 5,4% nos registros de  lesão corporal dolosa contra mulheres no Estado, e ainda mais intenso, de 15,8% na capital paulista entre janeiro e junho de 2021 em comparação com o mesmo intervalo do ano anterior. 
+
+
 

@@ -261,9 +261,11 @@ saveRDS(base_viol_mulher_long, "base_viol_mulher_long.rds")
 
 theme_sdpa_let <- theme_void()+
   theme(legend.position = "bottom",
+        legend.text=element_text(size=12),
         axis.text.y=element_text(size=12),
         legend.title = element_blank(),
         aspect.ratio=11/20)
+
 
 cores_2 <- c("#042e3f", "#be9068")
 
@@ -323,7 +325,10 @@ grid.arrange(g, p, heights=c(1,9))
 
 theme_sdpa_macroreg <- theme_void()+
   theme(legend.position = "bottom",
-        axis.text.x=element_text(size=10),
+        legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=12),
+        axis.text.x=element_text(size=12),
         legend.title = element_blank(), 
         aspect.ratio=8.5/20)
 
@@ -362,8 +367,9 @@ grafico_semestre(hd_ocorr, "Prisões")  # Teste da função
 
 theme_sdpa_deinter <- theme_classic()+
   theme(legend.position = "bottom",
-        axis.text.y=element_text(size=11),
+        axis.text.y=element_text(size=12),
         legend.title = element_blank(), 
+        legend.text=element_text(size=12),
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
         aspect.ratio=8.7/20)
@@ -541,7 +547,6 @@ titulo("Destaques")
 
 #### O que falta ----
 
-# Escrever Apresentação
 # Escrever Destaques
 # Escrever Considerações Finais
 
@@ -549,6 +554,5 @@ titulo("Destaques")
 
 # aumentar espaçamento texto apresentaçào e destaque (.rmd)
 # aumentar o espaçamento entre as barras dos gráficos
-# aumentar fonte da legenda e descer a legenda
 
 ## inserir variação porcentagens
