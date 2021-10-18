@@ -2,7 +2,10 @@
 title: "Boletim Sou da Paz Analisa 2021 - 1 Semestre"
 author: "ISDP"
 date: "04/08/2021"
-output: pdf_document
+output: 
+  word_document:
+    reference_docx: Template_SDPA.docx
+    
 fontfamily: arev
 fontsize: 8.5pt
 geometry: "left=2cm,right=2cm,top=1.5cm,bottom=2cm"
@@ -16,8 +19,9 @@ header-includes:
 
 ---
 
-
 ```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
 library(tidyverse)
 library(ggplot2)
@@ -75,10 +79,10 @@ p <- base_crimes %>%
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
              y= {{crime}}, x= ano_semestre)) + 
   geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
-  geom_text(aes(label = {{crime}}, colour =ifelse(cod_reg>11, "black", "white")), 
-            position=position_stack(vjust=0.5)) +
+  geom_text(aes(label = format({{crime}}, big.mark = ".", scientific = FALSE), 
+                colour =ifelse(cod_reg>11, "black", "white")), position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
-  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+  stat_summary(fun = sum, aes(label = format(..y.., big.mark = ".", scientific = FALSE), group = ano_semestre), 
                geom = "text",size=4, vjust = -0.5) +
   scale_fill_manual(values = cores) +
   guides(color = "none")+
@@ -129,11 +133,12 @@ grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e t
     ggplot(aes(fill=factor(area, levels=c("Interior","Grande São Paulo","Capital")),
                y= {{crime}}, x= ano_semestre)) + 
     geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
-    geom_text(aes(label = {{crime}}, colour =ifelse(area == "Capital",  "white", "black")),
+    geom_text(aes(label = format({{crime}}, big.mark = ".", scientific = FALSE), 
+                  colour =ifelse(area == "Capital",  "white", "black")),
               position=position_stack(vjust=0.5)) +
     scale_colour_manual(values=c("white"="white", "black"="black")) +
-    stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
-                 geom = "text",size=4, vjust = -0.5) +
+    stat_summary(fun = sum, aes(label = format(..y.., big.mark = ".", scientific = FALSE), 
+                                group = ano_semestre), geom = "text",size=4, vjust = -0.5) +
     scale_fill_manual(values = cores) +
     guides(color = "none")+
     theme_sdpa_macroreg
@@ -148,12 +153,10 @@ grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e t
 
 ```
 
-## Capa
 
 \newpage
 
-![](imgs\tit_apres.jpg)
-\
+## Apresentação
 
 O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela
 Secretaria da Segurança Pública de São Paulo (SSP/SP) desde 2012, a fim de
@@ -179,9 +182,8 @@ a possibilitar a análise de como estes fenômenos se distribuem pelo interior d
 
 \newpage
 
-![](imgs\tit_destaques.jpg)
+## Destaques
 
-\
 
 O 1º semestre de 2021 foi novamente marcado pela pandemia de Covid-19, que até o final de junho deste ano matou mais de 510 mil pessoas nas cidades brasileiras. O estado de São Paulo foi particularmente afetado, com mais de um quarto de todas as mortes pela doença em todo o país. Além das centenas de milhares de mortes, a pandemia e as medidas de isolamento social afetaram diretamente a circulação de pessoas nas cidades paulistas e as dinâmicas dos fenômenos criminais, ainda que nem sempre da mesma forma, sobretudo com a chamada terceira onda da pandemia, que teve seu pico no mês de março de 2021, e demandou um recrudescimento das medidas de isolamento social, ainda que de forma extremamente heterogênea no estado.
 
@@ -195,8 +197,6 @@ Por sua vez os roubos (outros) e roubos de veículos, que estavam em um processo
 
 As análises apresentadas a seguir demonstram não apenas os intensos impactos da pandemia e das medidas de isolamento social sobre as dinâmicas criminais, mas também que esses impactos se deram de formas muito distintas em cada tipo de crime. Em paralelo ao aumento dos registros de estupros, e da redução continuada dos roubos no estado, a letalidade e a vitimização das polícias paulistas diminuíram significativamente nos primeiros seis meses do ano, e evidenciam a necessidade não apenas de implementar, mas de acompanhar e avaliar constantemente, as  medidas voltadas à redução da letalidade policial adotadas pelo governo do estado de São Paulo e suas forças policiais. 
 
-\newpage
-
 
 ```{r letalidade violenta e crimes violentos, echo=FALSE, fig.dim = c(10, 6)}
 
@@ -208,8 +208,8 @@ p <- base_letalidade_long %>%
              x= factor(morte, levels = c(
                "Total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol")))) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
-  geom_text(aes(label = count), position = position_dodge(0.94), 
-            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.4) +
   scale_fill_manual(values = cores_2) +
   guides(color = "none")+
   scale_x_discrete(labels = str_wrap(
@@ -217,6 +217,7 @@ p <- base_letalidade_long %>%
     "Mortos pela Polícia Civil e Militar em serviço", "Mortos pela Polícia Civil e Militar fora de 
     serviço"), width = 24))+
   theme_sdpa_let +
+
   coord_flip(ylim=c(100, 2300))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
@@ -224,7 +225,6 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                                                             fontface="bold")))
 
 grid.arrange(g, p, heights=c(1,9))
-
 
 # Criar gráfico crimes violentos
 
@@ -235,14 +235,15 @@ p <- base_crimes_long %>%
                "Total", "tot_estupro", "extor_seq", "hd_ocorr", "lat_ocorr", "roubo_veic", 
                "roubo_outros")))) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
-  geom_text(aes(label = count), position = position_dodge(0.94), 
-            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.4) +
   scale_fill_manual(values = cores_2) +
   guides(color = "none")+
   scale_x_discrete(labels = str_wrap(
     c("Total de ocorrências", "Estupro", "Extorsão mediante sequestro", "Homicídio doloso", 
       "Latrocínio", "Roubo de veículo", "Roubo (outros)"), width = 24))+
   theme_sdpa_let +
+
   coord_flip(ylim=c(100, 145000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
@@ -260,8 +261,6 @@ redução de -5,7% no total de ocorrências. O destaque negativo foi o aumento d
 de estupros.
 
 
-\newpage
-
 ```{r homicidios e latrocinios macro, echo=FALSE, fig.dim = c(10, 6)}
 
 grafico_semestre(hd_ocorr, "Homicídios Dolosos")  
@@ -273,8 +272,6 @@ grafico_semestre(lat_ocorr, "Latrocínios")
 
 As ocorrências de homicídio doloso tiveram queda de -3% no primeiro semestre de 2021 comparado ao mesmo período no ano anterior. Porém, ao considerarmos as regiões, a Grande São Paulo e a Capital apresentaram queda de -20% e -11%, respectivamente, enquanto no Interior os casos aumentaram em 9% no primeiro semestre de 2021. Por sua vez, os casos de latrocínio tiveram redução de -8% no primeiro semestre de 2021 comparado ao mesmo período do ano anterior. De todo o Estado, foi no Interior que ocorreu uma redução expressiva (-38%), enquanto na capital e na região metropolitana, destaca-se o aumento dos casos de latrocínio.
 
-
-\newpage
 
 ```{r homicidios e latrocinios deinter, echo=FALSE, fig.dim = c(10, 6)}
 
@@ -288,8 +285,6 @@ No interior, dentre os 10 Departamentos de Polícia Judiciária do Interior (Dei
 
 No que diz respeito aos crimes de latrocínios por 100 mil habitantes vemos certa estabilidade nas taxas, onde se destaca o Deinter 2 - Campinas com sucessivas reduções no período analisado.
 
-
-\newpage
 
 ```{r estupros macro, echo=FALSE, fig.dim = c(10, 6)}
 
@@ -331,13 +326,9 @@ feminicídios), quando foram registradas 201 vítimas contra 196 no mesmo perío
 nos casos, enquanto na região metropolitana houve redução importante do número de homicídios de mulheres (-55%). Já nos casos de lesão corporal dolosa, ou seja, agressões intencionais contra mulheres, o aumento foi de 5,4% no 1º semestre de 2021 em comparação com o mesmo período do
 ano anterior, com um crescimento ainda mais acentuado, de 8,4%, nos municípios da Grande São Paulo.
 
-\newpage
-
 ```{r roubos macro, echo=FALSE, fig.dim = c(10, 6)}
 
 grafico_semestre(roubo_outros, "Roubo (Outros)")  
-
-
 
 grafico_semestre(roubo_veic, "Roubo (Veículos)")  
 ```
@@ -352,7 +343,6 @@ Os roubos de veículos tiveram uma redução de -7% no estado durante os primeir
 
 grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 310)
 
-
 grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 42)  
 ```
 
@@ -363,7 +353,8 @@ Em relação às taxas de Roubo de Veículos temos que a maior parte dos departa
 
 \newpage
 
-![](imgs\tit_let_vit_pol.jpg)
+## Letalidade e Vitimização Policial
+
 ![](imgs\tabela let_vit_policial_2021_1sem.jpg)
 
 ```{r letalidade e vitimização policial, echo=FALSE, fig.dim = c(10, 6)}
@@ -373,7 +364,8 @@ p <- base_corregedoria_long %>%
   filter(let_vit == "let_ser" | let_vit == "let_fol") %>% 
   ggplot(aes(fill=let_vit, x=ano_semestre, y= count))+
   geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
-  geom_text(aes(label = count, colour =ifelse(let_vit == "let_fol", "black", "white")), 
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE), 
+                colour =ifelse(let_vit == "let_fol", "black", "white")), 
             position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
   stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
@@ -394,14 +386,9 @@ Em relação tanto à letalidade como a vitimização policial, os primeiros sei
 
 A vitimização de policiais também teve grande redução no 1º semestre de 2021, passando de 28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de 2021 (-60,7%). Se destaca que nenhum policial no estado de São Paulo foi morto durante o serviço nos primeiros seis meses de 2021.
 
-
-\newpage
-
 ```{r produtiv macro, echo=FALSE, fig.dim = c(10, 6)}
 
 grafico_semestre(ap_armas, "Apreensões de armas")  
-
-
 
 grafico_semestre(prisoes, "Prisões")  
 ```
@@ -412,18 +399,14 @@ O número de armas apreendidas no estado de São Paulo nesse primeiro semestre d
 
 grafico_deinter(ap_armas, "Apreensões de armas (taxa por 100 mil habitantes)", 25)
 
-
 grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 350)  
 ```
 Seis dos dez departamentos de polícia do Interior tiveram diminuição na taxa por cem mil habitantes de armas apreendidas. Dos quatro Deinter que aumentaram a taxa, destaque para o Deinter 6 - Santos, que teve maior crescimento nas apreensões no período. 
 
 Em comparação com o primeiro semestre de 2021, somente três Deinter apresentaram redução da taxa de prisões. O Deinter 8 - Presidente Prudente se destaca com taxa bem a frente dos demais departamentos, 291 prisões por cem mil habitantes, em posição que se mantém nos últimos semestres.
 
-\newpage
+## Considerações Finais
 
-![](imgs\tit_consideracoes_finais.jpg)
-
-\
 Os primeiros seis meses de 2021 foram marcados pela redução significativa dos crimes violentos, especialmente aqueles com vítimas fatais. No 1º semestre de 2021, foram assassinadas 1.966 pessoas no estado de São Paulo, contra 2.223 vítimas letais nos primeiros seis meses de 2020, uma significativa queda de -11,6%. Se neste conjunto os homicídios tiveram redução de -2,5%, chama a atenção que a queda intensa no número de pessoas mortas pelas polícia tenha produzido o maior impacto na diminuição da letalidade violenta no estado: nos primeiros seis meses de 2020 as polícias de São Paulo mataram, em serviço e fora dele, 533 pessoas, no 1º semestre de 2021 foram 351 vítimas, uma expressiva redução de -34,1%.
 
 Ainda assim, é importante analisarmos de maneira mais profunda como se deu esta redução da letalidade policial, e em quais regiões do estado. Recentemente, houve uma grande repercussão sobre a adoção em 18 batalhões da Polícia Militar do programa de câmeras portáteis a partir do mês de junho, mas esta é apenas uma de uma série de ações tomadas pelas forças policiais do estado. Portanto, é necessário identificar e analisar o impacto de diferentes iniciativas e seus respectivos contextos, assim como monitorar a evolução da letalidade no estado ao longo do tempo. Além disso, é preciso manter atenção sobre os episódios de letalidade policial fora de serviço, que inclusive tiveram um aumento de 9,1% na capital no último semestre. 
@@ -433,6 +416,3 @@ A tendência de queda nos roubos de veículos se manteve nos primeiros meses de 
 Por sua vez os crimes de estupro retomaram a tendência de crescimento em São Paulo. Nos primeiros seis meses de 2021 houve um aumento de 13,5% nos registros de estupros em comparação com o mesmo período de 2020, e um crescimento ainda mais acentuado de, 19,5%, nos municípios da Grande São Paulo. Os estupros de vulneráveis (com vítimas que sejam menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual) tiveram um aumento ainda mais expressivo no estado, de 17,5%, com um total de 4.441 registros – o que equi-vale a 24,6 estupros de vulneráveis notificados diariamente no estado de São Paulo. São necessárias análises e estudos mais aprofundados em relação aos crimes de estupro de forma a compreender se sua tendência de crescimento desde 2014 corresponde efetivamente a uma variação do fenômeno, de sua notificação às autoridades, ou ambos. Também é preciso compreender os efeitos da pandemia de Covid-19 na notificação de crimes de caráter doméstico, como estupro de vulnerável e violência contra mulher. Análises preliminares apontam que houve em primeiro momento, com o isolamento social, uma redução expressiva dos registros destes crimes, e posteriormente, em segundo momento, percebe-se uma retomada das notificações. 
 
 É importante ressaltar que o momento singular pelo qual o mundo passa devido a pandemia de COVID-19 e seus efeitos nas dinâmicas criminais e nas ações das instituições de segurança pública. Análises preliminares apontam mudanças nas dinâmicas criminais durante a quarentena no estado, tais como o aumento das violências contra mulheres. No 1º semestre de 2021 os homicídios contra mulheres (incluindo feminicídios) tiveram aumento de 2,6% no estado, e ainda com mais intensidade nos municípios do Interior, com aumento de 9,7%. As agressões intencionais contra mulheres também tiveram um aumento em comparação com o mesmo período de 2020: o crescimento foi de 5,4% nos registros de  lesão corporal dolosa contra mulheres no Estado, e ainda mais intenso, de 15,8% na capital paulista.
-
-
-
