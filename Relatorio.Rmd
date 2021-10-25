@@ -1,7 +1,7 @@
 ---
-title: "Boletim Sou da Paz Analisa 2021 - 1 Semestre"
+title: "Boletim Sou da Paz Analisa 2021 - 3 trimestre"
 author: "ISDP"
-date: "04/08/2021"
+date: "03/11/2021"
 output: 
   word_document:
     reference_docx: Template_SDPA.docx
@@ -70,23 +70,29 @@ cores <- c("#cec8c4", "#be9068","#042e3f")
 cores_2 <- c("#042e3f", "#be9068")
 cores_3 <- c("#be9068", "#042e3f")
 
-# Criar função de gráfico crimes por ano_semestre/macroregião
+# Criar função de gráfico crimes por ano_trimestre/macroregião
 
-grafico_semestre <- function(crime, titulo) { #selecionar o tipo de crime e titulo
+grafico_trimestre <- function(crime, titulo) { #selecionar o tipo de crime e titulo
                                               # do gráfico
 p <- base_crimes %>% 
   filter(cod_reg<31) %>% 
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
-             y= {{crime}}, x= ano_semestre)) + 
+             y= {{crime}}, x= ano_tri)) + 
   geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = format({{crime}}, big.mark = ".", scientific = FALSE), 
                 colour =ifelse(cod_reg>11, "black", "white")), position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
-  stat_summary(fun = sum, aes(label = format(..y.., big.mark = ".", scientific = FALSE), group = ano_semestre), 
+  stat_summary(fun = sum, aes(label = format(..y.., big.mark = ".", scientific = FALSE), group = ano_tri), 
                geom = "text",size=4, vjust = -0.5) +
   scale_fill_manual(values = cores) +
   guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("2019 / 1º Tri", "2019 / 2º Tri", "2019 / 3º Tri", "2019 / 4º Tri",
+      "2020 / 1º Tri", "2020 / 2º Tri", "2020 / 3º Tri", "2020 / 4º Tri",
+      "2021 / 1º Tri", "2021 / 2º Tri", "2021 / 3º Tri"), width = 7))+
   theme_sdpa_macroreg
+
+
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                  textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -96,19 +102,19 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
-# Criar gráfico taxa de crimes por ano_semestre/deinter
+# Criar gráfico taxa de crimes por ano_trimestre/deinter
 
 grafico_deinter <- function(crime, titulo, limite) {  #selecionar o tipo de crime, titulo
                                                       # do gráfico e limite do eixo x
 p <- base_crimes %>% 
-  filter(ano>=(ano_referencia - 1)) %>% 
+   filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
   filter(cod_reg>30) %>% 
   mutate(taxa = round(({{crime}}/pop * 100000),1)) %>%
-  ggplot(aes(fill=ano_semestre, y= taxa, x= deinter)) + 
+  ggplot(aes(fill=ano_tri, y= taxa, x= deinter)) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = taxa), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
-  scale_fill_manual(values = cores) +
+  scale_fill_manual(values = cores_2) +
   guides(color = "none")+
   coord_flip(ylim=c(0, {{limite}})) +
   theme_sdpa_deinter+
@@ -131,15 +137,19 @@ grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e t
   
   p <- base_viol_mulher_long %>% 
     ggplot(aes(fill=factor(area, levels=c("Interior","Grande São Paulo","Capital")),
-               y= {{crime}}, x= ano_semestre)) + 
+               y= {{crime}}, x= ano_tri)) + 
     geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
     geom_text(aes(label = format({{crime}}, big.mark = ".", scientific = FALSE), 
                   colour =ifelse(area == "Capital",  "white", "black")),
               position=position_stack(vjust=0.5)) +
     scale_colour_manual(values=c("white"="white", "black"="black")) +
     stat_summary(fun = sum, aes(label = format(..y.., big.mark = ".", scientific = FALSE), 
-                                group = ano_semestre), geom = "text",size=4, vjust = -0.5) +
+                                group = ano_tri), geom = "text",size=4, vjust = -0.5) +
     scale_fill_manual(values = cores) +
+    scale_x_discrete(labels = str_wrap(
+      c("2019 / 1º Tri", "2019 / 2º Tri", "2019 / 3º Tri", "2019 / 4º Tri",
+      "2020 / 1º Tri", "2020 / 2º Tri", "2020 / 3º Tri", "2020 / 4º Tri",
+      "2021 / 1º Tri", "2021 / 2º Tri", "2021 / 3º Tri"), width = 7))+
     guides(color = "none")+
     theme_sdpa_macroreg
   
@@ -158,26 +168,11 @@ grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e t
 
 ## Apresentação
 
-O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela
-Secretaria da Segurança Pública de São Paulo (SSP/SP) desde 2012, a fim de
-contribuir para a melhor compreensão das dinâmicas criminais e atividades
-policiais no estado de São Paulo e em suas grandes regiões - Capital, Grande São
-Paulo e Interior. Além dos dados mensalmente divulgados pela SSP/SP, são
-consideradas informações produzidas pelas Corregedorias das Polícias Civil e
-Militar do Estado de São Paulo publicadas no Diário Oficial e dados obtidos via Lei
-de Acesso à Informação (LAI), fornecidos pela Coordenadoria de Análise e
-Planejamento (CAP) da SSP/SP e pela Polícia Civil.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
 
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-O Boletim Sou da Paz Analisa tem uma periodicidade trimestral e, nesta edição
-referente ao primeiro semestre de 2021, aborda os crimes de homicídio, latrocínio,
-estupro, roubo (outros e de veículos), além dos homicídios e agressões contra
-mulheres no estado. Em relação às atividades policiais, foram analisadas as
-apreensões de armas e prisões realizadas no período, além da letalidade e
-vitimização policial. Dessa forma, as páginas a seguir trazem análises das ocorrências criminais 
-e de atuação das policias paulistas tanto por macrorregião, como também suas taxas por 100 mil 
-habitantes para cada um dos 10 Departamentos de Polícia Judiciária de São Paulo Interior, de forma
-a possibilitar a análise de como estes fenômenos se distribuem pelo interior do estado.
 
 
 \newpage
@@ -185,17 +180,19 @@ a possibilitar a análise de como estes fenômenos se distribuem pelo interior d
 ## Destaques
 
 
-O 1º semestre de 2021 foi novamente marcado pela pandemia de Covid-19, que até o final de junho deste ano matou mais de 510 mil pessoas nas cidades brasileiras. O estado de São Paulo foi particularmente afetado, com mais de um quarto de todas as mortes pela doença em todo o país. Além das centenas de milhares de mortes, a pandemia e as medidas de isolamento social afetaram diretamente a circulação de pessoas nas cidades paulistas e as dinâmicas dos fenômenos criminais, ainda que nem sempre da mesma forma, sobretudo com a chamada terceira onda da pandemia, que teve seu pico no mês de março de 2021, e demandou um recrudescimento das medidas de isolamento social, ainda que de forma extremamente heterogênea no estado.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
 
-Quatro das seis categorias de crimes violentos no estado de São Paulo tiveram redução em relação ao 1º semestre de 2020. Os únicos aumentos se deram nos crimes de extorsão mediante seques-tro, que permanecem em uma frequência bastante reduzida, e dos estupros, com um significativo aumento de 13,5% nas ocorrências registradas nos primeiros seis meses de 2021. O total de ocorrências dos chamados crimes violentos pela SSP/SP diminuiu de 138.934 ocorrências no 1º semestre de 2020, para 130.999 ocorrências no 1º semestre deste ano, uma redução de -5,7%.
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-Os crimes de estupro vinham em uma tendência significativa de aumento no estado entre os anos de 2015 e 2019, com uma súbita redução no 1º semestre de 2020, justamente no início da pandemia de Covid-19.  No entanto, os registros de estupro voltaram a aumentar no estado de São Paulo em 2021, particularmente no Interior (crescimento de 13,1%) e nos municípios da grande São Paulo (19,5%). Infelizmente o mesmo movimento de queda no início de 2020 e subsequente aumento se repetiu com os estupros de vulneráveis, que tiveram um crescimento de 17,5% no estado: no 1º semestre de 2020 foram registradas 3.780 ocorrências de estupros de vulneráveis, enquanto nos primeiros seis meses de 2021 foram 4.441 ocorrências deste crime, que correspondem a 77% dos estupros registrados no estado. 
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-Por outro lado, houve uma intensa redução tanto da letalidade como da vitimização policial no estado nestes primeiros seis meses de 2021. Policiais foram responsáveis por 351 mortes no 1º semestre de 2021, 182 mortes a menos que no mesmo período do ano anterior, uma intensa redução de -34,1%. Dentre essas 351 mortes cometidas pelas polícias paulistas, 283 foram durante o serviço (80,6%) e 68 em período de folga (19,4%). No 1º semestre de 2021 as 351 pessoas mortas por policiais em folga ou em serviço correspondem a 17,9% de um total de 1.966 mortes violentas no estado. A vitimização de policiais também diminuiu significativamente no 1º semestre de 2021, passando de 28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de 2021, uma importante redução de -60,7%. 
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-Por sua vez os roubos (outros) e roubos de veículos, que estavam em um processo forte redução no estado desde o ano de 2016, mantiveram a queda nos primeiros seis meses de 2021. Os roubos (outros) – todos os roubos, excluídos os de veículo, carga e banco – tiveram uma queda de  -6,3%, com uma média de cerca de 603 roubos por dia. Os roubos de veículos tiveram uma redução parecida, de -7%, que se concentrou especialmente na Capital, cuja queda foi de -12,9% nesse tipo de roubo. 
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-As análises apresentadas a seguir demonstram não apenas os intensos impactos da pandemia e das medidas de isolamento social sobre as dinâmicas criminais, mas também que esses impactos se deram de formas muito distintas em cada tipo de crime. Em paralelo ao aumento dos registros de estupros, e da redução continuada dos roubos no estado, a letalidade e a vitimização das polícias paulistas diminuíram significativamente nos primeiros seis meses do ano, e evidenciam a necessidade não apenas de implementar, mas de acompanhar e avaliar constantemente, as  medidas voltadas à redução da letalidade policial adotadas pelo governo do estado de São Paulo e suas forças policiais. 
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
 
 ```{r letalidade violenta e crimes violentos, echo=FALSE, fig.dim = c(10, 6)}
@@ -229,8 +226,8 @@ grid.arrange(g, p, heights=c(1,9))
 # Criar gráfico crimes violentos
 
 p <- base_crimes_long %>% 
-  filter(ano_semestre!="2020 / 2º Semestre") %>% 
-  ggplot(aes(fill=factor(ano_semestre,  levels=c("2021 / 1º Semestre", "2020 / 1º Semestre")), y= count, 
+  filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
+  ggplot(aes(fill=factor(ano_tri,  levels=c("2021 / 3º Trimestre", "2020 / 3º Trimestre")), y= count, 
              x= factor(crime, levels = c(
                "Total", "tot_estupro", "extor_seq", "hd_ocorr", "lat_ocorr", "roubo_veic", 
                "roubo_outros")))) + 
@@ -243,8 +240,7 @@ p <- base_crimes_long %>%
     c("Total de ocorrências", "Estupro", "Extorsão mediante sequestro", "Homicídio doloso", 
       "Latrocínio", "Roubo de veículo", "Roubo (outros)"), width = 24))+
   theme_sdpa_let +
-
-  coord_flip(ylim=c(100, 145000))
+  coord_flip(ylim=c(100, 65000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Crimes Violentos", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -252,67 +248,51 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 
 grid.arrange(g, p, heights=c(1,9)) 
 ```
-
-No 1º semestre de 2021, o número de vítimas de violência letal no estado teve uma redução de -11,6%,
-com 257 pessoas mortas a menos que nos primeiros seis meses de 2020. Chama a atenção a intensa 
-redução de -36,3% nas mortes cometidas pelas polícias em serviço, e de -23,6% no número 
-de pessoas mortas por policiais fora de serviço. Por sua vez, os homicídios tiveram redução de -2,5% neste semestre. Em relação ao conjunto de crimes violentos, no 1º semestre de 2021 houve uma 
-redução de -5,7% no total de ocorrências. O destaque negativo foi o aumento de 13,5% nas ocorrências 
-de estupros.
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 
 ```{r homicidios e latrocinios macro, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_semestre(hd_ocorr, "Homicídios Dolosos")  
+grafico_trimestre(hd_ocorr, "Homicídios Dolosos")  
 
-
-
-grafico_semestre(lat_ocorr, "Latrocínios")  
+grafico_trimestre(lat_ocorr, "Latrocínios")  
 ```
-
-As ocorrências de homicídio doloso tiveram queda de -3% no primeiro semestre de 2021 comparado ao mesmo período no ano anterior. Porém, ao considerarmos as regiões, a Grande São Paulo e a Capital apresentaram queda de -20% e -11%, respectivamente, enquanto no Interior os casos aumentaram em 9% no primeiro semestre de 2021. Por sua vez, os casos de latrocínio tiveram redução de -8% no primeiro semestre de 2021 comparado ao mesmo período do ano anterior. De todo o Estado, foi no Interior que ocorreu uma redução expressiva (-38%), enquanto na capital e na região metropolitana, destaca-se o aumento dos casos de latrocínio.
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 
 ```{r homicidios e latrocinios deinter, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 7.5)
+grafico_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 4.0)
 
-
-grafico_deinter(lat_ocorr, "Latrocínios (taxa por 100 mil habitantes)", 0.5)  
+grafico_deinter(lat_ocorr, "Latrocínios (taxa por 100 mil habitantes)", 0.4)  
 ```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-No interior, dentre os 10 Departamentos de Polícia Judiciária do Interior (Deinter), seis apresentaram um aumento em suas taxas de homicídios em comparação com o 1º semestre de 2020: o Deinter 10 – Araçatuba, Deinter 9 – Piracicaba, e o Deinter 2 – Campinas apresentaram redução de suas taxas, e o Deinter 7 – Sorocaba manteve a mesma taxa em relação ao 1º semestre de 2020.
-
-No que diz respeito aos crimes de latrocínios por 100 mil habitantes vemos certa estabilidade nas taxas, onde se destaca o Deinter 2 - Campinas com sucessivas reduções no período analisado.
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 
 ```{r estupros macro, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_semestre(tot_estupro, "Total de Estupros")  
+grafico_trimestre(tot_estupro, "Total de Estupros")  
 
-
-
-grafico_semestre(estupro_vuln, "Estupros de vulneráveis")  
+grafico_trimestre(estupro_vuln, "Estupros de vulneráveis")  
 ```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-No primeiro semestre de 2021 o crime de estupro apresentou aumento de 13,5% no estado em comparação com o primeiro semestre de 2020, com destaque para a Grande São Paulo com aumento de 19,5%.
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-Em relação aos estupros de vulneráveis (com vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual) vale destacar que eles responderam por cerca de 77% do total de estupros registrados no estado.
-
-
-\newpage
 
 ```{r estupros deinter, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_deinter(tot_estupro, "Estupros (taxa por 100 mil habitantes)", 22)
+grafico_deinter(tot_estupro, "Estupros (taxa por 100 mil habitantes)", 12)
 
 
-grafico_deinter(estupro_vuln, "Estupros de Vulneráveis (taxa por 100 mil habitantes)", 20.5)  
+grafico_deinter(estupro_vuln, "Estupros de Vulneráveis (taxa por 100 mil habitantes)", 10.0)  
 ```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-Quando olhamos a taxa de estupros e de estupros de vulneráveis por Deinter, chama atenção que em nenhum deles houve redução em comparação com o primeiro semestre de 2020. Há uma grande variação entre os departamentos, onde o Deinter 9 - Piracicaba apresentou a menor taxa, 10,6 por 100 mil, enquanto o Deinter 7 - Sorocaba apresentou a maior, de 18,9 ocorrências por 100 mil habitantes.
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-\newpage
 
 ```{r violencia contra mulher, echo=FALSE, fig.dim = c(10, 6)}
 
@@ -320,38 +300,31 @@ grafico_viol_mulher (`HOMICÍDIO DOLOSO - TOTAL`, "Violência Contra a Mulher: H
 
 grafico_viol_mulher (`LESÃO CORPORAL DOLOSA`, "Violência Contra a Mulher: Lesão Corporal Dolosa") 
 ```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-No 1º semestre de 2021, houve um aumento de 2,6% dos homicídios contra mulheres (incluindo os
-feminicídios), quando foram registradas 201 vítimas contra 196 no mesmo período de 2020. O aumento mais intenso se deu na região do Interior, com um crescimento de 9,7%
-nos casos, enquanto na região metropolitana houve redução importante do número de homicídios de mulheres (-55%). Já nos casos de lesão corporal dolosa, ou seja, agressões intencionais contra mulheres, o aumento foi de 5,4% no 1º semestre de 2021 em comparação com o mesmo período do
-ano anterior, com um crescimento ainda mais acentuado, de 8,4%, nos municípios da Grande São Paulo.
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 ```{r roubos macro, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_semestre(roubo_outros, "Roubo (Outros)")  
+grafico_trimestre(roubo_outros, "Roubo (Outros)")  
 
-grafico_semestre(roubo_veic, "Roubo (Veículos)")  
+grafico_trimestre(roubo_veic, "Roubo (Veículos)")  
 ```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-Durante o 1º semestre de 2021, o crime de roubo (outros) – todos os roubos, excluídos os de carga, veículo e banco – teve uma redução de -6,3%. Foram 108.698 nos primeiros seis meses de 2021, contra 116.084 no mesmo período de 2020, uma média de 598 roubos por dia.
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-Os roubos de veículos tiveram uma redução de -7% no estado durante os primeiros seis meses de 2021, quando foram registradas 15.028 ocorrências, enquanto no mesmo período de 2020 foram 16.222, sendo que essa redução ocorreu com mais intensidade na capital (-13%).
-
-\newpage
 
 ```{r roubos deinter, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 310)
+grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 130)
 
-grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 42)  
+grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 26)  
 ```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-Observando o Interior, vemos que a taxa de Roubo (Outros) por 100 mil habitantes diminuiu no primeiro semestre de 2021 em relação ao mesmo período de 2020 em todos os departamentos, com exceção dos Deinter 10 - Araçatuba e Deinter 3  - Ribeirão Preto.  
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-Em relação às taxas de Roubo de Veículos temos que a maior parte dos departamentos apresentou redução: somente o Deinter 8 - Presidente Prudente e o Deinter 3 - Ribeirão Preto tiveram aumento em relação ao primeiro semestre de 2020.
-
-
-\newpage
 
 ## Letalidade e Vitimização Policial
 
@@ -382,37 +355,42 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 grid.arrange(g, p, heights=c(1,9))
 
 ```
-Em relação tanto à letalidade como a vitimização policial, os primeiros seis meses de 2021 foram significativamente menos violentos em comparação com o mesmo período de 2020. No 1º semestre de 2021 os policiais de São Paulo mataram 351 pessoas, uma redução de -34,1% em relação ao 1º semestre 2020, semestre que teve o maior número registrado desde o início da série histórica, em 2001. Destas 351 mortes cometidas pelas polícias paulistas, 283 foram durante o serviço (80,6%) e 68 em período de folga (19,4%). Apesar da redução geral, é importante destacar que a Capital registrou um aumento de 9,1% no número de pessoas mortas pelas polícias fora de serviço.
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-A vitimização de policiais também teve grande redução no 1º semestre de 2021, passando de 28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de 2021 (-60,7%). Se destaca que nenhum policial no estado de São Paulo foi morto durante o serviço nos primeiros seis meses de 2021.
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 ```{r produtiv macro, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_semestre(ap_armas, "Apreensões de armas")  
+grafico_trimestre(ap_armas, "Apreensões de armas")  
 
-grafico_semestre(prisoes, "Prisões")  
+grafico_trimestre(prisoes, "Prisões")  
 ```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-O número de armas apreendidas no estado de São Paulo nesse primeiro semestre de 2021 foi muito parecido com o que foi observado no primeiro semestre de 2020, resultado da estabilidade observada nas grandes regiões do estado. Quando observamos o número de prisões, - considerando as prisões em flagrante e também por mandado - vemos que nesse primeiro semestre de 2021 foi ligeiramente maior ao observado no mesmo período do ano anterior (+2,5%), sem variações significativas nas grandes regiões. 
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 ```{r produtiv deinter, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_deinter(ap_armas, "Apreensões de armas (taxa por 100 mil habitantes)", 25)
+grafico_deinter(ap_armas, "Apreensões de armas (taxa por 100 mil habitantes)", 12)
 
-grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 350)  
+grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 160)  
 ```
-Seis dos dez departamentos de polícia do Interior tiveram diminuição na taxa por cem mil habitantes de armas apreendidas. Dos quatro Deinter que aumentaram a taxa, destaque para o Deinter 6 - Santos, que teve maior crescimento nas apreensões no período. 
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-Em comparação com o primeiro semestre de 2021, somente três Deinter apresentaram redução da taxa de prisões. O Deinter 8 - Presidente Prudente se destaca com taxa bem a frente dos demais departamentos, 291 prisões por cem mil habitantes, em posição que se mantém nos últimos semestres.
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+\newpage
 
 ## Considerações Finais
 
-Os primeiros seis meses de 2021 foram marcados pela redução significativa dos crimes violentos, especialmente aqueles com vítimas fatais. No 1º semestre de 2021, foram assassinadas 1.966 pessoas no estado de São Paulo, contra 2.223 vítimas letais nos primeiros seis meses de 2020, uma significativa queda de -11,6%. Se neste conjunto os homicídios tiveram redução de -2,5%, chama a atenção que a queda intensa no número de pessoas mortas pelas polícia tenha produzido o maior impacto na diminuição da letalidade violenta no estado: nos primeiros seis meses de 2020 as polícias de São Paulo mataram, em serviço e fora dele, 533 pessoas, no 1º semestre de 2021 foram 351 vítimas, uma expressiva redução de -34,1%.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
 
-Ainda assim, é importante analisarmos de maneira mais profunda como se deu esta redução da letalidade policial, e em quais regiões do estado. Recentemente, houve uma grande repercussão sobre a adoção em 18 batalhões da Polícia Militar do programa de câmeras portáteis a partir do mês de junho, mas esta é apenas uma de uma série de ações tomadas pelas forças policiais do estado. Portanto, é necessário identificar e analisar o impacto de diferentes iniciativas e seus respectivos contextos, assim como monitorar a evolução da letalidade no estado ao longo do tempo. Além disso, é preciso manter atenção sobre os episódios de letalidade policial fora de serviço, que inclusive tiveram um aumento de 9,1% na capital no último semestre. 
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-A tendência de queda nos roubos de veículos se manteve nos primeiros meses de 2021, com uma redução de -7% em relação ao mesmo período de 2020, de modo que tivemos em 2021 o semestre com menor número de ocorrências deste tipo na última década. Mesmo que não haja consenso sobre os motivos dessa redução, mantemos a indicação de alguns marcos que podem nos dar o caminho inicial dessa identificação, como, por exemplo, a Lei dos Desmanches (Lei nº 15.276, de 02 de janeiro de 2014), que normatiza o comércio de peças usadas e prevê maior estrutura de fiscalização e penalidades em caso de descumprimento das normas, como o fechamento do estabelecimento. Já os demais tipos de roubos, chamados aqui de roubo (outros), tiveram uma redução de -6,3% no estado em comparação com o 1º semestre de 2020, mas com um crescimento localizado de 3,8%, nos municípios da Grande São Paulo.
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-Por sua vez os crimes de estupro retomaram a tendência de crescimento em São Paulo. Nos primeiros seis meses de 2021 houve um aumento de 13,5% nos registros de estupros em comparação com o mesmo período de 2020, e um crescimento ainda mais acentuado de, 19,5%, nos municípios da Grande São Paulo. Os estupros de vulneráveis (com vítimas que sejam menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual) tiveram um aumento ainda mais expressivo no estado, de 17,5%, com um total de 4.441 registros – o que equi-vale a 24,6 estupros de vulneráveis notificados diariamente no estado de São Paulo. São necessárias análises e estudos mais aprofundados em relação aos crimes de estupro de forma a compreender se sua tendência de crescimento desde 2014 corresponde efetivamente a uma variação do fenômeno, de sua notificação às autoridades, ou ambos. Também é preciso compreender os efeitos da pandemia de Covid-19 na notificação de crimes de caráter doméstico, como estupro de vulnerável e violência contra mulher. Análises preliminares apontam que houve em primeiro momento, com o isolamento social, uma redução expressiva dos registros destes crimes, e posteriormente, em segundo momento, percebe-se uma retomada das notificações. 
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-É importante ressaltar que o momento singular pelo qual o mundo passa devido a pandemia de COVID-19 e seus efeitos nas dinâmicas criminais e nas ações das instituições de segurança pública. Análises preliminares apontam mudanças nas dinâmicas criminais durante a quarentena no estado, tais como o aumento das violências contra mulheres. No 1º semestre de 2021 os homicídios contra mulheres (incluindo feminicídios) tiveram aumento de 2,6% no estado, e ainda com mais intensidade nos municípios do Interior, com aumento de 9,7%. As agressões intencionais contra mulheres também tiveram um aumento em comparação com o mesmo período de 2020: o crescimento foi de 5,4% nos registros de  lesão corporal dolosa contra mulheres no Estado, e ainda mais intenso, de 15,8% na capital paulista.
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
