@@ -382,9 +382,7 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 grid.arrange(g, p, heights=c(1,9))
 
 ```
-Em relação tanto à letalidade como a vitimização policial, os primeiros seis meses de 2021 foram significativamente menos violentos em comparação com o mesmo período de 2020. No 1º semestre de 2021 os policiais de São Paulo mataram 351 pessoas, uma redução de -34,1% em relação ao 1º semestre 2020, semestre que teve o maior número registrado desde o início da série histórica, em 2001. Destas 351 mortes cometidas pelas polícias paulistas, 283 foram durante o serviço (80,6%) e 68 em período de folga (19,4%). Apesar da redução geral, é importante destacar que a Capital registrou um aumento de 9,1% no número de pessoas mortas pelas polícias fora de serviço.
-
-A vitimização de policiais também teve grande redução no 1º semestre de 2021, passando de 28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de 2021 (-60,7%). Se destaca que nenhum policial no estado de São Paulo foi morto durante o serviço nos primeiros seis meses de 2021.
+Em relação tanto à letalidade como a vitimização policial, os primeiros seis meses de 2021 foram significativamente menos violentos em comparação com o mesmo período de 2020. No 1º semestre de 2021 os policiais de São Paulo mataram 351 pessoas, uma redução de -34,1% em relação ao 1º semestre 2020, semestre que teve o maior número registrado desde o início da série histórica, em 2001. Destas 351 mortes cometidas pelas polícias paulistas, 283 foram durante o serviço (80,6%) e 68 em período de folga (19,4%). Apesar da redução geral, é importante destacar que a Capital registrou um aumento de 9,1% no número de pessoas mortas pelas polícias fora de serviço. A vitimização de policiais também teve grande redução no 1º semestre de 2021, passando de 28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de 2021 (-60,7%). Se destaca que nenhum policial no estado de São Paulo foi morto durante o serviço nos primeiros seis meses de 2021.
 
 ```{r produtiv macro, echo=FALSE, fig.dim = c(10, 6)}
 
@@ -404,6 +402,8 @@ grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 350)
 Seis dos dez departamentos de polícia do Interior tiveram diminuição na taxa por cem mil habitantes de armas apreendidas. Dos quatro Deinter que aumentaram a taxa, destaque para o Deinter 6 - Santos, que teve maior crescimento nas apreensões no período. 
 
 Em comparação com o primeiro semestre de 2021, somente três Deinter apresentaram redução da taxa de prisões. O Deinter 8 - Presidente Prudente se destaca com taxa bem a frente dos demais departamentos, 291 prisões por cem mil habitantes, em posição que se mantém nos últimos semestres.
+
+\newpage
 
 ## Considerações Finais
 
