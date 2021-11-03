@@ -164,8 +164,6 @@ grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e t
 ```
 
 
-\newpage
-
 ## Apresentação
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
