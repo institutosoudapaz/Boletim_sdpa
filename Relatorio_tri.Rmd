@@ -355,10 +355,13 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 grid.arrange(g, p, heights=c(1,9))
 
 ```
-
+<<<<<<< HEAD
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
 Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+=======
+Em relação tanto à letalidade como a vitimização policial, os primeiros seis meses de 2021 foram significativamente menos violentos em comparação com o mesmo período de 2020. No 1º semestre de 2021 os policiais de São Paulo mataram 351 pessoas, uma redução de -34,1% em relação ao 1º semestre 2020, semestre que teve o maior número registrado desde o início da série histórica, em 2001. Destas 351 mortes cometidas pelas polícias paulistas, 283 foram durante o serviço (80,6%) e 68 em período de folga (19,4%). Apesar da redução geral, é importante destacar que a Capital registrou um aumento de 9,1% no número de pessoas mortas pelas polícias fora de serviço. A vitimização de policiais também teve grande redução no 1º semestre de 2021, passando de 28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de 2021 (-60,7%). Se destaca que nenhum policial no estado de São Paulo foi morto durante o serviço nos primeiros seis meses de 2021.
+>>>>>>> dc3369db4dc1c7be697289c960807918f0776d33
 
 ```{r produtiv macro, echo=FALSE, fig.dim = c(10, 6)}
 
