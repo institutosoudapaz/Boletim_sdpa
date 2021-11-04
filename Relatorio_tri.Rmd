@@ -174,7 +174,6 @@ Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hen
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
 
-
 \newpage
 
 ## Destaques
@@ -200,8 +199,8 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 # Criar gráfico letalidade violenta
 
 p <- base_letalidade_long %>% 
-  filter(ano_semestre!="2020 / 2º Semestre") %>% 
-  ggplot(aes(fill=factor(ano_semestre,  levels=c("2021 / 1º Semestre", "2020 / 1º Semestre")), y= count, 
+  filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
+  ggplot(aes(fill=factor(ano_tri, levels=c("2021 / 3º Trimestre", "2020 / 3º Trimestre")), y= count, 
              x= factor(morte, levels = c(
                "Total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol")))) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
@@ -214,8 +213,7 @@ p <- base_letalidade_long %>%
     "Mortos pela Polícia Civil e Militar em serviço", "Mortos pela Polícia Civil e Militar fora de 
     serviço"), width = 24))+
   theme_sdpa_let +
-
-  coord_flip(ylim=c(100, 2300))
+  coord_flip(ylim=c(1, 1000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -240,7 +238,7 @@ p <- base_crimes_long %>%
     c("Total de ocorrências", "Estupro", "Extorsão mediante sequestro", "Homicídio doloso", 
       "Latrocínio", "Roubo de veículo", "Roubo (outros)"), width = 24))+
   theme_sdpa_let +
-  coord_flip(ylim=c(100, 65000))
+  coord_flip(ylim=c(1, 72000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Crimes Violentos", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -262,9 +260,9 @@ Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
 
 ```{r homicidios e latrocinios deinter, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 4.0)
+grafico_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 3.5)
 
-grafico_deinter(lat_ocorr, "Latrocínios (taxa por 100 mil habitantes)", 0.4)  
+grafico_deinter(lat_ocorr, "Latrocínios (taxa por 100 mil habitantes)", 0.6)  
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
@@ -284,10 +282,10 @@ Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras
 
 ```{r estupros deinter, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_deinter(tot_estupro, "Estupros (taxa por 100 mil habitantes)", 12)
+grafico_deinter(tot_estupro, "Estupros (taxa por 100 mil habitantes)", 11)
 
 
-grafico_deinter(estupro_vuln, "Estupros de Vulneráveis (taxa por 100 mil habitantes)", 10.0)  
+grafico_deinter(estupro_vuln, "Estupros de Vulneráveis (taxa por 100 mil habitantes)", 9.5)  
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
@@ -317,9 +315,9 @@ Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras
 
 ```{r roubos deinter, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 130)
+grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 135)
 
-grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 26)  
+grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 22)  
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
@@ -328,24 +326,27 @@ Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras
 
 ## Letalidade e Vitimização Policial
 
-![](imgs\tabela let_vit_policial_2021_1sem.jpg)
+![](imgs\tabela let_vit_policial_2021_3tri.jpg)
 
 ```{r letalidade e vitimização policial, echo=FALSE, fig.dim = c(10, 6)}
 
 p <- base_corregedoria_long %>% 
-  filter(ano_semestre != "2020 / 2º Semestre") %>% 
   filter(let_vit == "let_ser" | let_vit == "let_fol") %>% 
-  ggplot(aes(fill=let_vit, x=ano_semestre, y= count))+
+  ggplot(aes(fill=let_vit, x=ano_tri, y= count))+
   geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE), 
                 colour =ifelse(let_vit == "let_fol", "black", "white")), 
             position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
-  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_tri), 
                geom = "text",size=4, vjust = -0.5) +
   guides(color = "none")+
   scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
                     values = cores_3) +
+  scale_x_discrete(labels = str_wrap(
+    c("2020 / 1º Tri", "2020 / 2º Tri", "2020 / 3º Tri", "2020 / 4º Tri",
+      "2021 / 1º Tri", "2021 / 2º Tri", "2021 / 3º Tri"), width = 7))+
+  
   theme_sdpa_macroreg
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
@@ -355,13 +356,10 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 grid.arrange(g, p, heights=c(1,9))
 
 ```
-<<<<<<< HEAD
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
 Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
-=======
-Em relação tanto à letalidade como a vitimização policial, os primeiros seis meses de 2021 foram significativamente menos violentos em comparação com o mesmo período de 2020. No 1º semestre de 2021 os policiais de São Paulo mataram 351 pessoas, uma redução de -34,1% em relação ao 1º semestre 2020, semestre que teve o maior número registrado desde o início da série histórica, em 2001. Destas 351 mortes cometidas pelas polícias paulistas, 283 foram durante o serviço (80,6%) e 68 em período de folga (19,4%). Apesar da redução geral, é importante destacar que a Capital registrou um aumento de 9,1% no número de pessoas mortas pelas polícias fora de serviço. A vitimização de policiais também teve grande redução no 1º semestre de 2021, passando de 28 policiais mortos nos primeiros seis meses de 2020 para 11 policiais assassinados no mesmo período de 2021 (-60,7%). Se destaca que nenhum policial no estado de São Paulo foi morto durante o serviço nos primeiros seis meses de 2021.
->>>>>>> dc3369db4dc1c7be697289c960807918f0776d33
+
 
 ```{r produtiv macro, echo=FALSE, fig.dim = c(10, 6)}
 
@@ -375,9 +373,9 @@ Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras
 
 ```{r produtiv deinter, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_deinter(ap_armas, "Apreensões de armas (taxa por 100 mil habitantes)", 12)
+grafico_deinter(ap_armas, "Apreensões de armas (taxa por 100 mil habitantes)", 11.5)
 
-grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 160)  
+grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 180)  
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 

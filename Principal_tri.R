@@ -30,14 +30,15 @@ base_trimestral <- base_trimestral %>%
 base_crimes <- base_trimestral %>% 
   filter(ano >(ano_referencia-3)) %>% 
   select(ano, semestre,tri,cod_reg,t1,t15,t21,t23,t40,t45,t46,
-         t49,t50,t75,t77,t80,t201,t202,t203)
-  
+         t49,t50,t75,t77,t80,t201,t202,t203) %>% 
+  mutate_at(c(4:19), as.numeric)
+
 
 ###Passo 03: Criando as tabelas de crimes----
 
 base_crimes <- base_crimes %>% 
   group_by(cod_reg,ano, tri) %>% 
-  summarise(hd_ocorr = sum(t21),
+  summarise(lealidade = sum(let_ser),
             hd_vitima = sum(t50),
             lat_ocorr = sum(t23),
             lat_vitima =sum(t49),
@@ -107,13 +108,12 @@ base_pop <- base_pop %>%
   group_by(reg_ano) %>% 
   summarise(pop = sum(Pop))
 
-
 #### Passo 05: Juntando população e crimes ----
 
 base_crimes <- left_join(base_crimes, base_pop, by = "reg_ano")
 
-
 #### Passo 06: Criando a tabela de letalidade e vit policial ----
+
 base_corregedoria <- readRDS("../Boletim_sdpa/data-raw/base_corregedoria.RDS") %>% 
   mutate(
     let_ser = c1+c3,
@@ -152,6 +152,8 @@ base_corregedoria <- readRDS("../Boletim_sdpa/data-raw/base_corregedoria.RDS") %
       TRUE  ~  2)
   )  
 
+#base_corregedoria[1607, 12] = 2
+
 base_corregedoria <- base_corregedoria %>%
   filter(cod_ano >(ano_referencia-3)) %>% 
   group_by(cod_reg,trimestre, cod_ano) %>% 
@@ -160,6 +162,8 @@ base_corregedoria <- base_corregedoria %>%
             mort_ser = sum(mort_ser),
             mort_fol = sum(mort_fol)) %>% 
   unite(ano_tri, c(cod_ano, trimestre), sep = " / ", remove = FALSE) 
+
+#base_corregedoria[is.na(base_corregedoria)] = 75
 
 base_corregedoria$ano_tri <- paste(base_corregedoria$ano_tri, 'º Trimestre', sep='')
 
@@ -270,21 +274,21 @@ cores_2 <- c("#042e3f", "#be9068")
 # Criar gráfico letalidade violenta
 
 p <- base_letalidade_long %>% 
-  filter(ano_tri!="2020 / 2º Semestre") %>% 
-  ggplot(aes(fill=factor(ano_semestre,  levels=c("2021 / 1º Semestre", "2020 / 1º Semestre")), y= count, 
+  filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
+  ggplot(aes(fill=factor(ano_tri, levels=c("2021 / 3º Trimestre", "2020 / 3º Trimestre")), y= count, 
              x= factor(morte, levels = c(
                "Total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol")))) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
-  geom_text(aes(label = count), position = position_dodge(0.94), 
-            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.1) +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.4) +
   scale_fill_manual(values = cores_2) +
   guides(color = "none")+
   scale_x_discrete(labels = str_wrap(
     c("Total de vítimas", "Homicídio doloso", "Latrocínio", "Lesão corporal seguida de morte", 
-    "Mortos pela Polícia Civil e Militar em serviço", "Mortos pela Polícia Civil e Militar fora de 
+      "Mortos pela Polícia Civil e Militar em serviço", "Mortos pela Polícia Civil e Militar fora de 
     serviço"), width = 24))+
   theme_sdpa_let +
-  coord_flip(ylim=c(100, 2300))
+  coord_flip(ylim=c(100, 1000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -542,6 +546,52 @@ titulo <- function(titulo) { #selecionar o titulo
 }
 
 titulo("Destaques") 
+
+# Criar tabela de letalidade e vitimização policial
+
+tabela <- base_corregedoria %>% 
+  filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
+  group_by(ano_tri) %>% 
+  bind_rows(summarise(.,
+                      across(where(is.numeric), sum))) %>% 
+  mutate(regiao = case_when(cod_reg == 10 ~ "capital",
+                            cod_reg == 460 ~ "total")) %>% 
+  filter(!is.na(regiao)) %>% 
+  select(-cod_reg, -trimestre, -cod_ano) %>% 
+  pivot_longer(cols = ano_tri,
+               names_to = regiao)
+values_to = c("let_ser_capital", "let_ser_total, let_fol_capital, let_fol_total, mort_ser_capital,
+                            "mort_ser_total", "mort_fol_capital"mort_fol_total))
+
+  reactable::reactable(
+    columnGroups = list(
+    colGroup(name = "Estado", columns = c("Sepal.Length", "Sepal.Width")),
+    colGroup(name = "Petal", columns = c("Petal.Length", "Petal.Width"))
+  )
+)
+  ) 
+  tabela <- base_corregedoria %>% 
+  filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
+  group_by(ano_tri) %>% 
+  bind_rows(summarise(.,
+                      across(where(is.numeric), sum))) %>% 
+  mutate(regiao = case_when(cod_reg == 10 ~ "capital",
+                            cod_reg == 460 ~ "total")) %>% 
+  filter(!is.na(regiao)) %>% 
+  select(-cod_reg, -trimestre, -cod_ano) %>% 
+  pivot_longer(cols = ano_tri,
+               names_to = regiao)
+               values_to = c("let_ser_capital", "let_ser_total, let_fol_capital, let_fol_total, mort_ser_capital,
+"mort_ser_total", "mort_fol_capital"mort_fol_total))
+
+reactable::reactable(
+  columnGroups = list(
+    colGroup(name = "Estado", columns = c("Sepal.Length", "Sepal.Width")),
+    colGroup(name = "Petal", columns = c("Petal.Length", "Petal.Width"))
+  )
+)
+) 
+
 
 #### O que falta ----
 
