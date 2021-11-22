@@ -38,8 +38,8 @@ base_crimes <- base_trimestral %>%
 
 base_crimes <- base_crimes %>% 
   group_by(cod_reg,ano, tri) %>% 
-  summarise(lealidade = sum(let_ser),
-            hd_vitima = sum(t50),
+  summarise(hd_vitima = sum(t50),
+            hd_ocorr = sum(t21),
             lat_ocorr = sum(t23),
             lat_vitima =sum(t49),
             tot_estupro =sum(t201),
@@ -152,8 +152,6 @@ base_corregedoria <- readRDS("../Boletim_sdpa/data-raw/base_corregedoria.RDS") %
       TRUE  ~  2)
   )  
 
-#base_corregedoria[1607, 12] = 2
-
 base_corregedoria <- base_corregedoria %>%
   filter(cod_ano >(ano_referencia-3)) %>% 
   group_by(cod_reg,trimestre, cod_ano) %>% 
@@ -162,8 +160,6 @@ base_corregedoria <- base_corregedoria %>%
             mort_ser = sum(mort_ser),
             mort_fol = sum(mort_fol)) %>% 
   unite(ano_tri, c(cod_ano, trimestre), sep = " / ", remove = FALSE) 
-
-#base_corregedoria[is.na(base_corregedoria)] = 75
 
 base_corregedoria$ano_tri <- paste(base_corregedoria$ano_tri, 'º Trimestre', sep='')
 
