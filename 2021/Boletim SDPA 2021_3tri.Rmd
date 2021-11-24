@@ -1,0 +1,380 @@
+---
+title: "Boletim Sou da Paz Analisa 2021 - 3 trimestre"
+author: "ISDP"
+date: "03/11/2021"
+output: 
+  word_document:
+    reference_docx: Template_SDPA.docx
+    
+fontfamily: arev
+fontsize: 8.5pt
+geometry: "left=2cm,right=2cm,top=1.5cm,bottom=2cm"
+header-includes: 
+      - \usepackage{graphicx}
+      - \usepackage{fancyhdr}
+      - \pagestyle{fancy}
+      - \fancyhead{}
+      - \renewcommand{\headrule}{}
+      - \fancyfoot[R]{\includegraphics{./imgs/rodape.png}}
+
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+
+# Carregar bases
+
+base_crimes <- readRDS("base_crimes.rds")
+base_letalidade_long <- readRDS("base_letalidade_long.rds")
+base_corregedoria<- readRDS("base_corregedoria.rds")
+base_corregedoria_long <- readRDS("base_corregedoria_long.rds")
+base_crimes_long <- readRDS("base_crimes_long.rds")
+base_viol_mulher_long <- readRDS("base_viol_mulher_long.rds")
+
+ano_referencia <- 2021
+
+# Definir temas e cores
+
+theme_sdpa_macroreg <- theme_void()+
+  theme(legend.position = "bottom",
+        legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=12),
+        axis.text.x=element_text(size=12),
+        legend.title = element_blank(), 
+        aspect.ratio=8.5/20)
+
+theme_sdpa_let <- theme_void()+
+  theme(legend.position = "bottom",
+        legend.text=element_text(size=12),
+        axis.text.y=element_text(size=12),
+        legend.title = element_blank(),
+        aspect.ratio=11/20)
+
+theme_sdpa_deinter <- theme_classic()+
+  theme(legend.position = "bottom",
+        axis.text.y=element_text(size=12),
+        legend.title = element_blank(), 
+        legend.text=element_text(size=12),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        aspect.ratio=8.7/20)
+
+cores <- c("#cec8c4", "#be9068","#042e3f")
+cores_2 <- c("#be9068", "#042e3f")
+cores_3 <- c("#042e3f", "#be9068")
+
+
+# Criar função de gráfico crimes por ano_trimestre/macroregião
+
+grafico_trimestre <- function(crime, titulo) { #selecionar o tipo de crime e titulo
+                                              # do gráfico
+p <- base_crimes %>% 
+  filter(cod_reg<31) %>% 
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
+             y= {{crime}}, x= ano_tri)) + 
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format({{crime}}, big.mark = ".", scientific = FALSE), 
+                colour =ifelse(cod_reg>11, "black", "white")), position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = format(..y.., big.mark = ".", scientific = FALSE), group = ano_tri), 
+               geom = "text",size=4, vjust = -0.5) +
+  scale_fill_manual(values = cores) +
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("2019 / 1º Tri", "2019 / 2º Tri", "2019 / 3º Tri", "2019 / 4º Tri",
+      "2020 / 1º Tri", "2020 / 2º Tri", "2020 / 3º Tri", "2020 / 4º Tri",
+      "2021 / 1º Tri", "2021 / 2º Tri", "2021 / 3º Tri"), width = 7))+
+  theme_sdpa_macroreg
+
+
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                 textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                          fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+# Criar gráfico taxa de crimes por ano_trimestre/deinter
+
+grafico_deinter <- function(crime, titulo, limite) {  #selecionar o tipo de crime, titulo
+                                                      # do gráfico e limite do eixo x
+p <- base_crimes %>% 
+   filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
+  filter(cod_reg>30) %>% 
+  mutate(taxa = round(({{crime}}/pop * 100000),1)) %>%
+  ggplot(aes(fill=ano_tri, y= taxa, x= deinter)) + 
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = taxa), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  coord_flip(ylim=c(0, {{limite}})) +
+  theme_sdpa_deinter+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                    decimal.mark = ','),
+                     expand = c(0, 0), n.breaks = 8)
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+# Criar gráficos violencia contra mulher
+
+grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e titulo
+  # do gráfico
+  
+  p <- base_viol_mulher_long %>% 
+    ggplot(aes(fill=factor(area, levels=c("Interior","Grande São Paulo","Capital")),
+               y= {{crime}}, x= ano_tri)) + 
+    geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+    geom_text(aes(label = format({{crime}}, big.mark = ".", scientific = FALSE), 
+                  colour =ifelse(area == "Capital",  "white", "black")),
+              position=position_stack(vjust=0.5)) +
+    scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum, aes(label = format(..y.., big.mark = ".", scientific = FALSE), 
+                                group = ano_tri), geom = "text",size=4, vjust = -0.5) +
+    scale_fill_manual(values = cores) +
+    scale_x_discrete(labels = str_wrap(
+      c("2019 / 1º Tri", "2019 / 2º Tri", "2019 / 3º Tri", "2019 / 4º Tri",
+      "2020 / 1º Tri", "2020 / 2º Tri", "2020 / 3º Tri", "2020 / 4º Tri",
+      "2021 / 1º Tri", "2021 / 2º Tri", "2021 / 3º Tri"), width = 7))+
+    guides(color = "none")+
+    theme_sdpa_macroreg
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=20, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
+```
+
+
+\newpage
+
+## Apresentação
+
+O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela Secretaria da Segurança Pública de São Paulo (SSP/SP) desde 2012, a fim de contribuir para a melhor compreensão das dinâmicas criminais e atividades policiais no estado de São Paulo e em suas grandes regiões - Capital, Grande São Paulo e Interior. Além dos dados trimestralmente divulgados pela SSP/SP, são consideradas informações produzidas pelas Corregedorias das Polícias Civil e Militar do Estado de São Paulo publicadas no Diário Oficial.
+
+O Boletim Sou da Paz Analisa tem periodicidade trimestral e, nesta edição referente ao terceiro trimestre de 2021, aborda os crimes de homicídio, latrocínio, estupro, roubo (outros e de veículos), além dos homicídios e agressões contra mulheres no estado. Em relação às atividades policiais, foram analisadas as apreensões de armas e prisões realizadas no período, além da letalidade e vitimização policial.
+
+As páginas a seguir trazem análises das ocorrências criminais e de atuação das polícias paulistas tanto por macrorregião como também suas taxas por 100 mil habitantes para cada um dos 10 Departamentos de Polícia Judiciária de São Paulo Interior, de forma a possibilitar a análise de como estes fenômenos se distribuem pelo interior do estado.
+
+ forma conseguimos trazer informações sobre as grandes áreas do estado e também de cada região do interior, de forma a compor um panorama da situação de segurança pública do estado a partir das estatísticas oficiais publicadas em transparência ativa.
+
+
+\newpage
+
+## Destaques
+
+
+O  terceiro trimestre de 2021 foi marcado pelo aumento expressivo das ocorrências de roubos no estado de São Paulo, após um período de redução significativa desde o início da pandemia de Covid-19. Os registros de ocorrências de Roubo (outros) – todos os roubos, excluídos os de carga e banco –, no terceiro trimestre de 2021 aumentaram em 20,5% em comparação com o mesmo período do ano anterior, enquanto os casos de Roubo de Veículos seguiram dinâmica semelhante, com aumento de 19,4% no período analisado.
+
+Em relação aos assassinatos, as ocorrências de Homicídio Doloso reduziram 2,7% no estado de São Paulo, em comparação com o mesmo período do ano anterior. É a terceira queda consecutiva dos homicídios no estado. Em contrapartida, ao observarmos a região do Interior, nas taxas por 100 mil habitantes, o Deinter 10, de Araçatuba, teve aumento impactante de 156%. O total de casos de letalidade violenta, que somam as ocorrências de Homicídios Dolosos, Latrocínios, Mortos pelas Polícias em serviço e fora dele, e Lesão Corporal Seguida de Morte também apresentaram queda de 1,2% no estado durante o período analisado.
+
+Já os Homicídios Dolosos contra Mulheres (incluindo Feminicídios) tiveram significativa redução de 14,4% em todo o estado no terceiro trimestre de 2021 comparado ao mesmo período do ano anterior. Entretanto, os casos de Lesão Corporal Dolosa contra mulheres aumentaram em 9,3% no estado, com destaque para a região da Capital, com expressivos 35,9% de aumento nos registros.
+
+A Letalidade Policial teve redução de 33% nesse terceiro trimestre de 2021, quando comparado com o mesmo período de 2020. O destaque fica na redução de 44% nas mortes provocadas por policiais em serviço, enquanto as mortes provocadas por policiais em folga tiveram aumento de 32 vítimas no 3º trimestre de 2020 para 37 no mesmo período de 2021.
+
+Os casos de estupro registrados no período tiveram aumento de 2%. Mesmo com o aumento dos casos no estado, a região da Capital paulista apresentou queda de 5,6% nas ocorrências registradas no terceiro trimestre de 2021, quando comparado ao mesmo período de 2020. Nos casos de estupro de vulneráveis, o aumento foi de 3,1% em todo o estado e, mais uma vez, a região da Capital apresentou redução expressiva de 11,2% no período analisado. Na análise das taxas por 100 mil habitantes dos casos de estupro no Interior, o destaque vai para o Deinter 3, de Ribeirão Preto, com aumento de 33% nos registros no terceiro trimestre de 2021. 
+
+
+```{r letalidade violenta e crimes violentos, echo=FALSE, fig.dim = c(10, 6)}
+
+# Criar gráfico letalidade violenta
+
+p <- base_letalidade_long %>% 
+  filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
+  ggplot(aes(fill=factor(ano_tri, levels=c("2021 / 3º Trimestre", "2020 / 3º Trimestre")), y= count, 
+             x= factor(morte, levels = c(
+               "Total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol")))) + 
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.4) +
+  scale_fill_manual(values = cores_3) +
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("Total de vítimas", "Homicídio doloso", "Latrocínio", "Lesão corporal seguida de morte", 
+    "Mortos pela Polícia Civil e Militar em serviço", "Mortos pela Polícia Civil e Militar fora de 
+    serviço"), width = 24))+
+  theme_sdpa_let +
+  theme(axis.text.y = element_text(hjust = 0))+
+  coord_flip(ylim=c(1, 1000))
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                                            fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+# Criar gráfico crimes violentos
+
+p <- base_crimes_long %>% 
+  filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
+  ggplot(aes(fill=factor(ano_tri,  levels=c("2021 / 3º Trimestre", "2020 / 3º Trimestre")), y= count, 
+             x= factor(crime, levels = c(
+               "Total", "tot_estupro", "extor_seq", "hd_ocorr", "lat_ocorr", "roubo_veic", 
+               "roubo_outros")))) + 
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.4) +
+  scale_fill_manual(values = cores_3) +
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("Total de ocorrências", "Estupro", "Extorsão mediante sequestro", "Homicídio doloso", 
+      "Latrocínio", "Roubo de veículo", "Roubo (outros)"), width = 24))+
+  theme_sdpa_let +
+  theme(axis.text.y = element_text(hjust = 0))+
+  coord_flip(ylim=c(1, 72000))
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Crimes Violentos", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                                                           fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9)) 
+```
+No terceiro trimestre de 2021 a letalidade violenta no estado de São Paulo apresentou diminuição de 7%, com 68 vítimas a menos em comparação com o mesmo período de 2020. Das cinco categorias analisadas, três apresentaram redução no número de vítimas: Homicídio Doloso, Pessoas Mortas por Policiais em Serviço e Lesão Corporal Seguida de morte. Dos crimes violentos, à exceção dos homicídios, houve aumento nos registros das demais categorias, com destaque para os casos de Roubo (Outros) e de Veículos.
+
+```{r homicidios e latrocinios macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_trimestre(hd_ocorr, "Homicídios Dolosos")  
+
+grafico_trimestre(lat_ocorr, "Latrocínios")  
+```
+Pelo terceiro trimestre consecutivo as ocorrências de homicídios dolosos no estado caíram, com uma redução de 2,7% no 3º trimestre de 2021 em relação ao mesmo período de 2020. No entanto, enquanto as regiões da Capital e da Grande São Paulo tiveram reduções de 13,5% e 12,6%, respectivamente, os municípios do Interior do estado registraram um aumento de 5,3% nas ocorrências de homicídios. Por sua vez, as ocorrências de latrocínios, ainda que tenham permanecido em um patamar próximo ao dos trimestres anteriores, registraram aumento significativo na Capital e forte redução nos municípios da Grande São Paulo.
+
+
+```{r homicidios e latrocinios deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 3.5)
+
+grafico_deinter(lat_ocorr, "Latrocínios (taxa por 100 mil habitantes)", 0.6)  
+```
+No interior, dentre os 10 Departamentos de Polícia Judiciária do Interior (Deinter), seis apresentaram aumento em suas taxas de homicídios no terceiro trimestre de 2021, com destaque negativo para Deinter 10 – Araçatuba, cuja taxa de homicídios no período mais que dobrou, e Deinter 8 – Presidente Prudente, que teve um aumento de 50% em sua taxa de homicídios. Outros dois departamentos não apresentaram variação, e apenas o Deinter 7 – Sorocaba e o Deinter 04 – Bauru tiveram reduções efetivas em suas taxas de homicídios no terceiro trimestre de 2021. 
+
+```{r estupros macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_trimestre(tot_estupro, "Total de Estupros")  
+
+grafico_trimestre(estupro_vuln, "Estupros de vulneráveis")  
+```
+No Estado, os registros de Estupro aumentaram 2,0% no total e 3,1% no caso de Estupro de Vulnerável, aumento este localizado no Interior. O Estupro de Vulnerável (vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato violento) representaram 79% dos estupros no terceiro trimestre de 2021 e seus registros cresceram 9,4% no Interior enquanto na Capital recuaram em 11,2%. 
+
+```{r estupros deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(tot_estupro, "Estupros (taxa por 100 mil habitantes)", 11)
+
+
+grafico_deinter(estupro_vuln, "Estupros de Vulneráveis (taxa por 100 mil habitantes)", 9.5)  
+```
+No terceiro trimestre de 2021, sete Departamentos de Polícia Judiciária do Interior (Deinter) registraram aumento nas taxas de estupros em comparação com o mesmo período do ano anterior. Os aumentos mais intensos se deram no Deinter 8 – Presidente Prudente, que teve a maior taxa de estupros dentre os departamentos do interior, e no Deinter 3 – Ribeirão Preto, que saltou de 5,4 estupros por 100 mil habitantes para 7,2. A exceção do Deinter 10, as taxas de estupro de vulneráveis seguem o crescimento observado na taxa geral da maioria dos departamentos.
+
+
+```{r violencia contra mulher, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_viol_mulher (`HOMICÍDIO DOLOSO - TOTAL`, "Violência Contra a Mulher: Homicídio (incluindo Feminicídio)")
+
+grafico_viol_mulher (`LESÃO CORPORAL DOLOSA`, "Violência Contra a Mulher: Lesão Corporal Dolosa") 
+```
+Os casos de Homicídio Doloso contra Mulheres (incluindo Feminicídio) tiveram significativa redução de -14,4% no terceiro trimestre de 2021 no estado de São Paulo, com destaque para a região do Interior, com -22,2%. Por sua vez, a Capital registrou aumento de 1 caso no período.  Em contraponto, os casos de Lesão Corporal Dolosa contra Mulheres aumentaram 9,3% no Estado, tendência observada em todas as regiões, com destaque para a Capital, (35,9%), seguida da Grande São Paulo (9,7%).
+
+```{r roubos macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_trimestre(roubo_outros, "Roubo (Outros)")  
+
+grafico_trimestre(roubo_veic, "Roubo (Veículos)")  
+```
+Após um período de redução significativa dos casos de Roubo (outros) – todos os roubos, excluídos os de carga e banco –, no terceiro trimestre de 2021 os registros no estado aumentaram em 20,5% em comparação com o mesmo período do ano anterior. A Grande São Paulo teve aumento expressivo de 23,8% das ocorrências, seguida da Capital com 19,9% registros a mais. Seguindo dinâmica semelhante, os casos de Roubo de Veículos tiveram aumento de 19,4%  no Estado, de modo mais expressivo na Grande São Paulo (30,7%), seguida pela Capital (14,8%). 
+
+
+```{r roubos deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 135)
+
+grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 22)  
+```
+No interior, todos os 10 Departamentos de Polícia Judiciária do Interior (Deinter) apresentaram aumento em suas taxas de roubos (outros) no terceiro trimestre de 2021. O Deinter 6 – Santos permanece com taxa de roubos (outros) muito mais elevada que a dos demais departamentos, 126,5 roubos por 100 mil habitantes. Já em relação à variação no período, destaca-se o maior aumento da taxa nos Deinter 8, Deinter 3 e  Deinter 2. 
+
+Em relação aos Roubos de Veículos, a tendência de crescimento também foi geral, a exceção do  Deinter 4 – Bauru, que apresentou uma leve redução na taxa de veículos roubados no terceiro trimestre deste ano em comparação com o mesmo período do ano anterior.  
+
+## Letalidade e Vitimização Policial
+
+![](imgs\tabela let_vit_policial_2021_3tri.jpg)
+
+```{r letalidade e vitimização policial, echo=FALSE, fig.dim = c(10, 6)}
+
+p <- base_corregedoria_long %>% 
+  filter(let_vit == "let_ser" | let_vit == "let_fol") %>% 
+  ggplot(aes(fill=let_vit, x=ano_tri, y= count))+
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE), 
+                colour =ifelse(let_vit == "let_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = ano_tri), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
+                    values = cores_3) +
+  scale_x_discrete(labels = str_wrap(
+    c("2020 / 1º Tri", "2020 / 2º Tri", "2020 / 3º Tri", "2020 / 4º Tri",
+      "2021 / 1º Tri", "2021 / 2º Tri", "2021 / 3º Tri"), width = 7))+
+  
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Letalidade Policial", x = 0.03, hjust = 0, 
+                       gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+```
+Os meses de julho a setembro de 2021 registraram redução de 33% na letalidade policial no Estado, observada sobretudo nos casos fora de serviço: foram 112 mortes cometidas por policiais no estado de São Paulo, 55 mortes a menos que no mesmo período de 2020. Destas mortes, 55 ocorreram  na Capital paulista, contra 84 registradas em 2020, uma significativa redução de 34,5%. Em relação à vitimização policial no estado, houve uma redução de 12 servidores mortos no terceiro trimestre de 2020 para seis no mesmo período de 2021. Novamente a maior redução se deu na vitimização de policiais em serviço na capital paulista: no terceiro trimestre de 2021 não foi registrada nenhuma morte de policial em serviço na cidade de São Paulo, contra 5 mortes no mesmo período do ano anterior. 
+
+```{r produtiv macro, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_trimestre(ap_armas, "Apreensões de armas")  
+
+grafico_trimestre(prisoes, "Prisões")  
+```
+As Apreensões de Armas de Fogo reduziram 6,6% no período analisado no estado de São Paulo, exceto na região da Grande São Paulo, que registrou aumento de 15,7% nas apreensões no terceiro trimestre de 2021 comparado ao mesmo período do ano anterior. Em relação às Prisões, o estado registrou aumento de 7,5% no período analisado, que foi maior na Capital (aumento de 10,4%) do que nas outras regiões.
+
+```{r produtiv deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_deinter(ap_armas, "Apreensões de armas (taxa por 100 mil habitantes)", 11.5)
+
+grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 180)  
+```
+Em relação à apreensão de armas de fogo, no 3º trimestre de 2021 apenas os  Deinter 8 – Presidente Prudente, Deinter 10 – Araçatuba e o Deinter 2 – Campinas apresentaram aumento na taxa de apreensões em relação ao mesmo período de 2020. Já em relação às prisões, oito dos dez departamentos do Interior apresentaram aumento do encarceramento em relação ao mesmo período do ano anterior. Destaca-se novamente o Deinter 8 com a mais alta taxa de prisões no trimestre analisado, seguido pelos Deinter 5 e Deinter 10.
+
+\newpage
+
+## Considerações Finais
+
+Desde 2020 vivemos um momento atípico por conta da pandemia de Covid-19, que tem alterado as relações e dinâmicas do cotidiano. Ao longo desse período passamos por diferentes níveis de isolamento social como medida de prevenção ao Coronavírus, desde momentos mais rígidos com maior isolamento social e controle do funcionamento de serviços, passando por momentos de maior flexibilização, em uma dinâmica de avanços e recuos da circulação, até o atual momento onde, devido ao aumento progressivo do percentual de pessoas vacinadas no estado de São Paulo, vemos protocolos cada vez menos rígidos e a retomada de atividades até então restritas. 
+
+Os diferentes momentos da pandemia, e principalmente, a adoção mais ou menos restrita, de medidas de isolamento social e flexibilização da circulação, certamente tiveram efeitos distintos nas dinâmicas criminais. Assim, enquanto os Homicídios Dolosos aumentam no estado durante os momentos de maior restrição da circulação, os crimes contra o patrimônio, como os Roubos (Outros) e de Veículos, tiveram uma intensa redução nos momentos de maior isolamento social da população. Os registros criminais do terceiro trimestre de 2021 possivelmente refletem os efeitos deste momento de retomada plena das atividades e maior vacinação da população, dinâmica que veio acompanhada de um aumento de 19% nas ocorrências de Crimes Violentos no terceiro trimestre de 2021 em comparação ao mesmo período do ano anterior. 
+
+As ocorrências de homicídio apresentaram nesse terceiro trimestre de 2021 uma redução de 2,7% em relação ao mesmo período do ano anterior, sustentando assim uma tendência de queda observada ao longo do ano. Cabe relembrar que depois de vários anos de sucessivas quedas, 2020 foi marcado por um aumento das ocorrências de homicídio, redução que resultou na diminuição dos casos na Capital e na Grande São Paulo, mas não no Interior do estado.  
+
+Já os registros de estupro aumentaram no Estado em razão do crescimento dos registros no Interior, mas não na Capital e Grande São Paulo. . É preciso considerar ainda  o impacto do isolamento social na dinâmica nesse tipo de violência, que sabemos vitimar mais as pessoas vulneráveis que em muitas situações encontram-se em convívio regular com o agressor. O aumento verificado recentemente nos registros de estupros podem refletir a  maior possibilidade de as vítimas notificarem as autoridades, diminuindo portanto a subnotificação.
+
+Os casos de letalidade policial tiveram considerável redução em comparação com o terceiro trimestre do ano anterior, com destaque para as mortes  provocadas por policiais em serviço -  o menor número de toda a série histórica considerando o terceiro trimestre, resultado da redução na Capital. Os casos de vitimização policial, por sua vez, também apresentaram redução, com destaque novamente para a Capital, que não teve nenhum policial morto durante o serviço neste terceiro trimestre de 2021.
+
+A quantidade de armas apreendidas neste terceiro trimestre no estado foi a menor desde 2019. Essa diminuição ocorreu no Interior e Capital, pois a Grande São Paulo apresentou um aumento de 15% em relação ao terceiro trimestre de 2020 e reflete as peculiaridades da dinâmica criminal em cada região. O número de prisões, por sua vez, sustenta a tendência de crescimento observada desde o início de 2021, com aumento de 7,5%  neste terceiro trimestre, resultado que se expressa em todas as grandes regiões do Estado.
+

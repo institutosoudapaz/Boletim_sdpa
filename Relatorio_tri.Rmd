@@ -67,8 +67,9 @@ theme_sdpa_deinter <- theme_classic()+
         aspect.ratio=8.7/20)
 
 cores <- c("#cec8c4", "#be9068","#042e3f")
-cores_2 <- c("#042e3f", "#be9068")
-cores_3 <- c("#be9068", "#042e3f")
+cores_2 <- c("#be9068", "#042e3f")
+cores_3 <- c("#042e3f", "#be9068")
+
 
 # Criar função de gráfico crimes por ano_trimestre/macroregião
 
@@ -206,13 +207,14 @@ p <- base_letalidade_long %>%
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.4) +
-  scale_fill_manual(values = cores_2) +
+  scale_fill_manual(values = cores_3) +
   guides(color = "none")+
   scale_x_discrete(labels = str_wrap(
     c("Total de vítimas", "Homicídio doloso", "Latrocínio", "Lesão corporal seguida de morte", 
     "Mortos pela Polícia Civil e Militar em serviço", "Mortos pela Polícia Civil e Militar fora de 
     serviço"), width = 24))+
   theme_sdpa_let +
+  theme(axis.text.y = element_text(hjust = 0))+
   coord_flip(ylim=c(1, 1000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
@@ -232,12 +234,13 @@ p <- base_crimes_long %>%
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.4) +
-  scale_fill_manual(values = cores_2) +
+  scale_fill_manual(values = cores_3) +
   guides(color = "none")+
   scale_x_discrete(labels = str_wrap(
     c("Total de ocorrências", "Estupro", "Extorsão mediante sequestro", "Homicídio doloso", 
       "Latrocínio", "Roubo de veículo", "Roubo (outros)"), width = 24))+
   theme_sdpa_let +
+  theme(axis.text.y = element_text(hjust = 0))+
   coord_flip(ylim=c(1, 72000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
