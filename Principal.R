@@ -12,6 +12,7 @@ library(gridExtra)
 library(grid)
 library(stringr)
 library(tidyr)
+library(rvest)
 
 ###Passo 01: Baixar os dados trimestrais da SSP e consolidar a base_trimestral: ----
   #Aqui vale pensar em rever o código para torna-lo mais eficiente, não vamos baixar tudo, 
@@ -82,7 +83,7 @@ base_crimes <- base_crimes %>%
             ap_armas =sum(t1),
             prisoes =sum(t75)
             ) %>% 
-  mutate(regiao = case_when(cod_reg == 10 ~ "Capital", #cria coluna macroregião
+  mutate(regiao = case_when(cod_reg == 10 ~ "Capital", 
                             cod_reg == 20 ~ "Grande São Paulo",
                             cod_reg > 20 ~ "Interior")) %>% 
   mutate(deinter = case_when(cod_reg == 31 ~ "Deinter 01",
@@ -223,45 +224,112 @@ base_corregedoria <- base_corregedoria %>%
 
 base_completa <- left_join(base_crimes, base_corregedoria,by ="id")
 
+####Passo 06: Preparando a base mensal----
 
-###Passo 06: Dados violência contra a mulher----
-viol_mulher <- readRDS("../Boletim_sdpa/data-raw/viol_mulher.RDS")
+base_mensal <- readRDS("../Boletim_sdpa/data-raw/base_mensal.RDS")
+base_mensal <- base_mensal %>% 
+  mutate(
+    trimestre = case_when(
+      cod_mes ==1 ~ 1,
+      cod_mes ==2 ~ 1,
+      cod_mes ==3 ~ 1,
+      cod_mes ==4 ~ 2,
+      cod_mes ==5 ~ 2,
+      cod_mes ==6 ~ 2,
+      cod_mes ==7 ~ 3,
+      cod_mes ==8 ~ 3,
+      cod_mes ==9 ~ 3,
+      cod_mes ==10 ~ 4,
+      cod_mes ==11 ~ 4,
+      cod_mes ==12 ~ 4))%>% 
+  mutate(
+    semestre = case_when(
+      trimestre<3 ~ 1,
+      TRUE  ~  2)
+  ) %>% 
+  mutate(
+    semestre = case_when(
+      trimestre<3 ~ 1,
+      TRUE  ~  2),
+    cod_reg = case_when(
+      departa == "Decap" ~ 10,
+      departa == "Demacro" ~ 20,
+      departa == "Demacro" ~ 20,
+      departa == "Deinter 1" ~ 31,
+      departa == "Deinter 2" ~ 32,
+      departa == "Deinter 3" ~ 33,
+      departa == "Deinter 4" ~ 34,
+      departa == "Deinter 5" ~ 35,
+      departa == "Deinter 6" ~ 36,
+      departa == "Deinter 7" ~ 37,
+      departa == "Deinter 8" ~ 38,
+      departa == "Deinter 9" ~ 39,
+      departa == "Deinter 10" ~ 40)
+  )
 
-base_viol_mulher <- viol_mulher %>% 
-  filter(Ano >(ano_referencia-3)) 
+# trata a base mensal a partir do modelo selecionado
+if (modelo == 1){
+  base_mensal <- base_mensal %>% 
+    filter(cod_ano >(ano_referencia-2)) %>%
+    mutate(periodo = paste(cod_ano,"/", trimestre, "º Trimestre", sep = "")) %>% 
+    select(periodo,trimestre,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+} else if (modelo == 2){
+  base_mensal <- base_mensal %>% 
+    filter(cod_ano >(ano_referencia-3)) %>%
+    mutate(periodo = paste(cod_ano,"/", semestre, "º Semestre", sep = "")) %>% 
+    select(periodo,trimestre,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+} else if (modelo == 3){
+  base_mensal <- base_mensal %>% 
+    filter(cod_ano >(ano_referencia-2)) %>%
+    mutate(periodo = paste(cod_ano,"/", trimestre, "º Trimestre", sep = "")) %>% 
+    select(periodo,trimestre,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+} else if (modelo == 4){
+  base_mensal <- base_mensal %>% 
+    filter(cod_ano >(ano_referencia-6)) %>%
+    mutate(periodo = paste(cod_ano)) %>% 
+    select(periodo,trimestre,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+}
 
-base_viol_mulher <- subset(base_viol_mulher, select = -Total)
-base_viol_mulher <- base_viol_mulher %>% 
-  pivot_longer(
-    cols = Capital:Interior,
-    names_to = "area",
-    values_to = "qdte"
-  ) 
-  
-base_viol_mulher <- base_viol_mulher %>% 
-  unite(ano_tri, c(Ano, Tri), sep = " / ", remove = FALSE) %>% 
-  select(ano_tri, item, area, qdte)
+###Passo 07: Dados violência contra a mulher----
+base_viol_mul <- readRDS("data-raw/viol_mulher.rds")
+base_viol_mul <- base_viol_mul %>% 
+  select(!Total)%>% 
+  pivot_longer( cols = Capital:Interior,
+                names_to = "reg",
+                values_to = "contador") %>% 
+  mutate(cod_reg = case_when(
+    reg == "Capital" ~10,
+    reg == "Demacro" ~20,
+    reg == "Interior" ~30)
+  ) %>% 
+  select(Sem, Tri, Mês,Ano,cod_reg,item,contador) %>% 
+  filter(item =="HOMICÍDIO DOLOSO - TOTAL" |item ==	"LESÃO CORPORAL DOLOSA")
 
-base_viol_mulher$ano_tri <- paste(base_viol_mulher$ano_tri, 'º Trimestre', sep='')
+if (modelo == 1){
+  base_viol_mul <- base_viol_mul %>% 
+    filter(Ano >(ano_referencia-2)) %>%
+    mutate(periodo = paste(Ano,"/", Tri, "º Trimestre", sep = "")) %>% 
+    select(periodo,Tri,cod_reg,item, contador)
+} else if (modelo == 2){
+  base_viol_mul <- base_viol_mul %>% 
+    filter(Ano >(ano_referencia-3)) %>%
+    mutate(periodo = paste(Ano,"/", Sem, "º Semestre", sep = "")) %>% 
+    select(periodo,Tri,cod_reg,item, contador)
+} else if (modelo == 3){
+  base_viol_mul <- base_viol_mul %>% 
+    filter(Ano >(ano_referencia-2)) %>%
+    mutate(periodo = paste(Ano,"/", Tri, "º Trimestre", sep = "")) %>% 
+    select(periodo,Tri,cod_reg,item, contador)
+} else if (modelo == 4){
+  base_viol_mul <- base_viol_mul %>% 
+    filter(Ano >(ano_referencia-6)) %>%
+    mutate(periodo = paste(Ano)) %>% 
+    select(periodo,Tri,cod_reg,item, contador)
+}
 
-base_viol_mulher_long <- base_viol_mulher %>% 
-  filter(item =="HOMICÍDIO DOLOSO - TOTAL"| item =="LESÃO CORPORAL DOLOSA") %>% 
-  group_by(ano_tri, item, area) %>% 
-  summarise(qtde = sum(qdte)) 
-
-base_viol_mulher_long <- base_viol_mulher_long %>%
-  pivot_wider(
-    names_from = item,
-    values_from = qtde)
-
-base_viol_mulher_long$area [base_viol_mulher_long$area =="Demacro"] <- "Grande São Paulo"
-
-saveRDS(base_viol_mulher_long, "base_viol_mulher_long.rds") 
-
-###Passo 07: Criando os gráficos----
+###Passo 08: Criando os gráficos----
 
 # Definir tema letalidade violenta e cores
-
 theme_sdpa_let <- theme_void()+
   theme(legend.position = "bottom",
         legend.text=element_text(size=12),
