@@ -38,7 +38,7 @@ base_trimestral[is.na(base_trimestral)] <- 0
 
 #Modelo 1 para tri01; 2 para Semestre; 3 para tri03 e 4 para Anual
 
-modelo <- 2
+modelo <- 4
 
 # trata a base trimestral a partir do modelo selecionado
 if (modelo == 1){
@@ -130,7 +130,6 @@ base_pop <- base_pop %>%
       Pop = as.double(Pop)
   )
 base_pop <- base_pop %>% 
-filter(ano >(ano_referencia-3)) %>% 
   unite(
     col = "reg_ano",
     cod_reg,ano,
@@ -272,22 +271,22 @@ if (modelo == 1){
   base_mensal <- base_mensal %>% 
     filter(cod_ano >(ano_referencia-2)) %>%
     mutate(periodo = paste(cod_ano,"/", trimestre, "º Trimestre", sep = "")) %>% 
-    select(periodo,trimestre,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+    select(periodo,trimestre,nom_del,nom_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 } else if (modelo == 2){
   base_mensal <- base_mensal %>% 
     filter(cod_ano >(ano_referencia-3)) %>%
     mutate(periodo = paste(cod_ano,"/", semestre, "º Semestre", sep = "")) %>% 
-    select(periodo,trimestre,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+    select(periodo,trimestre,nom_del,nom_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 } else if (modelo == 3){
   base_mensal <- base_mensal %>% 
     filter(cod_ano >(ano_referencia-2)) %>%
     mutate(periodo = paste(cod_ano,"/", trimestre, "º Trimestre", sep = "")) %>% 
-    select(periodo,trimestre,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+    select(periodo,trimestre,nom_del,nom_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 } else if (modelo == 4){
   base_mensal <- base_mensal %>% 
     filter(cod_ano >(ano_referencia-6)) %>%
     mutate(periodo = paste(cod_ano)) %>% 
-    select(periodo,trimestre,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+    select(periodo,trimestre,nom_del,nom_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 }
 
 ###Passo 07: Dados violência contra a mulher----
