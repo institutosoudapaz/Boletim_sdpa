@@ -106,6 +106,34 @@ base_crimes <- base_crimes%>%
     remove = FALSE
   )
 
+#Criando o total do estado
+base_estado <- base_crimes %>% 
+  group_by(periodo) %>% 
+  summarise(
+    hd_vitima = sum(hd_vitima),
+    hd_ocorr = sum(hd_ocorr),
+    lat_ocorr = sum(lat_ocorr),
+    lat_vitima = sum(lat_vitima),
+    tot_estupro =sum(tot_estupro),
+    estupro_vuln =sum(estupro_vuln),
+    roubo_outros =sum(roubo_outros),
+    roubo_veic = sum(roubo_veic),
+    extor_seq = sum(extor_seq),
+    lesao_morte = sum(lesao_morte),
+    ap_armas =sum(ap_armas),
+    prisoes =sum(prisoes)
+   ) %>% 
+  mutate(cod_reg = 99,
+         deinter = "99",
+         regiao = "Estado de São Paulo",
+         ano = (str_sub(periodo,start = -4)),
+         reg_ano = paste(cod_reg,"-", ano, sep = "")
+         )
+
+  base_crimes <- rbind(base_crimes,base_estado)
+  
+  remove(base_estado)
+
 ###Passo 02: Criando os tabelas de população----
 base_pop <- readRDS("../Boletim_sdpa/data-raw/pop_munic.RDS")
 base_pop <- rename(base_pop, ano = Ano)
@@ -126,6 +154,27 @@ base_pop <- base_pop %>%
       deinter == "Araçatuba" ~ 40),
       Pop = as.double(Pop)
   )
+pop_estado <- base_pop
+pop_estado <- pop_estado%>% 
+group_by(ano) %>% 
+summarise(pop = sum(Pop))
+
+pop_estado <- pop_estado%>%
+  mutate (reg_ano = paste(99,"-", ano, sep = "")) %>% 
+  select(reg_ano, pop)
+
+pop_int <- base_pop
+pop_int <- pop_int %>% 
+  filter(macrorregiao == "Interior") 
+pop_int <- pop_int %>% 
+  group_by(ano) %>% 
+  summarise(pop = sum(Pop))
+pop_int <- pop_int %>% 
+mutate (reg_ano = paste(30,"-", ano, sep = "")) 
+pop_int <- pop_int %>% 
+  select(reg_ano, pop)
+
+
 base_pop <- base_pop %>% 
   unite(
     col = "reg_ano",
@@ -136,6 +185,12 @@ base_pop <- base_pop %>%
 base_pop <- base_pop %>% 
   group_by(reg_ano) %>% 
   summarise(pop = sum(Pop))
+
+
+base_pop <- base_pop%>%
+  rbind(base_pop,pop_estado, pop_int)
+
+remove(pop_estado, pop_int)
 
 #### Passo 03: Juntando população e crimes ----
 
@@ -184,6 +239,27 @@ base_corregedoria <- readRDS("../Boletim_sdpa/data-raw/base_corregedoria.RDS") %
 base_corregedoria <- base_corregedoria %>% 
   select(cod_ano,cod_reg,semestre,trimestre,let_ser,let_fol,mort_ser,mort_fol)
 
+correg_estado <- base_corregedoria %>% 
+group_by(cod_ano,trimestre,semestre) %>% 
+summarise(let_ser = sum(let_ser, na.rm = TRUE),
+          let_fol = sum(let_fol, na.rm = TRUE),
+          mort_ser = sum(mort_ser, na.rm = TRUE),
+          mort_fol = sum(mort_fol, na.rm = TRUE))
+correg_estado <-  correg_estado %>% 
+  mutate(cod_reg = "99")
+
+correg_int <- base_corregedoria %>% 
+  filter(cod_reg>30) %>% 
+  group_by(cod_ano,trimestre,semestre) %>% 
+  summarise(let_ser = sum(let_ser, na.rm = TRUE),
+            let_fol = sum(let_fol, na.rm = TRUE),
+            mort_ser = sum(mort_ser, na.rm = TRUE),
+            mort_fol = sum(mort_fol, na.rm = TRUE))
+correg_int <-  correg_int %>% 
+  mutate(cod_reg = "30")
+
+base_corregedoria <- rbind(base_corregedoria,correg_estado,correg_int)
+remove(correg_estado,correg_int)
 if (modelo == 1){
   base_corregedoria <- base_corregedoria %>% 
     filter(cod_ano >(ano_referencia-2)) %>%
