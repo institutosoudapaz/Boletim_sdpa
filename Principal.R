@@ -154,6 +154,8 @@ base_pop <- base_pop %>%
       deinter == "Araçatuba" ~ 40),
       Pop = as.double(Pop)
   )
+
+#Criando as linhas de total do estado e interior
 pop_estado <- base_pop
 pop_estado <- pop_estado%>% 
 group_by(ano) %>% 
@@ -174,6 +176,8 @@ mutate (reg_ano = paste(30,"-", ano, sep = ""))
 pop_int <- pop_int %>% 
   select(reg_ano, pop)
 
+novas_linhas_pop <- rbind(pop_estado,pop_int)
+remove(pop_estado,pop_int)
 
 base_pop <- base_pop %>% 
   unite(
@@ -187,10 +191,8 @@ base_pop <- base_pop %>%
   summarise(pop = sum(Pop))
 
 
-base_pop <- base_pop%>%
-  rbind(base_pop,pop_estado, pop_int)
-
-remove(pop_estado, pop_int)
+base_pop <- rbind(base_pop,novas_linhas_pop)
+remove(novas_linhas_pop)
 
 #### Passo 03: Juntando população e crimes ----
 
@@ -239,6 +241,9 @@ base_corregedoria <- readRDS("../Boletim_sdpa/data-raw/base_corregedoria.RDS") %
 base_corregedoria <- base_corregedoria %>% 
   select(cod_ano,cod_reg,semestre,trimestre,let_ser,let_fol,mort_ser,mort_fol)
 
+base_corregedoria <- base_corregedoria %>% 
+  drop_na(cod_reg)
+
 correg_estado <- base_corregedoria %>% 
 group_by(cod_ano,trimestre,semestre) %>% 
 summarise(let_ser = sum(let_ser, na.rm = TRUE),
@@ -246,7 +251,7 @@ summarise(let_ser = sum(let_ser, na.rm = TRUE),
           mort_ser = sum(mort_ser, na.rm = TRUE),
           mort_fol = sum(mort_fol, na.rm = TRUE))
 correg_estado <-  correg_estado %>% 
-  mutate(cod_reg = "99")
+  mutate(cod_reg = 99)
 
 correg_int <- base_corregedoria %>% 
   filter(cod_reg>30) %>% 
@@ -256,7 +261,7 @@ correg_int <- base_corregedoria %>%
             mort_ser = sum(mort_ser, na.rm = TRUE),
             mort_fol = sum(mort_fol, na.rm = TRUE))
 correg_int <-  correg_int %>% 
-  mutate(cod_reg = "30")
+  mutate(cod_reg = 30)
 
 base_corregedoria <- rbind(base_corregedoria,correg_estado,correg_int)
 remove(correg_estado,correg_int)
