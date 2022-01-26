@@ -27,15 +27,13 @@ library(tidyverse)
 library(ggplot2)
 library(gridExtra)
 library(grid)
+library(sf)
 
 # Carregar bases
 
-base_crimes <- readRDS("base_crimes.rds")
-base_letalidade_long <- readRDS("base_letalidade_long.rds")
-base_corregedoria<- readRDS("base_corregedoria.rds")
-base_corregedoria_long <- readRDS("base_corregedoria_long.rds")
-base_crimes_long <- readRDS("base_crimes_long.rds")
-base_viol_mulher_long <- readRDS("base_viol_mulher_long.rds")
+base_completa <- readRDS("base_completa.rds")
+base_mensal <- readRDS("base_mensal.rds")
+base_viol_mul <- readRDS("base_viol_mul")
 
 ano_referencia <- 2021
 
@@ -48,7 +46,8 @@ theme_sdpa_macroreg <- theme_void()+
         legend.text=element_text(size=12),
         axis.text.x=element_text(size=12),
         legend.title = element_blank(), 
-        aspect.ratio=8.5/20)
+        aspect.ratio=8.5/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm'))
 
 theme_sdpa_let <- theme_void()+
   theme(legend.position = "bottom",
@@ -64,35 +63,52 @@ theme_sdpa_deinter <- theme_classic()+
         legend.text=element_text(size=12),
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
-        aspect.ratio=8.7/20)
+        aspect.ratio=8.7/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm'))
+
+theme_sdpa_maps <-  theme_void()+
+  theme(#legend.position = "bottom",
+        #axis.text.y=element_text(size=12),
+        legend.title = element_blank(), 
+        legend.text=element_text(size=12),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        #aspect.ratio=8.7/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm'))
 
 cores <- c("#cec8c4", "#be9068","#042e3f")
-cores_2 <- c("#042e3f", "#be9068")
-cores_3 <- c("#be9068", "#042e3f")
+cores_2 <- c("#be9068", "#042e3f")
 
-# Criar função de gráfico crimes por ano_trimestre/macroregião
+# Gráfico crimes por ano/macroregião
 
-grafico_trimestre <- function(crime, titulo) { #selecionar o tipo de crime e titulo
-                                              # do gráfico
-p <- base_crimes %>% 
-  filter(cod_reg<31) %>% 
+grafico_geral <- function(crime, titulo) { #selecionar o tipo de crime e titulo do gráfico
+
+  p <- base_completa %>% 
+    #filtra sem os deinter individuais
+  filter(cod_reg.x <31) %>% 
+  group_by(regiao, periodo.x) %>%
+    #modela a base
+  summarise(tot_estupro = sum(tot_estupro),
+            extor_seq = sum(extor_seq),
+            hd_ocorr = sum(hd_ocorr),
+            lat_ocorr = sum(lat_ocorr),
+            roubo_veic = sum(roubo_veic),
+            roubo_outros = sum(roubo_outros)) %>% 
+  pivot_longer(cols = regiao, values_to = "regiao") %>% 
+    #gráfico
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
-             y= {{crime}}, x= ano_tri)) + 
+             y= {{crime}}, x= periodo.x)) + 
   geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = format({{crime}}, big.mark = ".", scientific = FALSE), 
-                colour =ifelse(cod_reg>11, "black", "white")), position=position_stack(vjust=0.5)) +
+                colour =ifelse(regiao=="Capital", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.4) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
-  stat_summary(fun = sum, aes(label = format(..y.., big.mark = ".", scientific = FALSE), group = ano_tri), 
-               geom = "text",size=4, vjust = -0.5) +
+  # descobrir como colocar o . como divisor dos valores no topo
+  stat_summary(fun = sum, aes(label = ..y.., group = periodo.x), 
+               geom = "text",size=3.4, vjust = -0.5) +
   scale_fill_manual(values = cores) +
   guides(color = "none")+
-  scale_x_discrete(labels = str_wrap(
-    c("2019 / 1º Tri", "2019 / 2º Tri", "2019 / 3º Tri", "2019 / 4º Tri",
-      "2020 / 1º Tri", "2020 / 2º Tri", "2020 / 3º Tri", "2020 / 4º Tri",
-      "2021 / 1º Tri", "2021 / 2º Tri", "2021 / 3º Tri"), width = 7))+
-  theme_sdpa_macroreg
-
-
+  theme_sdpa_macroreg 
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                  textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -102,17 +118,62 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
-# Criar gráfico taxa de crimes por ano_trimestre/deinter
+# Gráfico taxa de crimes por ano/macrorregiao
 
-grafico_deinter <- function(crime, titulo, limite) {  #selecionar o tipo de crime, titulo
-                                                      # do gráfico e limite do eixo x
-p <- base_crimes %>% 
-   filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
-  filter(cod_reg>30) %>% 
-  mutate(taxa = round(({{crime}}/pop * 100000),1)) %>%
-  ggplot(aes(fill=ano_tri, y= taxa, x= deinter)) + 
+grafico_taxa_macro<- function(crime, titulo) { #selecionar o tipo de crime e titulo
+  # do gráfico
+  
+p <- base_completa %>% 
+  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
+  filter(periodo.x > (ano_referencia-2)) %>% 
+  group_by(regiao, periodo.x) %>%
+  # Calcula já a taxa!
+    summarise(tot_estupro = sum(tot_estupro)/pop*100000,
+              extor_seq = sum(extor_seq)/pop*100000,
+              hd_ocorr = sum(hd_ocorr)/pop*100000,
+              lat_ocorr = sum(lat_ocorr)/pop*100000,
+              roubo_veic = sum(roubo_veic)/pop*100000,
+              roubo_outros = sum(roubo_outros)/pop*100000) %>% 
+  # Falta criar uma soma do Estado, e os dados de pop do interior
+  pivot_longer(cols = regiao, values_to = "regiao") %>% 
+  ggplot(aes(fill= periodo.x, y= {{crime}}, x= factor(regiao, levels = c("Capital", "Grande São Paulo",
+                                                                         "Interior",
+                                                                         "Estado de São Paulo")))) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
-  geom_text(aes(label = taxa), position = position_dodge(0.94), 
+  geom_text(aes(label = round(..y.., 2), vjust = -0.5),  position = position_dodge(0.9))+
+  scale_fill_manual(values = cores_2) +
+  guides(fill = guide_legend(reverse = TRUE))+
+  theme_sdpa_macroreg
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                                              fontface="bold")))
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
+# Gráfico das taxas de crimes por ano/deinter
+
+grafico_taxa_deinter <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo
+                                                          # do gráfico
+
+p <- base_completa %>% 
+  filter(cod_reg.x >30) %>% 
+  filter(periodo.x > (ano_referencia-2)) %>% 
+  group_by(periodo.x, deinter) %>% 
+  # Calcula já a taxa!
+  summarise(tot_estupro = sum(tot_estupro)/pop*100000,
+            extor_seq = sum(extor_seq)/pop*100000,
+            hd_ocorr = sum(hd_ocorr)/pop*100000,
+            lat_ocorr = sum(lat_ocorr)/pop*100000,
+            roubo_veic = sum(roubo_veic)/pop*100000,
+            roubo_outros = sum(roubo_outros)/pop*100000,
+            prisoes = sum(prisoes)/pop*100000,
+            ap_armas = sum(ap_armas)/pop*100000) %>%
+  pivot_longer(cols = deinter , values_to = "deinter") %>% 
+  ggplot(aes(fill= periodo.x, y= {{crime}}, x= deinter)) + 
+  geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+  geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
   scale_fill_manual(values = cores_2) +
   guides(color = "none")+
@@ -122,20 +183,155 @@ p <- base_crimes %>%
                                                     decimal.mark = ','),
                      expand = c(0, 0), n.breaks = 8)
 
+#PESQUISAR limites max_y *1,2
+# mudar o separador das taxas de '." para ","
+
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
-                                                              fontface="bold")))
+                                                            fontface="bold")))
 
 grid.arrange(g, p, heights=c(1,9))
 
 }
 
-# Criar gráficos violencia contra mulher
+# Gráfico dos top 10 municípios por número absoluto/crime fora Capital
+
+grafico_10_municipio <- function(crime, titulo, limite) {#selecionar o tipo de crime e titulo do gráfico
+  
+mun <- base_mensal %>%
+  na.omit() %>% 
+  filter(periodo == ano_referencia) %>% 
+  filter(nom_mun != "Sco Paulo") %>% 
+  group_by(nom_mun) %>% 
+  summarise(hd_vitima = sum(o2),
+            hd_ocorr = sum(o1),
+            lat_ocorr = sum(o12),
+            lat_vitima =sum(o13),
+            tot_estupro =sum(o14),
+            estupro_vuln =sum(o16),
+            roubo_outros =sum(o18),
+            roubo_veic = sum(o19),
+            lesao_morte = sum(o8),
+            ap_armas =sum(p5),
+            prisoes =sum(p11)) %>% 
+  arrange(desc({{crime}})) %>% 
+  slice_head(n=10) %>% 
+  pull(nom_mun)
+    
+p <- base_mensal %>%
+    na.omit() %>% 
+    filter(periodo > (ano_referencia-2)) %>% 
+    filter (nom_mun %in% mun) %>% 
+    group_by(nom_mun, periodo) %>%
+    summarise(hd_vitima = sum(o2),
+              hd_ocorr = sum(o1),
+              lat_ocorr = sum(o12),
+              lat_vitima =sum(o13),
+              tot_estupro =sum(o14),
+              estupro_vuln =sum(o16),
+              roubo_outros =sum(o18),
+              roubo_veic = sum(o19),
+              lesao_morte = sum(o8),
+              ap_armas =sum(p5),
+              prisoes =sum(p11)) %>% 
+  ggplot(aes(fill= periodo, y= {{crime}}, x= fct_reorder(nom_mun, {{crime}}, .desc = TRUE))) + 
+  geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+  geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
+              vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+    scale_fill_manual(values = cores_2) +
+    guides(color = "none")+
+    coord_flip(ylim=c(0, {{limite}})) +
+    theme_sdpa_deinter+
+    scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                      decimal.mark = ','),
+                       expand = c(0, 0), n.breaks = 8)
+  
+  # mudar o separador das taxas de '." para ","
+  
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
+# Gráfico dos top 10 distritos policiais por número absoluto/crime
+
+grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo do gráfico
+  
+  del <- base_mensal %>%
+    #na.omit() %>% 
+    filter(periodo == ano_referencia) %>% 
+    group_by(nom_del) %>% 
+    summarise(hd_vitima = sum(o2),
+              hd_ocorr = sum(o1),
+              lat_ocorr = sum(o12),
+              lat_vitima =sum(o13),
+              tot_estupro =sum(o14),
+              estupro_vuln =sum(o16),
+              roubo_outros =sum(o18),
+              roubo_veic = sum(o19),
+              lesao_morte = sum(o8),
+              ap_armas =sum(p5),
+              prisoes =sum(p11)) %>% 
+    arrange(desc({{crime}})) %>% 
+    slice_head(n=10) %>% 
+    pull(nom_del)
+  
+  p <- base_mensal %>%
+    #na.omit() %>% 
+    filter(periodo > (ano_referencia-2)) %>% 
+    group_by(nom_del, periodo) %>%
+    filter (nom_del %in% del) %>% 
+    summarise(hd_vitima = sum(o2),
+              hd_ocorr = sum(o1),
+              lat_ocorr = sum(o12),
+              lat_vitima =sum(o13),
+              tot_estupro =sum(o14),
+              estupro_vuln =sum(o16),
+              roubo_outros =sum(o18),
+              roubo_veic = sum(o19),
+              lesao_morte = sum(o8),
+              ap_armas =sum(p5),
+              prisoes =sum(p11)) %>% 
+    ggplot(aes(fill= periodo, y= {{crime}}, x= fct_reorder(nom_del, {{crime}}, .desc = TRUE))) + 
+    geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+    geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
+              vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+    scale_fill_manual(values = cores_2) +
+    guides(color = "none")+
+    coord_flip(ylim=c(0, {{limite}})) +
+    theme_sdpa_deinter+
+    scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                      decimal.mark = ','),
+                       expand = c(0, 0), n.breaks = 8)
+  
+  # mudar o separador das taxas de '." para ","
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
+
+
+
+
+
+
+
+
+
+# Criar gráficos violencia contra mulher (ATUALIZAR)
 
 grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e titulo
   # do gráfico
   
-  p <- base_viol_mulher_long %>% 
+  p <- base_viol_mulher%>% 
     ggplot(aes(fill=factor(area, levels=c("Interior","Grande São Paulo","Capital")),
                y= {{crime}}, x= ano_tri)) + 
     geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
@@ -193,80 +389,206 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
 
-```{r letalidade violenta e crimes violentos, echo=FALSE, fig.dim = c(10, 6)}
+```{r letalidade violenta, echo=FALSE, fig.dim = c(10, 6)}
 
-# Criar gráfico letalidade violenta
+# Gráfico letalidade violenta
 
-p <- base_letalidade_long %>% 
-  filter(ano_semestre!="2020 / 2º Semestre") %>% 
-  ggplot(aes(fill=factor(ano_semestre,  levels=c("2021 / 1º Semestre", "2020 / 1º Semestre")), y= count, 
-             x= factor(morte, levels = c(
-               "Total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol")))) + 
+p <- base_completa %>% 
+  filter(periodo.x > (ano_referencia-2)) %>% 
+  group_by(periodo.x) %>%
+  summarise(hd_vitima = sum(hd_vitima),
+            lat_vitima = sum(lat_vitima),
+            lesao_morte = sum(lesao_morte),
+            let_ser = sum(let_ser, na.rm = TRUE),
+            let_fol = sum (let_fol, na.rm = TRUE),
+            total = sum(hd_vitima, lat_vitima, lesao_morte, let_ser, let_fol)) %>% 
+  pivot_longer(!periodo.x, names_to = "crime", values_to = "count") %>% 
+  ggplot(aes(fill=factor(periodo.x, levels=c("2020", "2021")), y= count, 
+             x= factor(crime, levels = c(
+               "total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol"))))+ 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
-            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.4) +
+            vjust = 0.43, hjust = -0.2,check_overlap = TRUE, size=3.2) +
   scale_fill_manual(values = cores_2) +
   guides(color = "none")+
   scale_x_discrete(labels = str_wrap(
     c("Total de vítimas", "Homicídio doloso", "Latrocínio", "Lesão corporal seguida de morte", 
-    "Mortos pela Polícia Civil e Militar em serviço", "Mortos pela Polícia Civil e Militar fora de 
+      "Mortos pela Polícia Civil e Militar em serviço", "Mortos pela Polícia Civil e Militar fora de 
     serviço"), width = 24))+
   theme_sdpa_let +
-
-  coord_flip(ylim=c(100, 2300))
+  # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+  coord_flip(ylim=c(100, 6200))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
                                                             fontface="bold")))
-
 grid.arrange(g, p, heights=c(1,9))
+```
 
-# Criar gráfico crimes violentos
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-p <- base_crimes_long %>% 
-  filter(ano_tri %in% c("2020 / 3º Trimestre", "2021 / 3º Trimestre")) %>% 
-  ggplot(aes(fill=factor(ano_tri,  levels=c("2021 / 3º Trimestre", "2020 / 3º Trimestre")), y= count, 
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r crimes violentos, echo=FALSE, fig.dim = c(10, 6)}
+
+# Gráfico crimes violentos
+
+p <- base_completa %>% 
+  filter(periodo.x > (ano_referencia-2)) %>% 
+  group_by(periodo.x) %>%
+  summarise(tot_estupro = sum(tot_estupro),
+            extor_seq = sum(extor_seq),
+            hd_ocorr = sum(hd_ocorr),
+            lat_ocorr = sum(lat_ocorr),
+            roubo_veic = sum(roubo_veic),
+            roubo_outros = sum(roubo_outros), 
+            total = sum(tot_estupro,extor_seq, hd_ocorr,lat_ocorr, roubo_veic,roubo_outros)) %>% 
+  pivot_longer(!periodo.x, names_to = "crime", values_to = "count") %>% 
+  ggplot(aes(fill=factor(periodo.x, levels=c("2020", "2021")), y= count, 
              x= factor(crime, levels = c(
-               "Total", "tot_estupro", "extor_seq", "hd_ocorr", "lat_ocorr", "roubo_veic", 
-               "roubo_outros")))) + 
+               "total", "roubo_outros", "roubo_veic","extor_seq", "tot_estupro", "lat_ocorr", "hd_ocorr")))) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
-            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.4) +
+            vjust = 0.43, hjust = -0.2,check_overlap = TRUE, size=3.2) +
   scale_fill_manual(values = cores_2) +
   guides(color = "none")+
   scale_x_discrete(labels = str_wrap(
-    c("Total de ocorrências", "Estupro", "Extorsão mediante sequestro", "Homicídio doloso", 
-      "Latrocínio", "Roubo de veículo", "Roubo (outros)"), width = 24))+
+    c("Total de ocorrências", "Roubo (outros)","Roubo de veículo", "Extorsão mediante sequestro", "Estupro",
+      "Latrocínio", "Homicídio doloso"), width = 24))+
   theme_sdpa_let +
-  coord_flip(ylim=c(100, 65000))
+  # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+  coord_flip(ylim=c(100, 330000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Crimes Violentos", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
                                                                            fontface="bold")))
+grid.arrange(g, p, heights=c(1,9))
+```
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-grid.arrange(g, p, heights=c(1,9)) 
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r homicidios macroreg, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_geral(hd_ocorr, "Homicídios Dolosos - Ocorrências")  
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-```{r homicidios e latrocinios macro, echo=FALSE, fig.dim = c(10, 6)}
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-grafico_trimestre(hd_ocorr, "Homicídios Dolosos")  
+```{r homicidios macroreg taxas, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_trimestre(lat_ocorr, "Latrocínios")  
+grafico_taxa_macro (hd_ocorr, "Taxa de Homicídios Dolosos")  
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-```{r homicidios e latrocinios deinter, echo=FALSE, fig.dim = c(10, 6)}
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-grafico_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 4.0)
+```{r taxa de homicidios por deinter, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_deinter(lat_ocorr, "Latrocínios (taxa por 100 mil habitantes)", 0.4)  
+grafico_taxa_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 13.5)
+
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
 Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r homicidios por municipio, echo=FALSE, fig.dim = c(10, 6)}
+# FAZER FUNÇÃO
+grafico_10_municipio (hd_ocorr, "Dez municípios com mais ocorrências de homicídio doloso – 2021")
+
+```
+
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+
+```{r taxa homicidios por municipio, echo=FALSE, fig.dim = c(10, 6)}
+# FAZER FUNÇÃO
+grafico_10_municipio_taxa (hd_ocorr, "Dez municípios com maiores taxas de homicídio doloso – 2021")
+
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+
+```{r homicidios por distrito, echo=FALSE, fig.dim = c(10, 6)}
+
+grafico_10_dp (hd_ocorr, "Dez distritos policiais com mais ocorrências de homicídio doloso – 2021")
+
+```
+
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r homicidios mapa deinter, echo=FALSE, fig.dim = c(10, 6)}
+# FAZER FUNÇÃO
+mapa_deinter (hd_ocorr, "Taxas de homicídio dolosos por Deinter – 2021")
+
+```
+
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r homicidios mapa distrito, echo=FALSE, fig.dim = c(10, 6)}
+# FAZER FUNÇÃO
+mapa_capital (hd_ocorr, "Taxas de homicídio dolosos por DP na capital  – 2021")
+
+```
+
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+
+
 
 
 ```{r estupros macro, echo=FALSE, fig.dim = c(10, 6)}

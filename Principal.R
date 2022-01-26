@@ -305,7 +305,7 @@ saveRDS(base_completa, "base_completa.rds")
 
 ####Passo 06: Preparando a base mensal----
 
-base_mensal <- readRDS("../Boletim_sdpa/data-raw/base_mensal.RDS")
+base_mensal <- readRDS("../Boletim_sdpa/data-raw/base_mensal.rds")
 base_mensal <- base_mensal %>% 
   mutate(
     trimestre = case_when(
@@ -351,22 +351,22 @@ if (modelo == 1){
   base_mensal <- base_mensal %>% 
     filter(cod_ano >(ano_referencia-2)) %>%
     mutate(periodo = paste(cod_ano,"/", trimestre, "º Trimestre", sep = "")) %>% 
-    select(periodo,trimestre,nom_del,nom_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+    select(periodo,trimestre,nom_del,nom_mun,pop_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 } else if (modelo == 2){
   base_mensal <- base_mensal %>% 
     filter(cod_ano >(ano_referencia-3)) %>%
     mutate(periodo = paste(cod_ano,"/", semestre, "º Semestre", sep = "")) %>% 
-    select(periodo,trimestre,nom_del,nom_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+    select(periodo,trimestre,nom_del,nom_mun,pop_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 } else if (modelo == 3){
   base_mensal <- base_mensal %>% 
     filter(cod_ano >(ano_referencia-2)) %>%
     mutate(periodo = paste(cod_ano,"/", trimestre, "º Trimestre", sep = "")) %>% 
-    select(periodo,trimestre,nom_del,nom_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+    select(periodo,trimestre,nom_del,nom_mun,pop_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 } else if (modelo == 4){
   base_mensal <- base_mensal %>% 
     filter(cod_ano >(ano_referencia-6)) %>%
     mutate(periodo = paste(cod_ano)) %>% 
-    select(periodo,trimestre,nom_del,nom_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
+    select(periodo,trimestre,nom_del,nom_mun,pop_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 }
 
 saveRDS(base_mensal, "base_mensal.rds")
@@ -510,7 +510,7 @@ grafico_geral <- function(crime, titulo) { #selecionar o tipo de crime e titulo
                                               # do gráfico
 
 p <- base_completa %>% 
-  filter(cod_reg.x <31) %>% 
+  filter(cod_reg.x < 31) %>% 
   group_by(regiao, periodo.x) %>%
   summarise(tot_estupro = sum(tot_estupro),
             extor_seq = sum(extor_seq),
@@ -549,7 +549,7 @@ grafico_taxa_macro<- function(crime, titulo) { #selecionar o tipo de crime e tit
   # do gráfico
   
 p <- base_completa %>% 
-  filter(cod_reg.x <31) %>% 
+  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
   group_by(regiao, periodo.x) %>%
   # Calcula já a taxa!
@@ -561,7 +561,9 @@ p <- base_completa %>%
               roubo_outros = sum(roubo_outros)/pop*100000) %>% 
   # Falta criar uma soma do Estado, e os dados de pop do interior
   pivot_longer(cols = regiao, values_to = "regiao") %>% 
-  ggplot(aes(fill= periodo.x, y= {{crime}}, x= regiao)) + 
+  ggplot(aes(fill= periodo.x, y= {{crime}}, x= factor(regiao, levels = c("Capital", "Grande São Paulo",
+                                                                         "Interior",
+                                                                         "Estado de São Paulo")))) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = round(..y.., 2), vjust = -0.5),  position = position_dodge(0.9))+
   scale_fill_manual(values = cores_2) +
@@ -636,20 +638,207 @@ grafico_taxa_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 14) 
 
 # Criar gráfico top 10 municípios por número absoluto/crime
 
-########Arrumar a base mensal para ficar padronizada com os crimes
+grafico_10_municipio <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo do gráfico
+  
+mun <- base_mensal %>%
+  #na.omit() %>% 
+  filter(periodo == ano_referencia) %>% 
+  filter(nom_mun != "Sco Paulo") %>% 
+  group_by(nom_mun) %>% 
+  summarise(hd_vitima = sum(o2),
+            hd_ocorr = sum(o1),
+            lat_ocorr = sum(o12),
+            lat_vitima =sum(o13),
+            tot_estupro =sum(o14),
+            estupro_vuln =sum(o16),
+            roubo_outros =sum(o18),
+            roubo_veic = sum(o19),
+            lesao_morte = sum(o8),
+            ap_armas =sum(p5),
+            prisoes =sum(p11)) %>% 
+  arrange(desc({{crime}})) %>% 
+  slice_head(n=10) %>% 
+  pull(nom_mun)
+    
+p <- base_mensal %>%
+    #na.omit() %>% 
+    filter(periodo > (ano_referencia-2)) %>% 
+    group_by(nom_mun, periodo) %>%
+    filter (nom_mun %in% mun) %>% 
+    summarise(hd_vitima = sum(o2),
+              hd_ocorr = sum(o1),
+              lat_ocorr = sum(o12),
+              lat_vitima =sum(o13),
+              tot_estupro =sum(o14),
+              estupro_vuln =sum(o16),
+              roubo_outros =sum(o18),
+              roubo_veic = sum(o19),
+              lesao_morte = sum(o8),
+              ap_armas =sum(p5),
+              prisoes =sum(p11)) %>% 
+  ggplot(aes(fill= periodo, y= {{crime}}, x= fct_reorder(nom_mun, {{crime}}, .desc = TRUE))) + 
+  geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+  geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
+              vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+    scale_fill_manual(values = cores_2) +
+    guides(color = "none")+
+    coord_flip(ylim=c(0, {{limite}})) +
+    theme_sdpa_deinter+
+    scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                      decimal.mark = ','),
+                       expand = c(0, 0), n.breaks = 8)
+  
+  # mudar o separador das taxas de '." para ","
+  
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
 
-# p <- base_mensal %>% 
-#   filter(periodo > (ano_referencia-2)) %>% 
-#   group_by(nom_mun, periodo) %>%
-
+grafico_10_municipio(hd_ocorr, "Top 10 Homicídios", 130) #teste da função
 
 # Criar gráfico top 10 municípios por taxa/crime
 
-######## Arrumar a base mensal para ficar padronizada com os crimes
-######## Arrumar dados da população por município
+grafico_10_municipio_taxa <- function(crime, titulo, limite) { #selecionar o tipo de crime e 
+                                                                # titulo do gráfico
+mun_taxa <- base_mensal %>%
+  #na.omit() %>% 
+  filter(periodo == ano_referencia) %>% 
+  filter(nom_mun != "Sco Paulo") %>% 
+  group_by(nom_mun, pop_mun) %>% 
+  summarise(hd_vitima = sum(o2)/pop_mun*100000,
+            hd_ocorr = sum(o1)/pop_mun*100000,
+            lat_ocorr = sum(o12)/pop_mun*100000,
+            lat_vitima =sum(o13)/pop_mun*100000,
+            tot_estupro =sum(o14)/pop_mun*100000,
+            estupro_vuln =sum(o16)/pop_mun*100000,
+            roubo_outros =sum(o18)/pop_mun*100000,
+            roubo_veic = sum(o19)/pop_mun*100000,
+            lesao_morte = sum(o8)/pop_mun*100000,
+            ap_armas =sum(p5)/pop_mun*100000,
+            prisoes =sum(p11)/pop_mun*100000) %>% 
+  arrange(desc({{crime}})) %>% 
+  slice_head(n=10) %>% 
+  pull(nom_mun)
 
+p <- base_mensal %>%
+  na.omit() %>% 
+  filter(periodo > (ano_referencia-2)) %>% 
+  filter (nom_mun %in% mun_taxa) %>% 
+  group_by(nom_mun, periodo) %>%
+  summarise(hd_vitima = sum(o2)/pop_mun*100000,
+            hd_ocorr = sum(o1)/pop_mun*100000,
+            lat_ocorr = sum(o12)/pop_mun*100000,
+            lat_vitima =sum(o13)/pop_mun*100000,
+            tot_estupro =sum(o14)/pop_mun*100000,
+            estupro_vuln =sum(o16)/pop_mun*100000,
+            roubo_outros =sum(o18)/pop_mun*100000,
+            roubo_veic = sum(o19)/pop_mun*100000,
+            lesao_morte = sum(o8)/pop_mun*100000,
+            ap_armas =sum(p5)/pop_mun*100000,
+            prisoes =sum(p11)/pop_mun*100000) %>% 
+  ggplot(aes(fill= periodo, y= {{crime}}, x= fct_reorder(nom_mun, {{crime}}, .desc = TRUE))) + 
+  geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+  geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  coord_flip(ylim=c(0, {{limite}})) +
+  theme_sdpa_deinter+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                    decimal.mark = ','),
+                     expand = c(0, 0), n.breaks = 8)
+
+# mudar o separador das taxas de '." para ","
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                            fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+grafico_10_municipio_taxa(hd_ocorr, "teste", 402)
 
 # Criar gráfico top 10 distritos policiais por número absoluto/crime
+
+grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo do gráfico
+  
+  del <- base_mensal %>%
+    #na.omit() %>% 
+    filter(periodo == ano_referencia) %>% 
+    group_by(nom_del) %>% 
+    summarise(hd_vitima = sum(o2),
+              hd_ocorr = sum(o1),
+              lat_ocorr = sum(o12),
+              lat_vitima =sum(o13),
+              tot_estupro =sum(o14),
+              estupro_vuln =sum(o16),
+              roubo_outros =sum(o18),
+              roubo_veic = sum(o19),
+              lesao_morte = sum(o8),
+              ap_armas =sum(p5),
+              prisoes =sum(p11)) %>% 
+    arrange(desc({{crime}})) %>% 
+    slice_head(n=10) %>% 
+    pull(nom_del)
+  
+  p <- base_mensal %>%
+    #na.omit() %>% 
+    filter(periodo > (ano_referencia-2)) %>% 
+    group_by(nom_del, periodo) %>%
+    filter (nom_del %in% del) %>% 
+    summarise(hd_vitima = sum(o2),
+              hd_ocorr = sum(o1),
+              lat_ocorr = sum(o12),
+              lat_vitima =sum(o13),
+              tot_estupro =sum(o14),
+              estupro_vuln =sum(o16),
+              roubo_outros =sum(o18),
+              roubo_veic = sum(o19),
+              lesao_morte = sum(o8),
+              ap_armas =sum(p5),
+              prisoes =sum(p11)) %>% 
+    ggplot(aes(fill= periodo, y= {{crime}}, x= fct_reorder(nom_del, {{crime}}, .desc = TRUE))) + 
+    geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+    geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
+              vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+    scale_fill_manual(values = cores_2) +
+    guides(color = "none")+
+    coord_flip(ylim=c(0, {{limite}})) +
+    theme_sdpa_deinter+
+    scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                      decimal.mark = ','),
+                       expand = c(0, 0), n.breaks = 8)
+  
+  # mudar o separador das taxas de '." para ","
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
+grafico_10_dp(hd_ocorr, "Top 10 Homicídios", 43) #teste da função
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ######## Arrumar a base mensal para ficar padronizada com os crimes
 
