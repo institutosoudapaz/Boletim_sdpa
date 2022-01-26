@@ -220,6 +220,8 @@ base_corregedoria <- base_corregedoria %>%
 
 base_completa <- left_join(base_crimes, base_corregedoria,by ="id")
 
+saveRDS(base_completa, "base_completa.rds")
+
 ####Passo 06: Preparando a base mensal----
 
 base_mensal <- readRDS("../Boletim_sdpa/data-raw/base_mensal.RDS")
@@ -286,6 +288,8 @@ if (modelo == 1){
     select(periodo,trimestre,nom_del,nom_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 }
 
+saveRDS(base_mensal, "base_mensal.rds")
+
 ###Passo 07: Dados violência contra a mulher----
 base_viol_mul <- readRDS("data-raw/viol_mulher.rds")
 base_viol_mul <- base_viol_mul %>% 
@@ -323,7 +327,9 @@ if (modelo == 1){
     select(periodo,Tri,cod_reg,item, contador)
 }
 
-#CRIAÇÃO DOS GRÁFICOS
+saveRDS(base_viol_mul, "base_viol_mul")
+
+# CRIAÇÃO DOS GRÁFICOS
 
 ###Passo 08: Criando os gráficos----
 
@@ -335,7 +341,7 @@ theme_sdpa_let <- theme_void()+
         legend.title = element_blank(),
         aspect.ratio=11/20)
 
-cores_2 <- c("#042e3f", "#be9068")
+cores_2 <- c("#be9068", "#042e3f")
 
 # Criar gráfico letalidade violenta
 
@@ -349,7 +355,7 @@ p <- base_completa %>%
             let_fol = sum (let_fol, na.rm = TRUE),
             total = sum(hd_vitima, lat_vitima, lesao_morte, let_ser, let_fol)) %>% 
   pivot_longer(!periodo.x, names_to = "crime", values_to = "count") %>% 
-  ggplot(aes(fill=factor(periodo.x, levels=c("2021", "2020")), y= count, 
+  ggplot(aes(fill=factor(periodo.x, levels=c("2020", "2021")), y= count, 
              x= factor(crime, levels = c(
                "total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol"))))+ 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
@@ -458,8 +464,6 @@ grafico_geral(tot_estupro, "Estupros Total")  # Teste da função
 
 # Criar gráfico taxa de crimes por ano/macrorregiao
 
-cores_3 <- c("#be9068", "#042e3f")
-
 grafico_taxa_macro<- function(crime, titulo) { #selecionar o tipo de crime e titulo
   # do gráfico
   
@@ -479,7 +483,7 @@ p <- base_completa %>%
   ggplot(aes(fill= periodo.x, y= {{crime}}, x= regiao)) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = round(..y.., 2), vjust = -0.5),  position = position_dodge(0.9))+
-  scale_fill_manual(values = cores_3) +
+  scale_fill_manual(values = cores_2) +
   guides(fill = guide_legend(reverse = TRUE))+
   theme_sdpa_macroreg
   
@@ -590,7 +594,7 @@ p <- base_completa %>%
                geom = "text",size=4, vjust = -0.5) +
   guides(color = "none")+
   scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
-                    values = cores_3) +
+                    values = cores_2) +
   guides(fill = guide_legend(reverse = TRUE))+
   theme_sdpa_macroreg
 
@@ -672,10 +676,11 @@ tab_estado %>%
             geometry = geometry) %>% 
   ggplot() +
   geom_sf(aes(geometry = geometry, fill = hd_ocorr))+
-  geom_sf_text(aes(geometry = geometry, label = round(hd_ocorr, 2)), size = 2)+
+  geom_sf_text(aes(geometry = geometry, label = deinter), size = 4, color = "white", nudge_y = 0.1)+
+  geom_sf_text(aes(geometry = geometry, label = round(hd_ocorr, 2)), size = 4, color = "white", 
+               nudge_y = -0.1) +
   theme_sdpa_maps
  
-
 
 # Criar mapa de número absoluto de crimes por DP capital
 
@@ -691,14 +696,18 @@ theme_sdpa_maps <-  theme_void()+
 
 # Abrir arquivo shape
 
-arquivo <- system.file("./data-raw/shapes/Distrito_policial_SP.shp", package = "sf")
-shp_capital <- sf::st_read("./data-raw/shapes/Distrito_policial_SP.shp", quiet = TRUE)
+shp_capital <- sf::st_read("./data-raw/shapes/Distrito_policial_SP.shp", quiet = TRUE) %>% 
+  filter(DepGeoDes == "DECAP")
+  
 
 # teste do shape
 
-shp_capital  %>%
+shp_capital %>%
   ggplot() +
   geom_sf(aes())
+
+
+
 
   
 
