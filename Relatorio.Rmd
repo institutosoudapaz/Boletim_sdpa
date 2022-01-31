@@ -120,14 +120,15 @@ grid.arrange(g, p, heights=c(1,9))
 
 # Gráfico taxa de crimes por ano/macrorregiao
 
-grafico_taxa_macro<- function(crime, titulo) { #selecionar o tipo de crime e titulo
-  # do gráfico
+
+grafico_taxa_macro<- function(crime, titulo) { #selecionar o tipo de crime e titulo do gráfico
   
 p <- base_completa %>% 
-  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
+      #filtra sem os deinter individuais
+  filter(cod_reg.x <31) %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
   group_by(regiao, periodo.x) %>%
-  # Calcula já a taxa!
+  # Calcula as taxas por 100 mil hab
     summarise(tot_estupro = sum(tot_estupro)/pop*100000,
               extor_seq = sum(extor_seq)/pop*100000,
               hd_ocorr = sum(hd_ocorr)/pop*100000,
@@ -326,6 +327,7 @@ grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e
 
 
 
+
 # Criar gráficos violencia contra mulher (ATUALIZAR)
 
 grafico_viol_mulher <- function(crime, titulo) { #selecionar o tipo de crime e titulo
@@ -429,8 +431,12 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
-Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+=======
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
@@ -476,7 +482,11 @@ Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
 Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+=======
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
 
 ```{r homicidios macroreg, echo=FALSE, fig.dim = c(10, 6)}
 
@@ -498,6 +508,7 @@ Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
 Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
+
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
 ```{r taxa de homicidios por deinter, echo=FALSE, fig.dim = c(10, 6)}
@@ -517,7 +528,6 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
 ```{r homicidios por municipio, echo=FALSE, fig.dim = c(10, 6)}
-# FAZER FUNÇÃO
 grafico_10_municipio (hd_ocorr, "Dez municípios com mais ocorrências de homicídio doloso – 2021")
 
 ```
@@ -532,7 +542,7 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 
 ```{r taxa homicidios por municipio, echo=FALSE, fig.dim = c(10, 6)}
-# FAZER FUNÇÃO
+
 grafico_10_municipio_taxa (hd_ocorr, "Dez municípios com maiores taxas de homicídio doloso – 2021")
 
 ```
