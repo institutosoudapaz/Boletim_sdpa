@@ -61,7 +61,7 @@ if (modelo == 1){
              t49,t50,t75,t77,t80,t201,t202,t203)
 } else if (modelo == 4){
   base_crimes <- base_trimestral %>% 
-    filter(ano >(ano_referencia-6)) %>%
+    filter(ano >(ano_referencia-5)) %>%
     mutate(periodo = paste(ano)) %>% 
     select(periodo,tri,cod_reg,t1,t15,t21,t23,t40,t45,t46,
            t49,t50,t75,t77,t80,t201,t202,t203)
@@ -109,6 +109,7 @@ base_crimes <- base_crimes%>%
 #Criando o total do estado
 base_estado <- base_crimes %>% 
   group_by(periodo) %>% 
+  filter(cod_reg !=30) %>% 
   summarise(
     hd_vitima = sum(hd_vitima),
     hd_ocorr = sum(hd_ocorr),
@@ -280,7 +281,7 @@ if (modelo == 1){
     mutate(periodo = paste(cod_ano,"/", trimestre, "º Trimestre", sep = ""))
 } else if (modelo == 4){
   base_corregedoria <- base_corregedoria %>% 
-    filter(cod_ano >(ano_referencia-6)) %>%
+    filter(cod_ano >(ano_referencia-5)) %>%
     mutate(periodo = paste(cod_ano))
 }
 
@@ -364,7 +365,7 @@ if (modelo == 1){
     select(periodo,trimestre,nom_del,nom_mun,pop_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 } else if (modelo == 4){
   base_mensal <- base_mensal %>% 
-    filter(cod_ano >(ano_referencia-6)) %>%
+    filter(cod_ano >(ano_referencia-5)) %>%
     mutate(periodo = paste(cod_ano)) %>% 
     select(periodo,trimestre,nom_del,nom_mun,pop_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 }
@@ -403,7 +404,7 @@ if (modelo == 1){
     select(periodo,Tri,cod_reg,item, contador)
 } else if (modelo == 4){
   base_viol_mul <- base_viol_mul %>% 
-    filter(Ano >(ano_referencia-6)) %>%
+    filter(Ano >(ano_referencia-5)) %>%
     mutate(periodo = paste(Ano)) %>% 
     select(periodo,Tri,cod_reg,item, contador)
 }
@@ -428,6 +429,7 @@ cores_2 <- c("#be9068", "#042e3f")
 
 p <- base_completa %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
+  filter(cod_reg.x != 99) %>% 
   group_by(periodo.x) %>%
   summarise(hd_vitima = sum(hd_vitima),
             lat_vitima = sum(lat_vitima),
@@ -461,6 +463,7 @@ grid.arrange(g, p, heights=c(1,9))
 
 p <- base_completa %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
+  filter(cod_reg.x != 99) %>% 
   group_by(periodo.x) %>%
   summarise(tot_estupro = sum(tot_estupro),
             extor_seq = sum(extor_seq),
@@ -508,7 +511,6 @@ cores <- c("#cec8c4", "#be9068","#042e3f")
 
 grafico_geral <- function(crime, titulo) { #selecionar o tipo de crime e titulo
                                               # do gráfico
-
 p <- base_completa %>% 
   filter(cod_reg.x < 31) %>% 
   group_by(regiao, periodo.x) %>%
@@ -517,7 +519,9 @@ p <- base_completa %>%
             hd_ocorr = sum(hd_ocorr),
             lat_ocorr = sum(lat_ocorr),
             roubo_veic = sum(roubo_veic),
-            roubo_outros = sum(roubo_outros)) %>% 
+            roubo_outros = sum(roubo_outros),
+            ap_armas = sum(ap_armas),
+            prisoes = sum(prisoes)) %>% 
   pivot_longer(cols = regiao, values_to = "regiao") %>% 
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
              y= {{crime}}, x= periodo.x)) + 
@@ -531,7 +535,8 @@ p <- base_completa %>%
                geom = "text",size=3.4, vjust = -0.5) +
   scale_fill_manual(values = cores) +
   guides(color = "none")+
-  theme_sdpa_macroreg 
+  theme_sdpa_macroreg +
+  guides(fill = guide_legend(reverse = TRUE))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                  textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -597,7 +602,7 @@ grafico_taxa_deinter <- function(crime, titulo, limite) { #selecionar o tipo de 
   #PESQUISAR max_y *1,2
   
 p <- base_completa %>% 
-  filter(cod_reg.x >30) %>% 
+  filter(cod_reg.x >30 & cod_reg.x != 99) %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
   group_by(periodo.x, deinter) %>% 
   # Calcula já a taxa!
@@ -850,7 +855,7 @@ grafico_10_dp(hd_ocorr, "Top 10 Homicídios", 43) #teste da função
 # Criar gráfico de letalidade policial em serviço e fora por ano 
 
 p <- base_completa %>% 
-  filter(cod_reg.x != 30) %>% 
+  filter(cod_reg.x != 30 & cod_reg.x != 99) %>% 
   group_by(periodo.x) %>%
   summarise(let_ser = sum(let_ser),
             let_fol = sum(let_fol)) %>% 
@@ -930,12 +935,15 @@ levels(shp_deinter$DepGeoDes) <- c("DECAP", "Deinter 01", "Deinter 10", "Deinter
 
 tab_estado <- base_completa %>% 
   filter(periodo.x > (ano_referencia-1)) %>% 
-  filter(cod_reg.x != 30) %>% 
+  filter(cod_reg.x != 30 & cod_reg.x != 99 ) %>%   
   group_by(deinter) %>%
   right_join(shp_deinter, by = c("deinter" = "DepGeoDes"))
 
 # Mapa
-tab_estado %>% 
+
+mapa_deinter <- function(crime, titulo) { #selecionar o tipo de crime e titulo do gráfico
+
+p <- tab_estado %>% 
   #drop_na() %>% 
   summarise(tot_estupro = sum(tot_estupro)/pop*100000,
             extor_seq = sum(extor_seq)/pop*100000,
@@ -945,39 +953,76 @@ tab_estado %>%
             roubo_outros = sum(roubo_outros)/pop*100000,
             geometry = geometry) %>% 
   ggplot() +
-  geom_sf(aes(geometry = geometry, fill = hd_ocorr))+
+  geom_sf(aes(geometry = geometry, fill = {{crime}}))+
   geom_sf_text(aes(geometry = geometry, label = deinter), size = 4, color = "white", nudge_y = 0.1)+
-  geom_sf_text(aes(geometry = geometry, label = round(hd_ocorr, 2)), size = 4, color = "white", 
+  geom_sf_text(aes(geometry = geometry, label = round({{crime}}, 2)), size = 4, color = "white", 
                nudge_y = -0.1) +
-  theme_sdpa_maps
+  theme_sdpa_maps + 
+  scale_fill_continuous(trans = 'reverse')
  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
+mapa_deinter(hd_ocorr, "Taxa de homicídios")
 
 # Criar mapa de número absoluto de crimes por DP capital
-
-theme_sdpa_maps <-  theme_void()+
-  theme(#legend.position = "bottom",
-    #axis.text.y=element_text(size=12),
-    legend.title = element_blank(), 
-    legend.text=element_text(size=12),
-    axis.title.x=element_blank(),
-    axis.title.y=element_blank(),
-    #aspect.ratio=8.7/20,
-    plot.margin=unit(c(0.2,0,0,0), 'cm'))
 
 # Abrir arquivo shape
 
 shp_capital <- sf::st_read("./data-raw/shapes/Distrito_policial_SP.shp", quiet = TRUE) %>% 
   filter(DepGeoDes == "DECAP")
   
+# Padronizar nomes dos deinter
 
-# teste do shape
+shp_deinter$DepGeoDes <- as.factor(shp_deinter$DepGeoDes)
 
-shp_capital %>%
-  ggplot() +
-  geom_sf(aes())
+levels(shp_deinter$DepGeoDes) <- c("DECAP", "Deinter 01", "Deinter 10", "Deinter 02", "Deinter 03", 
+                                   "Deinter 04", "Deinter 05", "Deinter 06", "Deinter 07", "Deinter 08",
+                                   "Deinter 09","DEMACRO")
 
+# Mesclar base_completa e o shape pela coluna de deinter
 
+tab_estado <- base_completa %>% 
+  filter(periodo.x > (ano_referencia-1)) %>% 
+  filter(cod_reg.x != 30) %>% 
+  group_by(deinter) %>%
+  right_join(shp_deinter, by = c("deinter" = "DepGeoDes"))
 
+# Mapa
+
+mapa_deinter <- function(crime, titulo) { #selecionar o tipo de crime e titulo do gráfico
+  
+  p <- tab_estado %>% 
+    #drop_na() %>% 
+    summarise(tot_estupro = sum(tot_estupro)/pop*100000,
+              extor_seq = sum(extor_seq)/pop*100000,
+              hd_ocorr = sum(hd_ocorr)/pop*100000,
+              lat_ocorr = sum(lat_ocorr)/pop*100000,
+              roubo_veic = sum(roubo_veic)/pop*100000,
+              roubo_outros = sum(roubo_outros)/pop*100000,
+              geometry = geometry) %>% 
+    ggplot() +
+    geom_sf(aes(geometry = geometry, fill = {{crime}}))+
+    geom_sf_text(aes(geometry = geometry, label = deinter), size = 4, color = "white", nudge_y = 0.1)+
+    geom_sf_text(aes(geometry = geometry, label = round({{crime}}, 2)), size = 4, color = "white", 
+                 nudge_y = -0.1) +
+    theme_sdpa_maps + 
+    scale_fill_continuous(trans = 'reverse')
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
+mapa_deinter(hd_ocorr, "Taxa de homicídios")
 
   
 

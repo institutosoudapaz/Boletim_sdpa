@@ -1,7 +1,7 @@
 ---
-title: "Boletim Sou da Paz Analisa 2021 - 3 trimestre"
+title: "Boletim Sou da Paz Analisa 2021 - Panorama"
 author: "ISDP"
-date: "03/11/2021"
+date: "01/02/2022"
 output: 
   word_document:
     reference_docx: Template_SDPA.docx
@@ -79,6 +79,30 @@ theme_sdpa_maps <-  theme_void()+
 cores <- c("#cec8c4", "#be9068","#042e3f")
 cores_2 <- c("#be9068", "#042e3f")
 
+# Código adicional mapas
+
+# Abrir arquivos de shape
+
+#Deinter
+shp_deinter <- sf::st_read("./data-raw/shapes/Departamentos_SP.shp", quiet = TRUE)
+
+
+# Padronizar nomes dos deinter
+shp_deinter$DepGeoDes <- as.factor(shp_deinter$DepGeoDes)
+levels(shp_deinter$DepGeoDes) <- c("DECAP", "Deinter 01", "Deinter 10", "Deinter 02", "Deinter 03", 
+                            "Deinter 04", "Deinter 05", "Deinter 06", "Deinter 07", "Deinter 08",
+                            "Deinter 09","DEMACRO")
+
+# Mesclar base_completa e o shape pela coluna de deinter
+
+tab_estado <- base_completa %>% 
+  filter(periodo.x > (ano_referencia-1)) %>% 
+  filter(cod_reg.x != 30 & cod_reg.x != 99 ) %>%   
+  group_by(deinter) %>%
+  right_join(shp_deinter, by = c("deinter" = "DepGeoDes"))
+
+# FUNÇÕES PARA GERAR GRÁFICOS E MAPAS
+
 # Gráfico crimes por ano/macroregião
 
 grafico_geral <- function(crime, titulo) { #selecionar o tipo de crime e titulo do gráfico
@@ -93,7 +117,9 @@ grafico_geral <- function(crime, titulo) { #selecionar o tipo de crime e titulo 
             hd_ocorr = sum(hd_ocorr),
             lat_ocorr = sum(lat_ocorr),
             roubo_veic = sum(roubo_veic),
-            roubo_outros = sum(roubo_outros)) %>% 
+            roubo_outros = sum(roubo_outros),
+            ap_armas = sum(ap_armas),
+            prisoes = sum(prisoes)) %>% 
   pivot_longer(cols = regiao, values_to = "regiao") %>% 
     #gráfico
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
@@ -108,7 +134,8 @@ grafico_geral <- function(crime, titulo) { #selecionar o tipo de crime e titulo 
                geom = "text",size=3.4, vjust = -0.5) +
   scale_fill_manual(values = cores) +
   guides(color = "none")+
-  theme_sdpa_macroreg 
+  theme_sdpa_macroreg +
+  guides(fill = guide_legend(reverse = TRUE))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                  textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -120,15 +147,14 @@ grid.arrange(g, p, heights=c(1,9))
 
 # Gráfico taxa de crimes por ano/macrorregiao
 
-
-grafico_taxa_macro<- function(crime, titulo) { #selecionar o tipo de crime e titulo do gráfico
+grafico_taxa_macro<- function(crime, titulo) { #selecionar o tipo de crime e titulo
+  # do gráfico
   
 p <- base_completa %>% 
-      #filtra sem os deinter individuais
-  filter(cod_reg.x <31) %>% 
+  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
   group_by(regiao, periodo.x) %>%
-  # Calcula as taxas por 100 mil hab
+  # Calcula já a taxa!
     summarise(tot_estupro = sum(tot_estupro)/pop*100000,
               extor_seq = sum(extor_seq)/pop*100000,
               hd_ocorr = sum(hd_ocorr)/pop*100000,
@@ -159,7 +185,7 @@ grafico_taxa_deinter <- function(crime, titulo, limite) { #selecionar o tipo de 
                                                           # do gráfico
 
 p <- base_completa %>% 
-  filter(cod_reg.x >30) %>% 
+  filter(cod_reg.x >30 & cod_reg.x != 99) %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
   group_by(periodo.x, deinter) %>% 
   # Calcula já a taxa!
@@ -197,10 +223,10 @@ grid.arrange(g, p, heights=c(1,9))
 
 # Gráfico dos top 10 municípios por número absoluto/crime fora Capital
 
-grafico_10_municipio <- function(crime, titulo, limite) {#selecionar o tipo de crime e titulo do gráfico
+grafico_10_municipio <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo do gráfico
   
 mun <- base_mensal %>%
-  na.omit() %>% 
+  #na.omit() %>% 
   filter(periodo == ano_referencia) %>% 
   filter(nom_mun != "Sco Paulo") %>% 
   group_by(nom_mun) %>% 
@@ -220,10 +246,10 @@ mun <- base_mensal %>%
   pull(nom_mun)
     
 p <- base_mensal %>%
-    na.omit() %>% 
+    #na.omit() %>% 
     filter(periodo > (ano_referencia-2)) %>% 
-    filter (nom_mun %in% mun) %>% 
     group_by(nom_mun, periodo) %>%
+    filter (nom_mun %in% mun) %>% 
     summarise(hd_vitima = sum(o2),
               hd_ocorr = sum(o1),
               lat_ocorr = sum(o12),
@@ -318,14 +344,32 @@ grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e
   
 }
 
+mapa_deinter <- function(crime, titulo) { #selecionar o tipo de crime e titulo do gráfico
 
-
-
-
-
-
-
-
+p <- tab_estado %>% 
+  #drop_na() %>% 
+  summarise(tot_estupro = sum(tot_estupro)/pop*100000,
+            extor_seq = sum(extor_seq)/pop*100000,
+            hd_ocorr = sum(hd_ocorr)/pop*100000,
+            lat_ocorr = sum(lat_ocorr)/pop*100000,
+            roubo_veic = sum(roubo_veic)/pop*100000,
+            roubo_outros = sum(roubo_outros)/pop*100000,
+            geometry = geometry) %>% 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = {{crime}}))+
+  geom_sf_text(aes(geometry = geometry, label = deinter), size = 4, color = "white", nudge_y = 0.1)+
+  geom_sf_text(aes(geometry = geometry, label = round({{crime}}, 2)), size = 4, color = "white", 
+               nudge_y = -0.1) +
+  theme_sdpa_maps + 
+  scale_fill_continuous(trans = 'reverse')
+ 
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
 
 
 # Criar gráficos violencia contra mulher (ATUALIZAR)
@@ -375,10 +419,10 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 ## Destaques
 
-
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
 
 Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
@@ -390,13 +434,13 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-
-```{r letalidade violenta, echo=FALSE, fig.dim = c(10, 6)}
+```{r letalidade violenta, echo=FALSE, fig.width=9, fig.height=6}
 
 # Gráfico letalidade violenta
 
 p <- base_completa %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
+  filter(cod_reg.x != 99) %>% 
   group_by(periodo.x) %>%
   summarise(hd_vitima = sum(hd_vitima),
             lat_vitima = sum(lat_vitima),
@@ -419,7 +463,7 @@ p <- base_completa %>%
     serviço"), width = 24))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-  coord_flip(ylim=c(100, 6200))
+  coord_flip(ylim=c(100, 6380))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -431,21 +475,19 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-=======
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 
-Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
-
-```{r crimes violentos, echo=FALSE, fig.dim = c(10, 6)}
+```{r crimes violentos, echo=FALSE, fig.dim = c(9, 6)}
 
 # Gráfico crimes violentos
 
 p <- base_completa %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
+  filter(cod_reg.x != 99) %>% 
   group_by(periodo.x) %>%
   summarise(tot_estupro = sum(tot_estupro),
             extor_seq = sum(extor_seq),
@@ -468,7 +510,7 @@ p <- base_completa %>%
       "Latrocínio", "Homicídio doloso"), width = 24))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-  coord_flip(ylim=c(100, 330000))
+  coord_flip(ylim=c(100, 340000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Crimes Violentos", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -482,13 +524,9 @@ Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
 Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-=======
+<!-- HOMICÍDIOS  --> 
 
-Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
-Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
-
-
-```{r homicidios macroreg, echo=FALSE, fig.dim = c(10, 6)}
+```{r homicidios macroreg, echo=FALSE, fig.dim = c(9, 6)}
 
 grafico_geral(hd_ocorr, "Homicídios Dolosos - Ocorrências")  
 ```
@@ -499,7 +537,7 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-```{r homicidios macroreg taxas, echo=FALSE, fig.dim = c(10, 6)}
+```{r homicidios macroreg taxas, echo=FALSE, fig.dim = c(9, 6)}
 
 grafico_taxa_macro (hd_ocorr, "Taxa de Homicídios Dolosos")  
 ```
@@ -511,9 +549,9 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-```{r taxa de homicidios por deinter, echo=FALSE, fig.dim = c(10, 6)}
+```{r taxa de homicidios por deinter, echo=FALSE, fig.dim = c(9, 6)}
 
-grafico_taxa_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 13.5)
+grafico_taxa_deinter(hd_ocorr, "Taxa de Homicídios por Deinter", 13.5)
 
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
@@ -523,13 +561,13 @@ Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-```{r homicidios por municipio, echo=FALSE, fig.dim = c(10, 6)}
-grafico_10_municipio (hd_ocorr, "Dez municípios com mais ocorrências de homicídio doloso – 2021")
+```{r homicidios por municipio, echo=FALSE, fig.dim = c(9, 6)}
 
+grafico_10_municipio (hd_ocorr, "Dez municípios com mais ocorrências de homicídio doloso – 2021", 141)
 ```
 
 
@@ -541,26 +579,11 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
 
-```{r taxa homicidios por municipio, echo=FALSE, fig.dim = c(10, 6)}
+```{r homicidios por distrito, echo=FALSE, fig.dim = c(9, 6)}
 
-grafico_10_municipio_taxa (hd_ocorr, "Dez municípios com maiores taxas de homicídio doloso – 2021")
-
-```
-
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
-
-Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
-Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
-
-Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
-
-
-```{r homicidios por distrito, echo=FALSE, fig.dim = c(10, 6)}
-
-grafico_10_dp (hd_ocorr, "Dez distritos policiais com mais ocorrências de homicídio doloso – 2021")
+grafico_10_dp (hd_ocorr, "Dez distritos policiais com mais ocorrências de homicídio doloso", 43)
 
 ```
-
 
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
@@ -570,11 +593,63 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
 ```{r homicidios mapa deinter, echo=FALSE, fig.dim = c(10, 6)}
-# FAZER FUNÇÃO
+
 mapa_deinter (hd_ocorr, "Taxas de homicídio dolosos por Deinter – 2021")
 
 ```
 
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+<!-- LATROCINIOS  --> 
+
+```{r latrocinios macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_geral(lat_ocorr, "Latrocínios - Ocorrências")  
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r latrocinios macroreg taxas, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_macro (lat_ocorr, "Taxa de Latrocínios")  
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r taxa de latrocinios por deinter, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_deinter(lat_ocorr, "Taxa de Latrocínios por Deinter", 0.75)
+
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
+
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+
+```{r latrocinios por municipio, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_municipio (lat_ocorr, "Dez municípios com mais ocorrências de latrocínios – 2021", 5.5)
+```
+
 
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
@@ -583,10 +658,75 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-```{r homicidios mapa distrito, echo=FALSE, fig.dim = c(10, 6)}
-# FAZER FUNÇÃO
-mapa_capital (hd_ocorr, "Taxas de homicídio dolosos por DP na capital  – 2021")
+```{r latrocinios por distrito, echo=FALSE, fig.dim = c(9, 6)}
 
+grafico_10_dp (lat_ocorr, "Dez distritos policiais com mais ocorrências de latrocínios", 5.2)
+
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r latrocinios mapa deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+mapa_deinter (lat_ocorr, "Taxas de latrocínios por Deinter – 2021")
+
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+<!-- ESTUPROS --> 
+
+```{r estupros macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_geral(tot_estupro, "Ocorrências de Estupros por região")  
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r estupros macroreg taxas, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_macro (tot_estupro, "Taxas de Estupros")  
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r taxa de estupros por deinter, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_deinter(tot_estupro, "Taxa de Estupros por Deinter", 41)
+
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
+
+Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+
+```{r estupros por municipio, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_municipio (tot_estupro, "Dez municípios com mais ocorrências de estupros – 2021", 370)
 ```
 
 
@@ -597,85 +737,215 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
+```{r estupros por distrito, echo=FALSE, fig.dim = c(9, 6)}
 
+grafico_10_dp (tot_estupro, "Dez distritos policiais com mais ocorrências de estupros", 98)
 
+```
 
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-```{r estupros macro, echo=FALSE, fig.dim = c(10, 6)}
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-grafico_trimestre(tot_estupro, "Total de Estupros")  
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-grafico_trimestre(estupro_vuln, "Estupros de vulneráveis")  
+```{r estupros mapa deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+mapa_deinter (tot_estupro, "Taxas de estupros por Deinter – 2021")
+
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+<!-- ROUBO (OUTROS) --> 
+
+```{r roubos outros macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_geral(roubo_outros, "Ocorrências de Roubos (outros) por região")  
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r roubos outros macroreg taxas, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_macro (roubo_outros, "Taxas de Roubos (outros)")  
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r taxa de roubos (outros) por deinter, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_deinter(roubo_outros, "Taxa de Roubos (Outros) por Deinter", 599)
+
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
 Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-```{r estupros deinter, echo=FALSE, fig.dim = c(10, 6)}
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
 
-grafico_deinter(tot_estupro, "Estupros (taxa por 100 mil habitantes)", 12)
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
 
-grafico_deinter(estupro_vuln, "Estupros de Vulneráveis (taxa por 100 mil habitantes)", 10.0)  
+```{r roubos outros por municipio, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_municipio (roubo_outros, "Dez municípios com mais ocorrências de Roubos (outros)", 6900)
+```
+
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r roubos outros por distrito, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_dp (roubo_outros, "Dez distritos policiais com mais ocorrências de Roubos (outros)", 6400)
+
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r roubos outrps mapa deinter, echo=FALSE, fig.dim = c(10, 6)}
+
+mapa_deinter (roubo_outros, "Taxas de roubos (outros) por Deinter – 2021")
+
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+<!-- ROUBO (VEÍCULOS) --> 
+
+```{r roubos veiculos macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_geral(roubo_veic, "Ocorrências de Roubos (veículos) por região")  
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r roubos veiculos macroreg taxas, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_macro (roubo_veic, "Taxas de Roubos (Veículos)")  
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r taxa de roubos (veiculos) por deinter, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_deinter(roubo_veic, "Taxa de Roubos (Veículos) por Deinter", 93)
+
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
 Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-```{r violencia contra mulher, echo=FALSE, fig.dim = c(10, 6)}
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
 
-grafico_viol_mulher (`HOMICÍDIO DOLOSO - TOTAL`, "Violência Contra a Mulher: Homicídio (incluindo Feminicídio)")
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-grafico_viol_mulher (`LESÃO CORPORAL DOLOSA`, "Violência Contra a Mulher: Lesão Corporal Dolosa") 
+
+```{r roubos veiculos por municipio, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_municipio (roubo_veic, "Dez municípios com mais ocorrências de Roubos (veículos)", 1999)
 ```
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
-```{r roubos macro, echo=FALSE, fig.dim = c(10, 6)}
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-grafico_trimestre(roubo_outros, "Roubo (Outros)")  
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-grafico_trimestre(roubo_veic, "Roubo (Veículos)")  
+```{r roubos veículos por distrito, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_dp (roubo_veic, "Dez distritos policiais com mais ocorrências de Roubos (Veículos)", 730)
+
 ```
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-```{r roubos deinter, echo=FALSE, fig.dim = c(10, 6)}
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
-grafico_deinter(roubo_outros, "Roubo (Outros) (taxa por 100 mil habitantes)", 130)
+```{r roubos veículos mapa deinter, echo=FALSE, fig.dim = c(10, 6)}
 
-grafico_deinter(roubo_veic, "Roubo (Veículos) (taxa por 100 mil habitantes)", 26)  
+mapa_deinter (roubo_veic, "Taxas de roubos (Veículos) por Deinter – 2021")
+
 ```
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
 
-Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
 
-## Letalidade e Vitimização Policial
+<!-- LETALIDADE POLICIAL --> 
 
-![](imgs\tabela let_vit_policial_2021_1sem.jpg)
 
-```{r letalidade e vitimização policial, echo=FALSE, fig.dim = c(10, 6)}
 
-p <- base_corregedoria_long %>% 
-  filter(ano_semestre != "2020 / 2º Semestre") %>% 
-  filter(let_vit == "let_ser" | let_vit == "let_fol") %>% 
-  ggplot(aes(fill=let_vit, x=ano_semestre, y= count))+
+```{r letalidade policial, echo=FALSE, fig.width=9, fig.height=6}
+
+# Criar gráfico de letalidade policial em serviço e fora por ano 
+
+p <- base_completa %>% 
+  filter(cod_reg.x != 30 & cod_reg.x != 99) %>% 
+  group_by(periodo.x) %>%
+  summarise(let_ser = sum(let_ser),
+            let_fol = sum(let_fol)) %>% 
+  pivot_longer(cols = let_ser:let_fol, values_to = "count", names_to = "letalidade") %>% 
+  ggplot(aes(fill=letalidade, x=periodo.x, y= count))+
   geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
-  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE), 
-                colour =ifelse(let_vit == "let_fol", "black", "white")), 
+  geom_text(aes(label = count, colour =ifelse(letalidade == "let_fol", "black", "white")), 
             position=position_stack(vjust=0.5)) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
-  stat_summary(fun = sum, aes(label = ..y.., group = ano_semestre), 
+  stat_summary(fun = sum, aes(label = ..y.., group = periodo.x), 
                geom = "text",size=4, vjust = -0.5) +
   guides(color = "none")+
   scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
-                    values = cores_3) +
+                    values = cores_2) +
+  guides(fill = guide_legend(reverse = TRUE))+
   theme_sdpa_macroreg
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
@@ -683,45 +953,36 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                        gp=gpar(fontsize=22, col="white", fontface="bold")))
 
 grid.arrange(g, p, heights=c(1,9))
-
 ```
-
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
-
-Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
-
-```{r produtiv macro, echo=FALSE, fig.dim = c(10, 6)}
-
-grafico_trimestre(ap_armas, "Apreensões de armas")  
-
-grafico_trimestre(prisoes, "Prisões")  
-```
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
-
-Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
-
-```{r produtiv deinter, echo=FALSE, fig.dim = c(10, 6)}
-
-grafico_deinter(ap_armas, "Apreensões de armas (taxa por 100 mil habitantes)", 12)
-
-grafico_deinter(prisoes, "Prisões (taxa por 100 mil habitantes)", 160)  
-```
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
-
-Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
-
-\newpage
-
-## Considerações Finais
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
+<!-- APREENSÃO DE ARMAS DE FOGO --> 
+
+```{r apreensao armas macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_geral(ap_armas, "Apreensão de armas de fogo por região")  
+```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+<!-- PRISÕES --> 
+
+```{r prisoes macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_geral(prisoes, "Prisões realizadas por região")  
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
