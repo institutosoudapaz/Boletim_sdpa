@@ -588,12 +588,12 @@ grafico_taxa_macro(lat_ocorr, "Taxa de Latrocínio")  # Teste da função
 
 theme_sdpa_deinter <- theme_classic()+
   theme(legend.position = "bottom",
-        axis.text.y=element_text(size=12),
+        axis.text.y=element_text(size=10.5),
         legend.title = element_blank(), 
         legend.text=element_text(size=12),
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
-        aspect.ratio=8.7/20,
+        aspect.ratio=11/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm'))
 
 grafico_taxa_deinter <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo
@@ -616,13 +616,23 @@ p <- base_completa %>%
             ap_armas = sum(ap_armas)/pop*100000) %>%
   pivot_longer(cols = deinter , values_to = "deinter") %>% 
   ggplot(aes(fill= periodo.x, y= {{crime}}, x= deinter)) + 
-  geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+  geom_col(width=0.85, position=position_dodge(0.8), size=.4, colour="light grey") +
   geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
   scale_fill_manual(values = cores_2) +
   guides(color = "none")+
   coord_flip(ylim=c(0, {{limite}})) +
   theme_sdpa_deinter+
+  scale_x_discrete(labels = c("Deinter 01 - São José dos Campos", 
+      "Deinter 02 - Campinas",
+      "Deinter 03 - Ribeirão Preto",
+      "Deinter 04 - Bauru",
+      "Deinter 05 - São José do Rio Preto",
+      "Deinter 06 - Santos",
+      "Deinter 07 - Sorocaba",
+      "Deinter 08 - Presidente Prudente",
+      "Deinter 09 - Piracicaba",
+      "Deinter 10 - Araçatuba"))+
   scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
                                                     decimal.mark = ','),
                      expand = c(0, 0), n.breaks = 8)
@@ -637,7 +647,7 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
-grafico_taxa_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 14) #teste da função
+grafico_taxa_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 13.5) #teste da função
 
 ### GRAFICOS QUE FALTAM
 
@@ -904,13 +914,9 @@ titulo("Destaques")
 # Criar mapa de taxas de crime por deinter
 
 theme_sdpa_maps <-  theme_void()+
-  theme(#legend.position = "bottom",
-        #axis.text.y=element_text(size=12),
-        legend.title = element_blank(), 
-        legend.text=element_text(size=12),
+  theme(legend.text=element_text(size=12),
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
-        #aspect.ratio=8.7/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm'))
 
 # Abrir arquivo shape
@@ -927,9 +933,12 @@ shp_deinter %>%
 
 shp_deinter$DepGeoDes <- as.factor(shp_deinter$DepGeoDes)
 
-levels(shp_deinter$DepGeoDes) <- c("DECAP", "Deinter 01", "Deinter 10", "Deinter 02", "Deinter 03", 
+shp_deinter <- shp_deinter %>% 
+  filter(DpGeoCod != 30213)
+
+levels(shp_deinter$DepGeoDes) <- c("", "Deinter 01", "Deinter 10", "Deinter 02", "Deinter 03", 
                             "Deinter 04", "Deinter 05", "Deinter 06", "Deinter 07", "Deinter 08",
-                            "Deinter 09","DEMACRO")
+                            "Deinter 09","")
 
 # Mesclar base_completa e o shape pela coluna de deinter
 
@@ -945,22 +954,27 @@ mapa_deinter <- function(crime, titulo) { #selecionar o tipo de crime e titulo d
 
 p <- tab_estado %>% 
   #drop_na() %>% 
-  summarise(tot_estupro = sum(tot_estupro)/pop*100000,
+  summarise(tot_estupro = sum(tot_estupro)/pop*100000, 
             extor_seq = sum(extor_seq)/pop*100000,
             hd_ocorr = sum(hd_ocorr)/pop*100000,
             lat_ocorr = sum(lat_ocorr)/pop*100000,
             roubo_veic = sum(roubo_veic)/pop*100000,
-            roubo_outros = sum(roubo_outros)/pop*100000,
-            geometry = geometry) %>% 
-  ggplot() +
-  geom_sf(aes(geometry = geometry, fill = {{crime}}))+
-  geom_sf_text(aes(geometry = geometry, label = deinter), size = 4, color = "white", nudge_y = 0.1)+
-  geom_sf_text(aes(geometry = geometry, label = round({{crime}}, 2)), size = 4, color = "white", 
-               nudge_y = -0.1) +
-  theme_sdpa_maps + 
-  scale_fill_continuous(trans = 'reverse')
+            roubo_outros = sum(roubo_outros)/pop*100000, 
+            geometry = geometry) %>%
+ ggplot() +
+  geom_sf(aes(geometry = geometry, fill = {{crime}}), colour = "black")+
+  geom_sf_text(aes(geometry = geometry, label = deinter), size = 3.5, color = "white", nudge_y = -0.05, nudge_x = 0.05)+
+  geom_sf_text(aes(geometry = geometry, label = round({{crime}}, 2)), size = 3, color = "white", 
+               nudge_y = -0.25, nudge_x = 0.05)+
+  scale_fill_continuous((scales::breaks_extended()), labels = scales::label_comma(), 
+                        name = "Taxa por \n100 mil hab.", 
+                        guide = guide_colourbar(barheight = unit(4.5, "cm"), barwidth = unit(0.6, "cm")),
+                        low = "#8DB0C5", high = "#042e3f")+
+  theme_sdpa_maps
+
+  
  
-  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                 textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
                                                               fontface="bold")))
   
