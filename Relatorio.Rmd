@@ -63,7 +63,7 @@ theme_sdpa_deinter <- theme_classic()+
         legend.text=element_text(size=12),
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
-        aspect.ratio=8.7/20,
+        aspect.ratio=11/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm'))
 
 theme_sdpa_maps <-  theme_void()+
