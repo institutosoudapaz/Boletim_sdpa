@@ -972,8 +972,7 @@ p <- tab_estado %>%
                         low = "#8DB0C5", high = "#042e3f")+
   theme_sdpa_maps
 
-  
- 
+
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                 textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
                                                               fontface="bold")))
@@ -1001,10 +1000,10 @@ levels(shp_deinter$DepGeoDes) <- c("DECAP", "Deinter 01", "Deinter 10", "Deinter
 
 # Mesclar base_completa e o shape pela coluna de deinter
 
-tab_estado <- base_completa %>% 
-  filter(periodo.x > (ano_referencia-1)) %>% 
-  filter(cod_reg.x != 30) %>% 
-  group_by(deinter) %>%
+tab_dp <- base_mensal %>% 
+  filter(periodo > (ano_referencia-1)) %>% 
+  filter(cod_reg == 10) %>% 
+  group_by(nom_del) %>%
   right_join(shp_deinter, by = c("deinter" = "DepGeoDes"))
 
 # Mapa
