@@ -843,9 +843,45 @@ grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e
 grafico_10_dp(hd_ocorr, "Top 10 Homicídios", 43) #teste da função
 
 
+# Criar gráficos de violência contra mulheres por macroregião
 
 
+vio_mulher <- function(crime, titulo) { #selecionar o tipo de crime e titulo
+  # do gráfico
 
+p <- base_viol_mul %>% 
+  mutate(across(where(is.character), str_remove_all, pattern = fixed(" "))) %>% 
+  mutate(regiao = case_when(cod_reg == 10 ~ "Capital", 
+                            cod_reg == 20 ~ "Grande São Paulo",
+                            cod_reg > 20 ~ "Interior")) %>% 
+  group_by(regiao, periodo, item) %>%
+  summarise(total = sum(contador)) %>% 
+  filter(item == {{crime}}) %>% 
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
+               y= total, x= periodo)) + 
+    geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+    geom_text(aes(label = format(total, big.mark = ".", scientific = FALSE), 
+                  colour =ifelse(regiao=="Capital", "white", "black")), 
+              position=position_stack(vjust=0.5), size=3.4) +
+    scale_colour_manual(values=c("white"="white", "black"="black")) +
+    # descobrir como colocar o . como divisor aqui
+    stat_summary(fun = sum, aes(label = ..y.., group = periodo), 
+                 geom = "text",size=3.4, vjust = -0.5) +
+    scale_fill_manual(values = cores) +
+    guides(color = "none")+
+    theme_sdpa_macroreg +
+    guides(fill = guide_legend(reverse = TRUE))
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
+# as opções são "LESÃOCORPORALDOLOSA" e "HOMICÍDIODOLOSO-TOTAL" (com aspas mesmo)
+vio_mulher("HOMICÍDIODOLOSO-TOTAL", "Lesão corporal dolosa") 
 
 
 
@@ -972,8 +1008,7 @@ p <- tab_estado %>%
                         low = "#8DB0C5", high = "#042e3f")+
   theme_sdpa_maps
 
-  
- 
+
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
                 textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
                                                               fontface="bold")))
@@ -1001,10 +1036,10 @@ levels(shp_deinter$DepGeoDes) <- c("DECAP", "Deinter 01", "Deinter 10", "Deinter
 
 # Mesclar base_completa e o shape pela coluna de deinter
 
-tab_estado <- base_completa %>% 
-  filter(periodo.x > (ano_referencia-1)) %>% 
-  filter(cod_reg.x != 30) %>% 
-  group_by(deinter) %>%
+tab_dp <- base_mensal %>% 
+  filter(periodo > (ano_referencia-1)) %>% 
+  filter(cod_reg == 10) %>% 
+  group_by(nom_del) %>%
   right_join(shp_deinter, by = c("deinter" = "DepGeoDes"))
 
 # Mapa
