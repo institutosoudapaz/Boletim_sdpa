@@ -30,7 +30,8 @@ base_trimestral <- base_trimestral %>%
     semestre = case_when(
       tri<3 ~ 1,
       TRUE  ~  2)
-  )
+  ) %>% 
+  filter(cod_reg !=30)
 
 base_trimestral <- base_trimestral %>% 
   mutate_at(c(3:96), as.numeric)
@@ -131,9 +132,35 @@ base_estado <- base_crimes %>%
          reg_ano = paste(cod_reg,"-", ano, sep = "")
          )
 
-  base_crimes <- rbind(base_crimes,base_estado)
+#Criando o total do interior
+base_int <- base_crimes %>% 
+  filter(cod_reg > 30) %>% 
+  group_by(periodo) %>% 
+  summarise(
+    hd_vitima = sum(hd_vitima),
+    hd_ocorr = sum(hd_ocorr),
+    lat_ocorr = sum(lat_ocorr),
+    lat_vitima = sum(lat_vitima),
+    tot_estupro =sum(tot_estupro),
+    estupro_vuln =sum(estupro_vuln),
+    roubo_outros =sum(roubo_outros),
+    roubo_veic = sum(roubo_veic),
+    extor_seq = sum(extor_seq),
+    lesao_morte = sum(lesao_morte),
+    ap_armas =sum(ap_armas),
+    prisoes =sum(prisoes)
+  ) %>% 
+  mutate(cod_reg = 30,
+         deinter = "30",
+         regiao = "Interior",
+         ano = (str_sub(periodo,start = -4)),
+         reg_ano = paste(cod_reg,"-", ano, sep = "")
+  )
+
+  base_crimes <- rbind(base_crimes,base_estado, base_int)
   
-  remove(base_estado)
+  remove(base_estado, base_int)
+  
 
 ###Passo 02: Criando os tabelas de população----
 base_pop <- readRDS("../Boletim_sdpa/data-raw/pop_munic.RDS")
@@ -429,7 +456,7 @@ cores_2 <- c("#be9068", "#042e3f")
 
 p <- base_completa %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
-  filter(cod_reg.x != 99) %>% 
+  filter(cod_reg.x != 99 & cod_reg.x != 30) %>% 
   group_by(periodo.x) %>%
   summarise(hd_vitima = sum(hd_vitima),
             lat_vitima = sum(lat_vitima),
@@ -452,7 +479,7 @@ p <- base_completa %>%
     serviço"), width = 24))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-  coord_flip(ylim=c(100, 6200))
+  coord_flip(ylim=c(100, 6500))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -546,7 +573,7 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
-grafico_geral(tot_estupro, "Estupros Total")  # Teste da função
+grafico_geral(tot_estupro, "tot_estupro")  # Teste da função
 
 # Criar gráfico taxa de crimes por ano/macrorregiao
 
