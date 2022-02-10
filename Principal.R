@@ -39,7 +39,7 @@ base_trimestral[is.na(base_trimestral)] <- 0
 
 #Modelo 1 para tri01; 2 para Semestre; 3 para tri03 e 4 para Anual
 
-modelo <- 4
+modelo <- 2
 
 # trata a base trimestral a partir do modelo selecionado
 if (modelo == 1){
@@ -331,7 +331,7 @@ base_completa <- left_join(base_crimes, base_corregedoria,by ="id")
 
 saveRDS(base_completa, "base_completa.rds")
 
-####Passo 06: Preparando a base mensal----
+####Passo 06: Preparando a base mensal, para importar a base usar o enconding windows 1512----
 
 base_mensal <- readRDS("../Boletim_sdpa/data-raw/base_mensal.rds")
 base_mensal <- base_mensal %>% 
@@ -397,7 +397,46 @@ if (modelo == 1){
     select(periodo,trimestre,nom_del,nom_mun,pop_mun,cod_reg,o1,o2,o8,o12,o13,o14,o15,o16,o18,o19,p5,p9,p10,p11)
 }
 
-saveRDS(base_mensal, "base_mensal.rds")
+#Criando o base mensal por DP, sem população-
+base_mensal_dp <- base_mensal %>% 
+  group_by(periodo, nom_del) %>% 
+  summarise(hd_vitima = sum(o2),
+            hd_ocorr = sum(o1),
+            lat_ocorr = sum(o12),
+            lat_vitima =sum(o13),
+            tot_estupro =sum(o14),
+            estupro_vuln =sum(o16),
+            roubo_outros =sum(o18),
+            roubo_veic = sum(o19),
+            lesao_morte = sum(o8),
+            ap_armas =sum(p5),
+            prisoes =sum(p11))
+
+
+#Criando o base mensal por municipio, com população.
+
+base_mensal_munic <- base_mensal %>% 
+  group_by(periodo, nom_mun) %>% 
+  summarise(hd_vitima = sum(o2),
+            hd_ocorr = sum(o1),
+            lat_ocorr = sum(o12),
+            lat_vitima =sum(o13),
+            tot_estupro =sum(o14),
+            estupro_vuln =sum(o16),
+            roubo_outros =sum(o18),
+            roubo_veic = sum(o19),
+            lesao_morte = sum(o8),
+            ap_armas =sum(p5),
+            prisoes =sum(p11)) %>% 
+  mutate(ano = (str_sub(periodo,start = 1, end = 4)),
+         mun_ano = paste(nom_mun,"-", ano, sep = ""))
+
+base_pop_mun <- readRDS("../Boletim_sdpa/data-raw/pop_munic.RDS") %>%
+  mutate(mun_ano = paste(municipio_nome,"-", Ano, sep = "")) %>% 
+  select(mun_ano,Pop)
+
+base_mensal_munic <- left_join(base_mensal_munic, base_pop_mun, by = "mun_ano") %>% 
+  remove(base_pop_mun)
 
 ###Passo 07: Dados violência contra a mulher----
 base_viol_mul <- readRDS("data-raw/viol_mulher.rds")
