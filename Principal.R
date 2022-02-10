@@ -39,7 +39,7 @@ base_trimestral[is.na(base_trimestral)] <- 0
 
 #Modelo 1 para tri01; 2 para Semestre; 3 para tri03 e 4 para Anual
 
-modelo <- 2
+modelo <- 4
 
 # trata a base trimestral a partir do modelo selecionado
 if (modelo == 1){
