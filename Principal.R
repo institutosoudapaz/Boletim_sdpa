@@ -489,7 +489,7 @@ if (modelo == 1){
 
 saveRDS(base_viol_mul, "base_viol_mul")
 
-# CRIAÇÃO DOS GRÁFICOS
+########################### CRIAÇÃO DOS GRÁFICOS ###########################
 
 ###Passo 08: Criando os gráficos----
 
@@ -530,7 +530,7 @@ p <- base_completa %>%
     serviço"), width = 24))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-  coord_flip(ylim=c(100, 6500))
+  coord_flip(ylim=c(100, 4250))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -551,7 +551,7 @@ p <- base_completa %>%
             roubo_outros = sum(roubo_outros), 
             total = sum(tot_estupro,extor_seq, hd_ocorr,lat_ocorr, roubo_veic,roubo_outros)) %>% 
   pivot_longer(!periodo.x, names_to = "crime", values_to = "count") %>% 
-  ggplot(aes(fill=factor(periodo.x, levels=c("2021", "2020")), y= count, 
+  ggplot(aes(fill=factor(periodo.x, levels=c("2020", "2021")), y= count, 
              x= factor(crime, levels = c(
                "total", "roubo_outros", "roubo_veic","extor_seq", "tot_estupro", "lat_ocorr", "hd_ocorr")))) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
@@ -564,7 +564,7 @@ p <- base_completa %>%
       "Latrocínio", "Homicídio doloso"), width = 24))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-  coord_flip(ylim=c(100, 330000))
+  coord_flip(ylim=c(100, 336000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Crimes Violentos", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -624,7 +624,7 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
-grafico_geral(tot_estupro, "tot_estupro")  # Teste da função
+grafico_geral(roubo_veic, "tot_estupro")  # Teste da função
 
 # Criar gráfico taxa de crimes por ano/macrorregiao
 

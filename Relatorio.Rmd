@@ -1,7 +1,7 @@
 ---
 title: "Boletim Sou da Paz Analisa 2021 - Panorama"
 author: "ISDP"
-date: "01/02/2022"
+date: "09/02/2022"
 output: 
   word_document:
     reference_docx: Template_SDPA.docx
@@ -462,7 +462,7 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 p <- base_completa %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
-  filter(cod_reg.x != 99) %>% 
+  filter(cod_reg.x != 99 & cod_reg.x != 30) %>% 
   group_by(periodo.x) %>%
   summarise(hd_vitima = sum(hd_vitima),
             lat_vitima = sum(lat_vitima),
@@ -485,7 +485,7 @@ p <- base_completa %>%
     serviço"), width = 24))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-  coord_flip(ylim=c(100, 6380))
+  coord_flip(ylim=c(100, 4250))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -532,7 +532,7 @@ p <- base_completa %>%
       "Latrocínio", "Homicídio doloso"), width = 24))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-  coord_flip(ylim=c(100, 340000))
+  coord_flip(ylim=c(100, 350000))
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Crimes Violentos", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
