@@ -509,7 +509,7 @@ Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
 
 p <- base_completa %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
-  filter(cod_reg.x != 99) %>% 
+  filter(cod_reg.x != 99 & cod_reg.x != 30)
   group_by(periodo.x) %>%
   summarise(tot_estupro = sum(tot_estupro),
             extor_seq = sum(extor_seq),

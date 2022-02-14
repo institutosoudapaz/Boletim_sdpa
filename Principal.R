@@ -218,7 +218,6 @@ base_pop <- base_pop %>%
   group_by(reg_ano) %>% 
   summarise(pop = sum(Pop))
 
-
 base_pop <- rbind(base_pop,novas_linhas_pop)
 remove(novas_linhas_pop)
 
@@ -335,15 +334,6 @@ saveRDS(base_completa, "base_completa.rds")
 
 base_mensal <- readRDS("../Boletim_sdpa/data-raw/base_mensal.rds")
 
-# função para ajustar o encoding da base mensal
-fix_encoding <- function(x) {
-  Encoding(x) <- "latin1"
-  return(x)
-}
-
-base_mensal <- base_mensal %>% 
-  mutate_if(is.character,fix_encoding) 
-
 # modelagem base mensal 
 
 base_mensal <- base_mensal %>% 
@@ -423,7 +413,6 @@ base_mensal_dp <- base_mensal %>%
             lesao_morte = sum(o8),
             ap_armas =sum(p5),
             prisoes =sum(p11))
-
 
 #Criando o base mensal por municipio, com população.
 
@@ -542,7 +531,7 @@ grid.arrange(g, p, heights=c(1,9))
 
 p <- base_completa %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
-  filter(cod_reg.x != 99) %>% 
+  filter(cod_reg.x != 99 & cod_reg.x != 30) %>% 
   group_by(periodo.x) %>%
   summarise(tot_estupro = sum(tot_estupro),
             extor_seq = sum(extor_seq),
@@ -625,7 +614,7 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
-grafico_geral(roubo_veic, "tot_estupro")  # Teste da função
+grafico_geral(tot_estupro, "tot_estupro")  # Teste da função
 
 # Criar gráfico taxa de crimes por ano/macrorregiao
 
@@ -728,8 +717,6 @@ grid.arrange(g, p, heights=c(1,9))
 
 grafico_taxa_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 13.5) #teste da função
 
-### GRAFICOS QUE FALTAM
-
 # Criar gráfico top 10 municípios por número absoluto/crime
 
 grafico_10_municipio <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo do gráfico
@@ -737,7 +724,7 @@ grafico_10_municipio <- function(crime, titulo, limite) { #selecionar o tipo de 
 mun <- base_mensal %>%
   #na.omit() %>% 
   filter(periodo == ano_referencia) %>% 
-  filter(nom_mun != "Sco Paulo") %>% 
+  filter(nom_mun != "São Paulo") %>% 
   group_by(nom_mun) %>% 
   summarise(hd_vitima = sum(o2),
             hd_ocorr = sum(o1),
@@ -792,7 +779,9 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
   
 }
 
-grafico_10_municipio(hd_ocorr, "Top 10 Homicídios", 130) #teste da função
+grafico_10_municipio(hd_ocorr, "Top 10 Homicídios", 135) #teste da função
+
+### GRAFICOS QUE FALTAM
 
 # Criar gráfico top 10 municípios por taxa/crime
 
@@ -801,7 +790,7 @@ grafico_10_municipio_taxa <- function(crime, titulo, limite) { #selecionar o tip
 mun_taxa <- base_mensal %>%
   #na.omit() %>% 
   filter(periodo == ano_referencia) %>% 
-  filter(nom_mun != "Sco Paulo") %>% 
+  filter(nom_mun != "São Paulo") %>% 
   group_by(nom_mun, pop_mun) %>% 
   summarise(hd_vitima = sum(o2)/pop_mun*100000,
             hd_ocorr = sum(o1)/pop_mun*100000,
