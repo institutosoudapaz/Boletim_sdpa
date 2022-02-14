@@ -447,8 +447,9 @@ base_pop_mun <- readRDS("../Boletim_sdpa/data-raw/pop_munic.RDS") %>%
   mutate(mun_ano = paste(municipio_nome,"-", Ano, sep = "")) %>% 
   select(mun_ano,Pop)
 
-base_mensal_munic <- left_join(base_mensal_munic, base_pop_mun, by = "mun_ano") %>% 
-  remove(base_pop_mun)
+base_mensal_munic <- left_join(base_mensal_munic, base_pop_mun, by = "mun_ano")
+
+saveRDS(base_mensal_munic, "base_mensal_munic.rds")
 
 ###Passo 07: Dados violência contra a mulher----
 base_viol_mul <- readRDS("data-raw/viol_mulher.rds")
