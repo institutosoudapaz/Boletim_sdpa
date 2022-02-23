@@ -34,6 +34,7 @@ library(sf)
 base_completa <- readRDS("base_completa.rds")
 base_mensal <- readRDS("base_mensal.rds")
 base_viol_mul <- readRDS("base_viol_mul")
+base_mensal_munic <- readRDS("base_mensal_munic.rds")
 
 ano_referencia <- 2021
 
@@ -294,6 +295,66 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
   
 }
 
+# Criar gráfico top 10 municípios por taxa/crime
+
+grafico_10_municipio_taxa <- function(crime, titulo, limite) { #selecionar o tipo de crime e 
+                                                                # titulo do gráfico
+mun_taxa <- base_mensal_munic %>%
+  filter(periodo == ano_referencia) %>% 
+  filter(Pop > 99999) %>% 
+  group_by(nom_mun) %>% 
+  summarise(hd_vitima = sum(hd_vitima)/Pop*100000,
+            hd_ocorr = sum(hd_ocorr)/Pop*100000,
+            lat_ocorr = sum(lat_ocorr)/Pop*100000,
+            lat_vitima =sum(lat_vitima)/Pop*100000,
+            tot_estupro =sum(tot_estupro)/Pop*100000,
+            estupro_vuln =sum(estupro_vuln)/Pop*100000,
+            roubo_outros =sum(roubo_outros)/Pop*100000,
+            roubo_veic = sum(roubo_veic)/Pop*100000,
+            lesao_morte = sum(lesao_morte)/Pop*100000,
+            ap_armas =sum(ap_armas)/Pop*100000,
+            prisoes =sum(prisoes)/Pop*100000) %>% 
+  arrange(desc({{crime}})) %>% 
+  slice_head(n=10) %>% 
+  pull(nom_mun)
+
+p <- base_mensal_munic %>%
+  filter(periodo > (ano_referencia-2)) %>% 
+  filter (nom_mun %in% mun_taxa) %>% 
+  group_by(nom_mun, periodo) %>%
+  summarise(hd_vitima = sum(hd_vitima)/Pop*100000,
+            hd_ocorr = sum(hd_ocorr)/Pop*100000,
+            lat_ocorr = sum(lat_ocorr)/Pop*100000,
+            lat_vitima =sum(lat_vitima)/Pop*100000,
+            tot_estupro =sum(tot_estupro)/Pop*100000,
+            estupro_vuln =sum(estupro_vuln)/Pop*100000,
+            roubo_outros =sum(roubo_outros)/Pop*100000,
+            roubo_veic = sum(roubo_veic)/Pop*100000,
+            lesao_morte = sum(lesao_morte)/Pop*100000,
+            ap_armas =sum(ap_armas)/Pop*100000,
+            prisoes =sum(prisoes)/Pop*100000) %>% 
+  ggplot(aes(fill= periodo, y= {{crime}}, x= fct_reorder(nom_mun, {{crime}}, .desc = TRUE)))+
+  geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+  geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  coord_flip(ylim=c(0, {{limite}})) +
+  theme_sdpa_deinter+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                    decimal.mark = ','),
+                     expand = c(0, 0), n.breaks = 8)
+
+# mudar o separador das taxas de '." para ","
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=14, col="white", 
+                                                            fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
 # Gráfico dos top 10 distritos policiais por número absoluto/crime
 
 grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo do gráfico
@@ -388,7 +449,6 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 }
 
 # Criar gráficos de violência contra mulheres por macroregião
-
 
 vio_mulher <- function(crime, titulo) { #selecionar o tipo de crime e titulo # do gráfico
               # as opções são "LESÃOCORPORALDOLOSA" e "HOMICÍDIODOLOSO-TOTAL" (com aspas mesmo)
@@ -509,7 +569,7 @@ Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
 
 p <- base_completa %>% 
   filter(periodo.x > (ano_referencia-2)) %>% 
-  filter(cod_reg.x != 99 & cod_reg.x != 30)
+  filter(cod_reg.x != 99 & cod_reg.x != 30) %>%
   group_by(periodo.x) %>%
   summarise(tot_estupro = sum(tot_estupro),
             extor_seq = sum(extor_seq),
@@ -601,6 +661,18 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
 
+```{r homicidios taxa por municipio, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_municipio_taxa (hd_ocorr, "Dez municípios (com mais de 100 mil hab.) com maiores taxas de homicídio doloso – 2021", 24)
+```
+
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+
 ```{r homicidios por distrito, echo=FALSE, fig.dim = c(9, 6)}
 
 grafico_10_dp (hd_ocorr, "Dez distritos policiais com mais ocorrências de homicídio doloso", 43)
@@ -639,7 +711,6 @@ Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hen
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
-
 
 
 ```{r violencia contra mulher lesao, echo=FALSE, fig.dim = c(9, 6)}
@@ -706,6 +777,17 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
+
+```{r latrocinios taxa por municipio, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_municipio_taxa (lat_ocorr, "Dez municípios (com mais de 100 mil hab.) com maiores taxas de latrocínio – 2021", 3.2)
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
 ```{r latrocinios por distrito, echo=FALSE, fig.dim = c(9, 6)}
 
 grafico_10_dp (lat_ocorr, "Dez distritos policiais com mais ocorrências de latrocínios", 5.2)
@@ -738,6 +820,46 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 grafico_geral(tot_estupro, "Ocorrências de Estupros por região")  
 ```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+
+```{r estupros vuln macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+# Criar gráfico de proporção de estupros de vulneráveis por região
+  
+p <- base_completa %>% 
+  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
+  filter(periodo.x == ano_referencia) %>% 
+  select(regiao, tot_estupro, estupro_vuln) %>% 
+  mutate(prop_vuln = estupro_vuln/tot_estupro) %>% 
+  mutate(prop_vulnao = 1-prop_vuln) %>% 
+  select(-tot_estupro, - estupro_vuln) %>%  
+  gather(type, count, prop_vuln:prop_vulnao) %>% 
+  ggplot(aes(x=factor(regiao, levels=c("Estado de São Paulo", "Interior", "Grande São Paulo","Capital")), 
+             y=count, fill=forcats::fct_rev(type))) +
+  geom_bar(position="stack",  stat="identity", size=.4, colour="light grey") + 
+  geom_text(aes(label = scales::percent(..y.., 0.01), 
+                colour=ifelse(type=="prop_vuln", "white", "black")), 
+            position=position_stack(vjust=0.5), size=4) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  scale_fill_manual(labels = c("Estupros de não vulneráveis", "Estupros de vulneráveis"), rev(T), 
+                    values = cores_2, ) +
+  guides(color = "none")+
+  coord_flip() +
+  theme_sdpa_let 
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Proporção de estupros de vulneráveis por região – 2021", x = 0.03, hjust = 0, gp=gpar(fontsize=18, col="white", 
+                                                            fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+```
+
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
 Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
@@ -784,6 +906,74 @@ Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hen
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+
+```{r estupros taxa por municipio, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_municipio_taxa (tot_estupro, "Dez municípios (com mais de 100 mil hab.) com maiores taxas de estupros – 2021", 67)
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+
+```{r estupros vuln taxa por municipio, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_municipio_taxa (estupro_vuln, "Dez municípios (com mais de 100 mil hab.) com maiores taxas de estupros de vulneráveis – 2021", 46)
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+
+```{r participação estupros vulneravel , echo=FALSE, fig.dim = c(9, 6)}
+
+# gráfico top 10 municípios maior participação de estupros de vulneráveis
+
+top_vuln <- base_mensal_munic %>%
+    filter(periodo == ano_referencia) %>% 
+    filter(Pop > 99999) %>% 
+    group_by(nom_mun) %>% 
+    summarise(prop_vuln = estupro_vuln/tot_estupro) %>% 
+    arrange(desc(prop_vuln)) %>% 
+  slice_head(n=10)%>% 
+  pull(nom_mun)
+
+p <- base_mensal_munic %>% 
+  filter(periodo > (ano_referencia-2)) %>% 
+  group_by(nom_mun, periodo) %>%
+  filter (nom_mun %in% top_vuln) %>% 
+  summarise(prop_vuln = estupro_vuln/tot_estupro) %>% 
+  ggplot(aes(fill= periodo, y= prop_vuln, x= fct_reorder(nom_mun, prop_vuln, .desc = TRUE)))+
+  geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+    geom_text(aes(label = scales::percent(..y.., 0.1)), position = position_dodge(0.94), 
+              vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.5) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  coord_flip(ylim=c(0,1)) +
+  theme_sdpa_let+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                    decimal.mark = ','),
+                     expand = c(0, 0), n.breaks = 8)
+
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob("Dez municípios com mais de 100 mil habitantes com maior participação de vulneráveis entre as vítimas de estupro – 2021" , x = 0.03, hjust = 0, gp=gpar(fontsize=12, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
 
 ```{r estupros por distrito, echo=FALSE, fig.dim = c(9, 6)}
 
@@ -864,6 +1054,18 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
+
+```{r roubos outros taxa por municipio, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_municipio_taxa (roubo_outros, "Dez municípios (com mais de 100 mil hab.) com maiores taxas de roubo (outros) – 2021", 1300)
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+
 ```{r roubos outros por distrito, echo=FALSE, fig.dim = c(9, 6)}
 
 grafico_10_dp (roubo_outros, "Dez distritos policiais com mais ocorrências de Roubos (outros)", 6400)
@@ -941,6 +1143,17 @@ Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hen
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+
+```{r roubos veiculos taxa por municipio, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_10_municipio_taxa (roubo_veic, "Dez municípios (com mais de 100 mil hab.) com maiores taxas de roubo (veículos) – 2021", 260)
+```
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
 ```{r roubos veículos por distrito, echo=FALSE, fig.dim = c(9, 6)}
 
