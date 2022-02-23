@@ -614,7 +614,7 @@ grid.arrange(g, p, heights=c(1,9))
 
 }
 
-grafico_geral(tot_estupro, "tot_estupro")  # Teste da função
+grafico_geral(tot_estupro, "Total de Estupros (ocorrências)")  # Teste da função
 
 # Criar gráfico taxa de crimes por ano/macrorregiao
 
@@ -781,49 +781,45 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 
 grafico_10_municipio(hd_ocorr, "Top 10 Homicídios", 135) #teste da função
 
-### GRAFICOS QUE FALTAM
-
 # Criar gráfico top 10 municípios por taxa/crime
 
 grafico_10_municipio_taxa <- function(crime, titulo, limite) { #selecionar o tipo de crime e 
                                                                 # titulo do gráfico
-mun_taxa <- base_mensal %>%
-  #na.omit() %>% 
+mun_taxa <- base_mensal_munic %>%
   filter(periodo == ano_referencia) %>% 
-  filter(nom_mun != "São Paulo") %>% 
-  group_by(nom_mun, pop_mun) %>% 
-  summarise(hd_vitima = sum(o2)/pop_mun*100000,
-            hd_ocorr = sum(o1)/pop_mun*100000,
-            lat_ocorr = sum(o12)/pop_mun*100000,
-            lat_vitima =sum(o13)/pop_mun*100000,
-            tot_estupro =sum(o14)/pop_mun*100000,
-            estupro_vuln =sum(o16)/pop_mun*100000,
-            roubo_outros =sum(o18)/pop_mun*100000,
-            roubo_veic = sum(o19)/pop_mun*100000,
-            lesao_morte = sum(o8)/pop_mun*100000,
-            ap_armas =sum(p5)/pop_mun*100000,
-            prisoes =sum(p11)/pop_mun*100000) %>% 
+  filter(Pop > 99999) %>% 
+  group_by(nom_mun) %>% 
+  summarise(hd_vitima = sum(hd_vitima)/Pop*100000,
+            hd_ocorr = sum(hd_ocorr)/Pop*100000,
+            lat_ocorr = sum(lat_ocorr)/Pop*100000,
+            lat_vitima =sum(lat_vitima)/Pop*100000,
+            tot_estupro =sum(tot_estupro)/Pop*100000,
+            estupro_vuln =sum(estupro_vuln)/Pop*100000,
+            roubo_outros =sum(roubo_outros)/Pop*100000,
+            roubo_veic = sum(roubo_veic)/Pop*100000,
+            lesao_morte = sum(lesao_morte)/Pop*100000,
+            ap_armas =sum(ap_armas)/Pop*100000,
+            prisoes =sum(prisoes)/Pop*100000) %>% 
   arrange(desc({{crime}})) %>% 
   slice_head(n=10) %>% 
   pull(nom_mun)
 
-p <- base_mensal %>%
-  na.omit() %>% 
+p <- base_mensal_munic %>%
   filter(periodo > (ano_referencia-2)) %>% 
   filter (nom_mun %in% mun_taxa) %>% 
   group_by(nom_mun, periodo) %>%
-  summarise(hd_vitima = sum(o2)/pop_mun*100000,
-            hd_ocorr = sum(o1)/pop_mun*100000,
-            lat_ocorr = sum(o12)/pop_mun*100000,
-            lat_vitima =sum(o13)/pop_mun*100000,
-            tot_estupro =sum(o14)/pop_mun*100000,
-            estupro_vuln =sum(o16)/pop_mun*100000,
-            roubo_outros =sum(o18)/pop_mun*100000,
-            roubo_veic = sum(o19)/pop_mun*100000,
-            lesao_morte = sum(o8)/pop_mun*100000,
-            ap_armas =sum(p5)/pop_mun*100000,
-            prisoes =sum(p11)/pop_mun*100000) %>% 
-  ggplot(aes(fill= periodo, y= {{crime}}, x= fct_reorder(nom_mun, {{crime}}, .desc = TRUE))) + 
+  summarise(hd_vitima = sum(hd_vitima)/Pop*100000,
+            hd_ocorr = sum(hd_ocorr)/Pop*100000,
+            lat_ocorr = sum(lat_ocorr)/Pop*100000,
+            lat_vitima =sum(lat_vitima)/Pop*100000,
+            tot_estupro =sum(tot_estupro)/Pop*100000,
+            estupro_vuln =sum(estupro_vuln)/Pop*100000,
+            roubo_outros =sum(roubo_outros)/Pop*100000,
+            roubo_veic = sum(roubo_veic)/Pop*100000,
+            lesao_morte = sum(lesao_morte)/Pop*100000,
+            ap_armas =sum(ap_armas)/Pop*100000,
+            prisoes =sum(prisoes)/Pop*100000) %>% 
+  ggplot(aes(fill= periodo, y= {{crime}}, x= fct_reorder(nom_mun, {{crime}}, .desc = TRUE)))+
   geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
   geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
@@ -838,14 +834,14 @@ p <- base_mensal %>%
 # mudar o separador das taxas de '." para ","
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
-              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=15, col="white", 
                                                             fontface="bold")))
 
 grid.arrange(g, p, heights=c(1,9))
 
 }
 
-grafico_10_municipio_taxa(hd_ocorr, "teste", 402)
+grafico_10_municipio_taxa(hd_ocorr, "Dez municípios (com mais de 100 mil hab.) com maiores taxas de homicídio doloso – 2021", 25)
 
 # Criar gráfico top 10 distritos policiais por número absoluto/crime
 
@@ -864,8 +860,8 @@ grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e
               roubo_outros =sum(o18),
               roubo_veic = sum(o19),
               lesao_morte = sum(o8),
-              ap_armas =sum(p5),
-              prisoes =sum(p11)) %>% 
+              ap_armas = sum(p5),
+              prisoes = sum(p11)) %>% 
     arrange(desc({{crime}})) %>% 
     slice_head(n=10) %>% 
     pull(nom_del)
@@ -910,6 +906,43 @@ grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e
 
 grafico_10_dp(hd_ocorr, "Top 10 Homicídios", 43) #teste da função
 
+
+# Criar gráfico top 10 municípios maior participação de estupros de vulneráveis
+
+top_vuln <- base_mensal_munic %>%
+    filter(periodo == ano_referencia) %>% 
+    filter(Pop > 99999) %>% 
+    group_by(nom_mun) %>% 
+    summarise(prop_vuln = estupro_vuln/tot_estupro) %>% 
+    arrange(desc(prop_vuln)) %>% 
+  slice_head(n=10)%>% 
+  pull(nom_mun)
+
+p <- base_mensal_munic %>% 
+  filter(periodo > (ano_referencia-2)) %>% 
+  group_by(nom_mun, periodo) %>%
+  filter (nom_mun %in% top_vuln) %>% 
+  summarise(prop_vuln = estupro_vuln/tot_estupro) %>% 
+  ggplot(aes(fill= periodo, y= prop_vuln, x= fct_reorder(nom_mun, prop_vuln, .desc = TRUE)))+
+  geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+    geom_text(aes(label = scales::percent(..y.., 0.1)), position = position_dodge(0.94), 
+              vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3.5) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  coord_flip(ylim=c(0,1)) +
+  theme_sdpa_let+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                    decimal.mark = ','),
+                     expand = c(0, 0), n.breaks = 8)
+
+
+  # mudar o separador das taxas de '." para ","
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob("Dez municípios com mais de 100 mil habitantes com maior participação de vulneráveis entre as vítimas de estupro – 2021" , x = 0.03, hjust = 0, gp=gpar(fontsize=12, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
 
 # Criar gráficos de violência contra mulheres por macroregião
 
