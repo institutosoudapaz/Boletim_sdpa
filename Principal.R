@@ -934,7 +934,6 @@ p <- base_mensal_munic %>%
                                                     decimal.mark = ','),
                      expand = c(0, 0), n.breaks = 8)
 
-
   # mudar o separador das taxas de '." para ","
   
   g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),

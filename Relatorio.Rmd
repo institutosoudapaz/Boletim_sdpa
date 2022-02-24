@@ -939,7 +939,7 @@ top_vuln <- base_mensal_munic %>%
     filter(Pop > 99999) %>% 
     group_by(nom_mun) %>% 
     summarise(prop_vuln = estupro_vuln/tot_estupro) %>% 
-    arrange(desc(prop_vuln)) %>% 
+    arrange(desc(pop_vuln)) %>% 
   slice_head(n=10)%>% 
   pull(nom_mun)
 
