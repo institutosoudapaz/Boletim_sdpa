@@ -732,6 +732,8 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 ```{r homicidios mapa capital, echo=FALSE, fig.dim = c(9, 6)}
 
 mapa_dp (hd_ocorr, "Distribuição das ocorrências de homicídios dolosos na capital - 2021")
+=======
+>>>>>>> c0f8d6886f16822bf273227e3e1826168a585873
 ```
 
 
@@ -842,6 +844,8 @@ Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hen
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
 ```{r latrocinios mapa capital, echo=FALSE, fig.dim = c(9, 6)}
+=======
+>>>>>>> c0f8d6886f16822bf273227e3e1826168a585873
 
 mapa_dp (lat_ocorr, "Distribuição das ocorrências de latrocínios na capital - 2021")
 ```
@@ -971,6 +975,8 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 ```{r estupros total mapa capital, echo=FALSE, fig.dim = c(9, 6)}
 
 mapa_dp (tot_estupro, "Distribuição das ocorrências de estupros na capital - 2021")
+=======
+>>>>>>> c0f8d6886f16822bf273227e3e1826168a585873
 ```
 
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
@@ -1112,6 +1118,8 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 ```{r roubos outros mapa capital, echo=FALSE, fig.dim = c(9, 6)}
 
 mapa_dp (roubo_outros, "Distribuição das ocorrências de roubos (outros) na capital - 2021")
+=======
+>>>>>>> c0f8d6886f16822bf273227e3e1826168a585873
 ```
 
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
@@ -1198,6 +1206,8 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 ```{r roubos veiculos mapa capital, echo=FALSE, fig.dim = c(9, 6)}
 
 mapa_dp (roubo_veic, "Distribuição das ocorrências de roubos de veículos na capital - 2021")
+=======
+>>>>>>> c0f8d6886f16822bf273227e3e1826168a585873
 ```
 
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.

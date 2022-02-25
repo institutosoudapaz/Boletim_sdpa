@@ -1067,6 +1067,40 @@ p <- base_completa %>%
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Porcentagem de pessoas mortas por policiais em serviço e fora de serviço – 2021", 
                        x = 0.03, hjust = 0, gp=gpar(fontsize=15, col="white", fontface="bold")))
+=======
+
+p <- base_completa %>% 
+  filter(periodo.x == ano_referencia) %>% 
+  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
+  group_by(cod_reg.x) %>% 
+  
+  
+  mutate(letal_tot = sum(let_ser, let_fol)) %>% 
+  mutate(prop_aser = let_ser/letal_tot) %>% 
+  mutate(prop_fora = let_fol/letal_tot) %>% 
+  select(cod_reg.x, regiao, letal_tot, prop_aser,prop_fora) %>% 
+  gather(type, count, prop_aser:prop_fora) %>% 
+  ggplot(aes(x=factor(regiao, levels=c("Estado de São Paulo", "Interior", "Grande São Paulo","Capital")), 
+             y=count, fill=forcats::fct_rev(type))) +
+  geom_bar(position="stack",  stat="identity", size=.4, colour="light grey") + 
+  geom_text(aes(label = scales::percent(..y.., 0.01), 
+                colour=ifelse(type=="prop_aser", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.8) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  scale_fill_manual(labels = c("Mortes cometidas por policiais \nfora de serviço", "Mortes cometidas por policiais \nem serviço"), 
+                    values = cores_2, ) +
+  guides(color = "none")+
+  coord_flip() +
+  theme_sdpa_let 
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Porcentagem de pessoas mortas por policiais em serviço e fora de serviço – 2021", 
+                       x = 0.03, hjust = 0, gp=gpar(fontsize=15, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+
+>>>>>>> c0f8d6886f16822bf273227e3e1826168a585873
 
 grid.arrange(g, p, heights=c(1,9))
 
