@@ -717,70 +717,6 @@ grid.arrange(g, p, heights=c(1,9))
 
 grafico_taxa_deinter(hd_ocorr, "Homicídios (taxa por 100 mil habitantes)", 13.5) #teste da função
 
-# Criar gráfico top 10 municípios por número absoluto/crime
-
-grafico_10_municipio <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo do gráfico
-  
-mun <- base_mensal %>%
-  #na.omit() %>% 
-  filter(periodo == ano_referencia) %>% 
-  filter(nom_mun != "São Paulo") %>% 
-  group_by(nom_mun) %>% 
-  summarise(hd_vitima = sum(o2),
-            hd_ocorr = sum(o1),
-            lat_ocorr = sum(o12),
-            lat_vitima =sum(o13),
-            tot_estupro =sum(o14),
-            estupro_vuln =sum(o16),
-            roubo_outros =sum(o18),
-            roubo_veic = sum(o19),
-            lesao_morte = sum(o8),
-            ap_armas =sum(p5),
-            prisoes =sum(p11)) %>% 
-  arrange(desc({{crime}})) %>% 
-  slice_head(n=10) %>% 
-  pull(nom_mun)
-    
-p <- base_mensal %>%
-    #na.omit() %>% 
-    filter(periodo > (ano_referencia-2)) %>% 
-    group_by(nom_mun, periodo) %>%
-    filter (nom_mun %in% mun) %>% 
-    summarise(hd_vitima = sum(o2),
-              hd_ocorr = sum(o1),
-              lat_ocorr = sum(o12),
-              lat_vitima =sum(o13),
-              tot_estupro =sum(o14),
-              estupro_vuln =sum(o16),
-              roubo_outros =sum(o18),
-              roubo_veic = sum(o19),
-              lesao_morte = sum(o8),
-              ap_armas =sum(p5),
-              prisoes =sum(p11)) %>% 
-  ggplot(aes(fill= periodo, y= {{crime}}, x= fct_reorder(nom_mun, {{crime}}, .desc = TRUE))) + 
-  geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
-  geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
-              vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
-    scale_fill_manual(values = cores_2) +
-    guides(color = "none")+
-    coord_flip(ylim=c(0, {{limite}})) +
-    theme_sdpa_deinter+
-    scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
-                                                      decimal.mark = ','),
-                       expand = c(0, 0), n.breaks = 8)
-  
-  # mudar o separador das taxas de '." para ","
-  
-g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
-              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
-                                                              fontface="bold")))
-  
-  grid.arrange(g, p, heights=c(1,9))
-  
-}
-
-grafico_10_municipio(hd_ocorr, "Top 10 Homicídios", 135) #teste da função
-
 # Criar gráfico top 10 municípios por taxa/crime
 
 grafico_10_municipio_taxa <- function(crime, titulo, limite) { #selecionar o tipo de crime e 
@@ -1010,20 +946,68 @@ p <- base_viol_mul %>%
 # as opções são "LESÃOCORPORALDOLOSA" e "HOMICÍDIODOLOSO-TOTAL" (com aspas mesmo)
 vio_mulher("HOMICÍDIODOLOSO-TOTAL", "Lesão corporal dolosa") 
 
+# Criar gráfico da participação da letalidade policial nas mortes cometidas por macroregiões
 
+p <- base_completa %>% 
+  filter(periodo.x == ano_referencia) %>% 
+  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
+  group_by(cod_reg.x) %>% 
+  mutate(letalidade_tot = sum(hd_vitima, lat_vitima, lesao_morte, let_ser, let_fol)) %>% 
+  mutate(letalidade_crime = sum(hd_vitima, lat_vitima, lesao_morte)) %>%
+  mutate(letalidade_pol = sum(let_ser, let_fol)) %>% 
+  select(cod_reg.x, regiao, letalidade_tot, letalidade_pol,letalidade_crime) %>% 
+  mutate(prop_crime = letalidade_crime/letalidade_tot) %>% 
+  mutate(prop_apol = letalidade_pol/letalidade_tot) %>% 
+  select(-letalidade_tot, -letalidade_pol, -letalidade_crime) %>%  
+  gather(type, count, prop_crime:prop_apol) %>% 
+  ggplot(aes(x=factor(regiao, levels=c("Estado de São Paulo", "Interior", "Grande São Paulo","Capital")), 
+             y=count, fill=forcats::fct_rev(type))) +
+  geom_bar(position="stack",  stat="identity", size=.4, colour="light grey") + 
+  geom_text(aes(label = scales::percent(..y.., 0.01), 
+                colour=ifelse(type=="prop_apol", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.8) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  scale_fill_manual(labels = c("Letalidade Violenta (Homicídios Dolosos, Latrocínios e \nLesões Corporais Seguidas de Morte)", "Letalidade Policial"), rev(T), 
+                    values = cores_2, ) +
+  guides(color = "none")+
+  coord_flip() +
+  theme_sdpa_let 
 
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Participação das mortes por policiais na letalidade violenta – 2021", x = 0.03, hjust = 0, gp=gpar(fontsize=18, col="white", 
+                                                                                                              fontface="bold")))
 
+grid.arrange(g, p, heights=c(1,9))
 
+# Criar gráfico da porcentagem de pessoas mortas por policiais em serviço e fora de serviço por região
 
+p <- base_completa %>% 
+  filter(periodo.x == ano_referencia) %>% 
+  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
+  group_by(cod_reg.x) %>% 
+  mutate(letal_tot = sum(let_ser, let_fol)) %>% 
+  mutate(prop_aser = let_ser/letal_tot) %>% 
+  mutate(prop_fora = let_fol/letal_tot) %>% 
+  select(cod_reg.x, regiao, letal_tot, prop_aser,prop_fora) %>% 
+  gather(type, count, prop_aser:prop_fora) %>% 
+  ggplot(aes(x=factor(regiao, levels=c("Estado de São Paulo", "Interior", "Grande São Paulo","Capital")), 
+             y=count, fill=forcats::fct_rev(type))) +
+  geom_bar(position="stack",  stat="identity", size=.4, colour="light grey") + 
+  geom_text(aes(label = scales::percent(..y.., 0.01), 
+                colour=ifelse(type=="prop_aser", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.8) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  scale_fill_manual(labels = c("Mortes cometidas por policiais \nfora de serviço", "Mortes cometidas por policiais \nem serviço"), 
+                    values = cores_2, ) +
+  guides(color = "none")+
+  coord_flip() +
+  theme_sdpa_let 
 
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Porcentagem de pessoas mortas por policiais em serviço e fora de serviço – 2021", 
+                       x = 0.03, hjust = 0, gp=gpar(fontsize=15, col="white", fontface="bold")))
 
-
-######## Arrumar a base mensal para ficar padronizada com os crimes
-
-# p <- base_mensal %>% 
-#   filter(periodo > (ano_referencia-2)) %>% 
-#   group_by(nom_del, periodo) %>%
-
+grid.arrange(g, p, heights=c(1,9))
 
 # Criar gráfico de letalidade policial em serviço e fora por ano 
 
@@ -1052,11 +1036,39 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 
 grid.arrange(g, p, heights=c(1,9))
 
+# Criar gráfico da proporção de tipo de prisão por região
 
-# Criar gráfico da participação da letalidade policial nas mortes cometidas por macroregiões
+p <- base_completa %>% 
+  filter(periodo.x == ano_referencia) %>% 
+  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
+  group_by(cod_reg.x) %>% 
+  
+  
+  mutate(letal_tot = sum(let_ser, let_fol)) %>% 
+  mutate(prop_aser = let_ser/letal_tot) %>% 
+  mutate(prop_fora = let_fol/letal_tot) %>% 
+  select(cod_reg.x, regiao, letal_tot, prop_aser,prop_fora) %>% 
+  gather(type, count, prop_aser:prop_fora) %>% 
+  ggplot(aes(x=factor(regiao, levels=c("Estado de São Paulo", "Interior", "Grande São Paulo","Capital")), 
+             y=count, fill=forcats::fct_rev(type))) +
+  geom_bar(position="stack",  stat="identity", size=.4, colour="light grey") + 
+  geom_text(aes(label = scales::percent(..y.., 0.01), 
+                colour=ifelse(type=="prop_aser", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.8) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  scale_fill_manual(labels = c("Mortes cometidas por policiais \nfora de serviço", "Mortes cometidas por policiais \nem serviço"), 
+                    values = cores_2, ) +
+  guides(color = "none")+
+  coord_flip() +
+  theme_sdpa_let 
 
-######## Criar base que sumariza letalidade violenta (homicídio + latrocinio + Lesão corporal seguida de morte)
-######## Calcular percentual por macroregião
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Porcentagem de pessoas mortas por policiais em serviço e fora de serviço – 2021", 
+                       x = 0.03, hjust = 0, gp=gpar(fontsize=15, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+
 
 
 # Criar módulo de títulos sem os gráficos anexos
@@ -1203,3 +1215,68 @@ mapa_deinter(hd_ocorr, "Taxa de homicídios")
   
 
 
+# Gráficos que não utilizamos -----------------------------------------------------------------
+
+# Criar gráfico top 10 municípios por número absoluto/crime
+
+grafico_10_municipio <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo do gráfico
+  
+  mun <- base_mensal %>%
+    #na.omit() %>% 
+    filter(periodo == ano_referencia) %>% 
+    filter(nom_mun != "São Paulo") %>% 
+    group_by(nom_mun) %>% 
+    summarise(hd_vitima = sum(o2),
+              hd_ocorr = sum(o1),
+              lat_ocorr = sum(o12),
+              lat_vitima =sum(o13),
+              tot_estupro =sum(o14),
+              estupro_vuln =sum(o16),
+              roubo_outros =sum(o18),
+              roubo_veic = sum(o19),
+              lesao_morte = sum(o8),
+              ap_armas =sum(p5),
+              prisoes =sum(p11)) %>% 
+    arrange(desc({{crime}})) %>% 
+    slice_head(n=10) %>% 
+    pull(nom_mun)
+  
+  p <- base_mensal %>%
+    #na.omit() %>% 
+    filter(periodo > (ano_referencia-2)) %>% 
+    group_by(nom_mun, periodo) %>%
+    filter (nom_mun %in% mun) %>% 
+    summarise(hd_vitima = sum(o2),
+              hd_ocorr = sum(o1),
+              lat_ocorr = sum(o12),
+              lat_vitima =sum(o13),
+              tot_estupro =sum(o14),
+              estupro_vuln =sum(o16),
+              roubo_outros =sum(o18),
+              roubo_veic = sum(o19),
+              lesao_morte = sum(o8),
+              ap_armas =sum(p5),
+              prisoes =sum(p11)) %>% 
+    ggplot(aes(fill= periodo, y= {{crime}}, x= fct_reorder(nom_mun, {{crime}}, .desc = TRUE))) + 
+    geom_col(width=0.8, position=position_dodge(0.8), size=.4, colour="light grey") +
+    geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
+              vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+    scale_fill_manual(values = cores_2) +
+    guides(color = "none")+
+    coord_flip(ylim=c(0, {{limite}})) +
+    theme_sdpa_deinter+
+    scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                      decimal.mark = ','),
+                       expand = c(0, 0), n.breaks = 8)
+  
+  # mudar o separador das taxas de '." para ","
+  
+  g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                              fontface="bold")))
+  
+  grid.arrange(g, p, heights=c(1,9))
+  
+}
+
+grafico_10_municipio(hd_ocorr, "Top 10 Homicídios", 135) #teste da função
