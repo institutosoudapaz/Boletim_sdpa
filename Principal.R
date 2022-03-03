@@ -1067,7 +1067,6 @@ p <- base_completa %>%
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Porcentagem de pessoas mortas por policiais em serviço e fora de serviço – 2021", 
                        x = 0.03, hjust = 0, gp=gpar(fontsize=15, col="white", fontface="bold")))
-=======
 
 p <- base_completa %>% 
   filter(periodo.x == ano_referencia) %>% 
@@ -1334,8 +1333,6 @@ mapa_dp <- function(crime, titulo) { #selecionar o tipo de crime e titulo do gr�
 
 mapa_dp(hd_ocorr, "Distribuição das ocorrências de homicídios dolosos na capital - 2021")
 
-  
-
 
 # Gráficos que não utilizamos -----------------------------------------------------------------
 
@@ -1402,3 +1399,25 @@ grafico_10_municipio <- function(crime, titulo, limite) { #selecionar o tipo de 
 }
 
 grafico_10_municipio(hd_ocorr, "Top 10 Homicídios", 135) #teste da função
+
+# Tabela de vitimização e letalidade policial -------------------------------------------------
+
+base_tab <- base_completa %>%
+  filter(periodo.x > ano_referencia-2) %>% 
+  filter(cod_reg.x == 10 | cod_reg.x == 99) %>% 
+  select(periodo.x, cod_reg.x, let_ser,let_fol,mort_ser,mort_fol) %>% 
+  
+  
+  pivot_longer(
+    cols = let_ser:mort_fol,
+    names_to = "crime",
+    values_to = "count") %>% 
+  
+  base_tab %>% 
+  knitr::kable()
+
+base_corregedoria_tabela <- base_corregedoria_tabela %>% 
+  
+  
+  base_corregedoria_tabela%>% 
+  knitr::kable()
