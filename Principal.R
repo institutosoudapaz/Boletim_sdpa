@@ -1099,8 +1099,6 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 grid.arrange(g, p, heights=c(1,9))
 
 
->>>>>>> c0f8d6886f16822bf273227e3e1826168a585873
-
 grid.arrange(g, p, heights=c(1,9))
 
 # Criar módulo de títulos sem os gráficos anexos

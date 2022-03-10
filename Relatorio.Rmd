@@ -1382,3 +1382,41 @@ Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hen
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+```{r prisoes percentual, echo=FALSE, fig.dim = c(9, 6)}
+
+p <- base_completa %>% 
+  filter(periodo.x == ano_referencia) %>% 
+  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
+  group_by(cod_reg.x) %>% 
+  mutate(prisao_tot = sum(prisoes_flag, prisoes_mandado)) %>% 
+  mutate(prop_mand = prisoes_mandado/prisao_tot) %>% 
+  mutate(prop_flag = prisoes_flag/prisao_tot) %>% 
+  select(cod_reg.x, regiao, prisao_tot, prop_flag,prop_mand) %>% 
+  gather(type, count, prop_flag:prop_mand) %>% 
+  ggplot(aes(x=factor(regiao, levels=c("Estado de São Paulo", "Interior", "Grande São Paulo","Capital")), 
+             y=count, fill=forcats::fct_rev(type))) +
+  geom_bar(position="stack",  stat="identity", size=.4, colour="light grey") + 
+  geom_text(aes(label = scales::percent(..y.., 0.01), 
+                colour=ifelse(type=="prop_flag", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.8) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  scale_fill_manual(labels = c("Prisões por Mandado", "Prisões por Flagrante"), 
+                    values = cores_2, ) +
+  guides(color = "none")+
+  coord_flip() +
+  theme_sdpa_let 
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Proporção de tipo de prisão por região – 2021", 
+                       x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+```
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
