@@ -81,7 +81,9 @@ base_crimes <- base_crimes %>%
             extor_seq = sum(t15),
             lesao_morte = sum(t40),
             ap_armas =sum(t1),
-            prisoes =sum(t75)
+            prisoes =sum(t75),
+            prisoes_flag =sum(t45),
+            prisoes_mandado =sum(t46)
             ) %>% 
   mutate(regiao = case_when(cod_reg == 10 ~ "Capital", 
                             cod_reg == 20 ~ "Grande São Paulo",
@@ -123,7 +125,9 @@ base_estado <- base_crimes %>%
     extor_seq = sum(extor_seq),
     lesao_morte = sum(lesao_morte),
     ap_armas =sum(ap_armas),
-    prisoes =sum(prisoes)
+    prisoes =sum(prisoes),
+    prisoes_flag =sum(prisoes_flag),
+    prisoes_mandado =sum(prisoes_mandado)
    ) %>% 
   mutate(cod_reg = 99,
          deinter = "99",
@@ -148,7 +152,9 @@ base_int <- base_crimes %>%
     extor_seq = sum(extor_seq),
     lesao_morte = sum(lesao_morte),
     ap_armas =sum(ap_armas),
-    prisoes =sum(prisoes)
+    prisoes =sum(prisoes),
+    prisoes_flag =sum(prisoes_flag),
+    prisoes_mandado =sum(prisoes_mandado)
   ) %>% 
   mutate(cod_reg = 30,
          deinter = "30",
@@ -160,7 +166,6 @@ base_int <- base_crimes %>%
   base_crimes <- rbind(base_crimes,base_estado, base_int)
   
   remove(base_estado, base_int)
-  
 
 ###Passo 02: Criando os tabelas de população----
 base_pop <- readRDS("../Boletim_sdpa/data-raw/pop_munic.RDS")
@@ -441,6 +446,7 @@ base_mensal_munic <- left_join(base_mensal_munic, base_pop_mun, by = "mun_ano")
 
 saveRDS(base_mensal_munic, "base_mensal_munic.rds")
 saveRDS(base_mensal_dp, "base_mensal_dp.rds")
+saveRDS(base_mensal, "base_mensal.rds")
 
 ###Passo 07: Dados violência contra a mulher----
 base_viol_mul <- readRDS("data-raw/viol_mulher.rds")
@@ -642,7 +648,7 @@ p <- base_completa %>%
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = round(..y.., 2), vjust = -0.5),  position = position_dodge(0.9))+
   scale_fill_manual(values = cores_2) +
-  guides(fill = guide_legend(reverse = TRUE))+
+  guides(fill = guide_legend(reverse = FALSE))+
   theme_sdpa_macroreg
   
   g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
@@ -835,7 +841,7 @@ grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e
   # mudar o separador das taxas de '." para ","
   
   g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
-                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=18, col="white", 
                                                               fontface="bold")))
   
   grid.arrange(g, p, heights=c(1,9))
@@ -938,7 +944,7 @@ p <- base_viol_mul %>%
     guides(fill = guide_legend(reverse = TRUE))
   
   g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
-                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
                                                               fontface="bold")))
   
   grid.arrange(g, p, heights=c(1,9))
@@ -1044,62 +1050,30 @@ p <- base_completa %>%
   filter(periodo.x == ano_referencia) %>% 
   filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
   group_by(cod_reg.x) %>% 
-  
-  
-  mutate(letal_tot = sum(let_ser, let_fol)) %>% 
-  mutate(prop_aser = let_ser/letal_tot) %>% 
-  mutate(prop_fora = let_fol/letal_tot) %>% 
-  select(cod_reg.x, regiao, letal_tot, prop_aser,prop_fora) %>% 
-  gather(type, count, prop_aser:prop_fora) %>% 
+  mutate(prisao_tot = sum(prisoes_flag, prisoes_mandado)) %>% 
+  mutate(prop_mand = prisoes_mandado/prisao_tot) %>% 
+  mutate(prop_flag = prisoes_flag/prisao_tot) %>% 
+  select(cod_reg.x, regiao, prisao_tot, prop_flag,prop_mand) %>% 
+  gather(type, count, prop_flag:prop_mand) %>% 
   ggplot(aes(x=factor(regiao, levels=c("Estado de São Paulo", "Interior", "Grande São Paulo","Capital")), 
              y=count, fill=forcats::fct_rev(type))) +
   geom_bar(position="stack",  stat="identity", size=.4, colour="light grey") + 
   geom_text(aes(label = scales::percent(..y.., 0.01), 
-                colour=ifelse(type=="prop_aser", "white", "black")), 
+                colour=ifelse(type=="prop_flag", "white", "black")), 
             position=position_stack(vjust=0.5), size=3.8) +
   scale_colour_manual(values=c("white"="white", "black"="black")) +
-  scale_fill_manual(labels = c("Mortes cometidas por policiais \nfora de serviço", "Mortes cometidas por policiais \nem serviço"), 
+  scale_fill_manual(labels = c("Prisões por Mandado", "Prisões por Flagrante"), 
                     values = cores_2, ) +
   guides(color = "none")+
   coord_flip() +
   theme_sdpa_let 
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
-              textGrob("Porcentagem de pessoas mortas por policiais em serviço e fora de serviço – 2021", 
-                       x = 0.03, hjust = 0, gp=gpar(fontsize=15, col="white", fontface="bold")))
-
-p <- base_completa %>% 
-  filter(periodo.x == ano_referencia) %>% 
-  filter(cod_reg.x < 31 | cod_reg.x > 90) %>% 
-  group_by(cod_reg.x) %>% 
-  
-  
-  mutate(letal_tot = sum(let_ser, let_fol)) %>% 
-  mutate(prop_aser = let_ser/letal_tot) %>% 
-  mutate(prop_fora = let_fol/letal_tot) %>% 
-  select(cod_reg.x, regiao, letal_tot, prop_aser,prop_fora) %>% 
-  gather(type, count, prop_aser:prop_fora) %>% 
-  ggplot(aes(x=factor(regiao, levels=c("Estado de São Paulo", "Interior", "Grande São Paulo","Capital")), 
-             y=count, fill=forcats::fct_rev(type))) +
-  geom_bar(position="stack",  stat="identity", size=.4, colour="light grey") + 
-  geom_text(aes(label = scales::percent(..y.., 0.01), 
-                colour=ifelse(type=="prop_aser", "white", "black")), 
-            position=position_stack(vjust=0.5), size=3.8) +
-  scale_colour_manual(values=c("white"="white", "black"="black")) +
-  scale_fill_manual(labels = c("Mortes cometidas por policiais \nfora de serviço", "Mortes cometidas por policiais \nem serviço"), 
-                    values = cores_2, ) +
-  guides(color = "none")+
-  coord_flip() +
-  theme_sdpa_let 
-
-g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
-              textGrob("Porcentagem de pessoas mortas por policiais em serviço e fora de serviço – 2021", 
-                       x = 0.03, hjust = 0, gp=gpar(fontsize=15, col="white", fontface="bold")))
+              textGrob("Proporção de tipo de prisão por região – 2021", 
+                       x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", fontface="bold")))
 
 grid.arrange(g, p, heights=c(1,9))
 
-
-grid.arrange(g, p, heights=c(1,9))
 
 # Criar módulo de títulos sem os gráficos anexos
 

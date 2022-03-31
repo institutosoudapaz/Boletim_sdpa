@@ -280,7 +280,7 @@ p <- base_completa %>%
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = round(..y.., 2), vjust = -0.5),  position = position_dodge(0.9))+
   scale_fill_manual(values = cores_2) +
-  guides(fill = guide_legend(reverse = TRUE))+
+  guides(fill = guide_legend(reverse = FALSE))+
   theme_sdpa_macroreg
   
   g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
@@ -407,7 +407,7 @@ grid.arrange(g, p, heights=c(1,9))
 
 grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo do gráfico
   
-  del <- base_mensal %>%
+del <- base_mensal %>%
     #na.omit() %>% 
     filter(periodo == ano_referencia) %>% 
     group_by(nom_del) %>% 
@@ -426,7 +426,7 @@ grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e
     slice_head(n=10) %>% 
     pull(nom_del)
   
-  p <- base_mensal %>%
+p <- base_mensal %>%
     #na.omit() %>% 
     filter(periodo > (ano_referencia-2)) %>% 
     group_by(nom_del, periodo) %>%
@@ -457,7 +457,7 @@ grafico_10_dp <- function(crime, titulo, limite) { #selecionar o tipo de crime e
   # mudar o separador das taxas de '." para ","
   
   g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
-                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=18, col="white", 
                                                               fontface="bold")))
   
   grid.arrange(g, p, heights=c(1,9))
@@ -549,7 +549,7 @@ p <- base_viol_mul %>%
     guides(fill = guide_legend(reverse = TRUE))
   
   g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
-                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
                                                               fontface="bold")))
   
   grid.arrange(g, p, heights=c(1,9))
@@ -744,7 +744,7 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 ```{r homicidios por distrito, echo=FALSE, fig.dim = c(9, 6)}
 
-grafico_10_dp (hd_ocorr, "Dez distritos policiais com mais ocorrências de homicídio doloso", 43)
+grafico_10_dp (hd_ocorr, "Dez distritos policiais com mais ocorrências de homicídios dolosos", 43)
 
 ```
 
