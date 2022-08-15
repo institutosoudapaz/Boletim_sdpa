@@ -19,54 +19,60 @@ library(sf)
   #Aqui vale pensar em rever o código para torna-lo mais eficiente, não vamos baixar tudo, 
   #Aqui o resultado precisa ser um arquivo chamado "base_trimestral.RDS"
 
-ano_referencia <- 2021
+ano_referencia <- 2022
 
 ###Passo 02: Abre e trata a base trimestral ----
 
 #Abre a base trimestral e criar a variavel semestre
-base_trimestral <- readRDS("../Boletim_sdpa/data-raw/base_trimestral.RDS")
+base_trimestral <- read.csv2("../Boletim_sdpa/data-raw/base_trimestral_v4.csv")
 base_trimestral <- base_trimestral %>% 
   mutate(
     semestre = case_when(
       tri<3 ~ 1,
       TRUE  ~  2)
-  ) %>% 
-  filter(cod_reg !=30)
+  ) #%>% 
+  #filter(cod_reg !=30)
 
-base_trimestral <- base_trimestral %>% 
-  mutate_at(c(3:96), as.numeric)
-base_trimestral[is.na(base_trimestral)] <- 0
+# base_trimestral <- base_trimestral %>% 
+#   mutate_at(c(3:96), as.numeric)
+# base_trimestral[is.na(base_trimestral)] <- 0
+
 
 #Modelo 1 para tri01; 2 para Semestre; 3 para tri03 e 4 para Anual
 
-modelo <- 4
+modelo <- 2
 
 # trata a base trimestral a partir do modelo selecionado
 if (modelo == 1){
   base_crimes <- base_trimestral %>% 
     filter(ano >(ano_referencia-2)) %>%
     mutate(periodo = paste(ano,"/", tri, "º Trimestre", sep = "")) %>% 
-    select(periodo,tri,cod_reg,t1,t15,t21,t23,t40,t45,t46,
+    select(periodo,tri,cod_reg,t01,t15,t21,t23,t40,t45,t46,
            t49,t50,t75,t77,t80,t201,t202,t203)
 } else if (modelo == 2){
   base_crimes <- base_trimestral %>% 
     filter(ano >(ano_referencia-3)) %>%
     mutate(periodo = paste(ano,"/", semestre, "º Semestre", sep = "")) %>% 
-    select(periodo,tri,cod_reg,t1,t15,t21,t23,t40,t45,t46,
+    select(periodo,tri,cod_reg,t01,t15,t21,t23,t40,t45,t46,
            t49,t50,t75,t77,t80,t201,t202,t203)
 } else if (modelo == 3){
     base_crimes <- base_trimestral %>% 
       filter(ano >(ano_referencia-2)) %>%
       mutate(periodo = paste(ano,"/", tri, "º Trimestre", sep = "")) %>% 
-      select(periodo,tri,cod_reg,t1,t15,t21,t23,t40,t45,t46,
+      select(periodo,tri,cod_reg,t01,t15,t21,t23,t40,t45,t46,
              t49,t50,t75,t77,t80,t201,t202,t203)
 } else if (modelo == 4){
   base_crimes <- base_trimestral %>% 
     filter(ano >(ano_referencia-5)) %>%
     mutate(periodo = paste(ano)) %>% 
-    select(periodo,tri,cod_reg,t1,t15,t21,t23,t40,t45,t46,
+    select(periodo,tri,cod_reg,t01,t15,t21,t23,t40,t45,t46,
            t49,t50,t75,t77,t80,t201,t202,t203)
 }
+
+## RETIRAR QUANDO CÓDIGO DE RASPAGEM FOR CORRIGIDO SEM EST_ORIGINAL
+
+base_crimes$cod_reg <- as.double(base_crimes$cod_reg)
+base_crimes$cod_reg[is.na(base_crimes$cod_reg)] <- 99
 
 base_crimes <- base_crimes %>% 
   group_by(cod_reg, periodo) %>% 
@@ -80,14 +86,15 @@ base_crimes <- base_crimes %>%
             roubo_veic = sum(t80),
             extor_seq = sum(t15),
             lesao_morte = sum(t40),
-            ap_armas =sum(t1),
+            ap_armas =sum(t01),
             prisoes =sum(t75),
             prisoes_flag =sum(t45),
             prisoes_mandado =sum(t46)
             ) %>% 
   mutate(regiao = case_when(cod_reg == 10 ~ "Capital", 
                             cod_reg == 20 ~ "Grande São Paulo",
-                            cod_reg > 20 ~ "Interior")) %>% 
+                            cod_reg == 99 ~ "Estado de São Paulo",
+                            cod_reg %in% c(20:40) ~ "Interior")) %>% 
   mutate(deinter = case_when(cod_reg == 31 ~ "Deinter 01",
                              cod_reg == 32 ~ "Deinter 02",
                              cod_reg == 33 ~ "Deinter 03",
@@ -109,67 +116,29 @@ base_crimes <- base_crimes%>%
     remove = FALSE
   )
 
-#Criando o total do estado
-base_estado <- base_crimes %>% 
-  group_by(periodo) %>% 
-  filter(cod_reg !=30) %>% 
-  summarise(
-    hd_vitima = sum(hd_vitima),
-    hd_ocorr = sum(hd_ocorr),
-    lat_ocorr = sum(lat_ocorr),
-    lat_vitima = sum(lat_vitima),
-    tot_estupro =sum(tot_estupro),
-    estupro_vuln =sum(estupro_vuln),
-    roubo_outros =sum(roubo_outros),
-    roubo_veic = sum(roubo_veic),
-    extor_seq = sum(extor_seq),
-    lesao_morte = sum(lesao_morte),
-    ap_armas =sum(ap_armas),
-    prisoes =sum(prisoes),
-    prisoes_flag =sum(prisoes_flag),
-    prisoes_mandado =sum(prisoes_mandado)
-   ) %>% 
-  mutate(cod_reg = 99,
-         deinter = "99",
-         regiao = "Estado de São Paulo",
-         ano = (str_sub(periodo,start = -4)),
-         reg_ano = paste(cod_reg,"-", ano, sep = "")
-         )
-
-#Criando o total do interior
-base_int <- base_crimes %>% 
-  filter(cod_reg > 30) %>% 
-  group_by(periodo) %>% 
-  summarise(
-    hd_vitima = sum(hd_vitima),
-    hd_ocorr = sum(hd_ocorr),
-    lat_ocorr = sum(lat_ocorr),
-    lat_vitima = sum(lat_vitima),
-    tot_estupro =sum(tot_estupro),
-    estupro_vuln =sum(estupro_vuln),
-    roubo_outros =sum(roubo_outros),
-    roubo_veic = sum(roubo_veic),
-    extor_seq = sum(extor_seq),
-    lesao_morte = sum(lesao_morte),
-    ap_armas =sum(ap_armas),
-    prisoes =sum(prisoes),
-    prisoes_flag =sum(prisoes_flag),
-    prisoes_mandado =sum(prisoes_mandado)
-  ) %>% 
-  mutate(cod_reg = 30,
-         deinter = "30",
-         regiao = "Interior",
-         ano = (str_sub(periodo,start = -4)),
-         reg_ano = paste(cod_reg,"-", ano, sep = "")
-  )
-
-  base_crimes <- rbind(base_crimes,base_estado, base_int)
-  
-  remove(base_estado, base_int)
-
 ###Passo 02: Criando os tabelas de população----
-base_pop <- readRDS("../Boletim_sdpa/data-raw/pop_munic.RDS")
-base_pop <- rename(base_pop, ano = Ano)
+
+
+base_pop <- readxl::read_xlsx("../Boletim_sdpa/data-raw/pop_mun.xlsx") |> 
+  pivot_longer(cols = starts_with("20"), names_to = "ano") |> 
+  rename(Pop = value) |> 
+  mutate(
+    deinter = case_when(
+      departa == "Decap" ~ "Capital",
+      departa == "Demacro" ~ "Grande São Paulo", 
+      departa == "Deinter 1" ~ "São José dos Campos",
+      departa == "Deinter 2" ~ "Campinas",
+      departa == "Deinter 3" ~ "Ribeirão Preto"  ,
+      departa == "Deinter 4" ~ "Bauru",
+      departa == "Deinter 5" ~ "São José do Rio Preto",
+      departa == "Deinter 6" ~ "Santos",
+      departa == "Deinter 7" ~ "Sorocaba",
+      departa == "Deinter 8" ~ "Presidente Prudente",
+      departa == "Deinter 9" ~ "Piracicaba",
+      departa == "Deinter 10" ~ "Araçatuba")
+  )  
+
+
 base_pop <- base_pop %>% 
   mutate(
     cod_reg = case_when(
@@ -186,27 +155,29 @@ base_pop <- base_pop %>%
       deinter == "Piracicaba" ~ 39,
       deinter == "Araçatuba" ~ 40),
       Pop = as.double(Pop)
-  )
+  ) |> 
+  mutate(regiao = case_when(cod_reg == 10 ~ "Capital", 
+                            cod_reg == 20 ~ "Grande São Paulo",
+                            cod_reg == 99 ~ "Estado de São Paulo",
+                            cod_reg %in% c(20:40) ~ "Interior"))
 
 #Criando as linhas de total do estado e interior
-pop_estado <- base_pop
-pop_estado <- pop_estado%>% 
+
+pop_estado <- base_pop %>% 
 group_by(ano) %>% 
 summarise(pop = sum(Pop))
 
-pop_estado <- pop_estado%>%
+pop_estado <- pop_estado %>%
   mutate (reg_ano = paste(99,"-", ano, sep = "")) %>% 
   select(reg_ano, pop)
 
-pop_int <- base_pop
-pop_int <- pop_int %>% 
-  filter(macrorregiao == "Interior") 
-pop_int <- pop_int %>% 
+pop_int <- base_pop %>% 
+  filter(regiao == "Interior") |> 
   group_by(ano) %>% 
   summarise(pop = sum(Pop))
+
 pop_int <- pop_int %>% 
-mutate (reg_ano = paste(30,"-", ano, sep = "")) 
-pop_int <- pop_int %>% 
+  mutate (reg_ano = paste(30,"-", ano, sep = "")) |> 
   select(reg_ano, pop)
 
 novas_linhas_pop <- rbind(pop_estado,pop_int)
@@ -232,7 +203,7 @@ base_crimes <- left_join(base_crimes, base_pop, by = "reg_ano")
 
 #### Passo 04: Tratamento dos dados da corregedoria a partir do modelo selecionado ----
 
-base_corregedoria <- readRDS("../Boletim_sdpa/data-raw/base_corregedoria.RDS") %>% 
+base_corregedoria <- read.csv2("../Boletim_sdpa/data-raw/base_corregedoria.csv") %>% 
   mutate(
     let_ser = c1+c3,
     let_fol = c2+c4,
@@ -295,8 +266,9 @@ correg_int <- base_corregedoria %>%
 correg_int <-  correg_int %>% 
   mutate(cod_reg = 30)
 
-base_corregedoria <- rbind(base_corregedoria,correg_estado,correg_int)
-remove(correg_estado,correg_int)
+base_corregedoria <- rbind(base_corregedoria, correg_estado)
+remove(correg_estado, correg_int)
+
 if (modelo == 1){
   base_corregedoria <- base_corregedoria %>% 
     filter(cod_ano >(ano_referencia-2)) %>%
@@ -305,7 +277,6 @@ if (modelo == 1){
   base_corregedoria <- base_corregedoria %>% 
     filter(cod_ano >(ano_referencia-3)) %>%
     mutate(periodo = paste(cod_ano,"/", semestre, "º Semestre", sep = "")) 
-    
 } else if (modelo == 3){
   base_corregedoria <- base_corregedoria %>% 
     filter(cod_ano >(ano_referencia-2)) %>%
@@ -331,9 +302,12 @@ base_crimes <- base_crimes %>%
 base_corregedoria <- base_corregedoria %>% 
   mutate(id = paste(cod_reg,"-", periodo, sep = ""))
 
-base_completa <- left_join(base_crimes, base_corregedoria,by ="id")
+base_completa <- left_join(base_crimes, base_corregedoria,by ="id") |> 
+  select(-ends_with(".y"))|> 
+  rename(periodo = periodo.x) |> 
+  rename(cod_reg = cod_reg.x)
 
-saveRDS(base_completa, "base_completa.rds")
+saveRDS(base_completa, "./data-raw/base_completa.rds")
 
 ####Passo 06: Preparando a base mensal, para importar a base usar o enconding windows 1512----
 
@@ -448,11 +422,12 @@ saveRDS(base_mensal_munic, "base_mensal_munic.rds")
 saveRDS(base_mensal_dp, "base_mensal_dp.rds")
 saveRDS(base_mensal, "base_mensal.rds")
 
-###Passo 07: Dados violência contra a mulher----
-base_viol_mul <- readRDS("data-raw/viol_mulher.rds")
-base_viol_mul <- base_viol_mul %>% 
-  select(!Total)%>% 
-  pivot_longer( cols = Capital:Interior,
+
+###Passo 07: Dados violência contra a mulher------------------------------------------------------
+
+base_viol_mul <- readxl::read_xlsx("./data-raw/vio_mulher.xlsx") %>% 
+  select(!Total) %>% 
+  pivot_longer(cols = Capital:Interior,
                 names_to = "reg",
                 values_to = "contador") %>% 
   mutate(cod_reg = case_when(
@@ -460,8 +435,9 @@ base_viol_mul <- base_viol_mul %>%
     reg == "Demacro" ~20,
     reg == "Interior" ~30)
   ) %>% 
-  select(Sem, Tri, Mês,Ano,cod_reg,item,contador) %>% 
-  filter(item =="HOMICÍDIO DOLOSO - TOTAL" |item ==	"LESÃO CORPORAL DOLOSA")
+  select(Sem, Tri, Mês, Ano, cod_reg, item,contador) 
+#%>% 
+##  filter(item =="HOMICÍDIO DOLOSO - TOTAL" |item ==	"LESÃO CORPORAL DOLOSA")
 
 if (modelo == 1){
   base_viol_mul <- base_viol_mul %>% 
@@ -485,7 +461,7 @@ if (modelo == 1){
     select(periodo,Tri,cod_reg,item, contador)
 }
 
-saveRDS(base_viol_mul, "base_viol_mul")
+saveRDS(base_viol_mul, "./data-raw/base_viol_mul.rds")
 
 ########################### CRIAÇÃO DOS GRÁFICOS ###########################
 
