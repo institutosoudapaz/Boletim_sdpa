@@ -266,7 +266,7 @@ correg_int <- base_corregedoria %>%
 correg_int <-  correg_int %>% 
   mutate(cod_reg = 30)
 
-base_corregedoria <- rbind(base_corregedoria, correg_estado)
+base_corregedoria <- rbind(base_corregedoria, correg_estado, correg_int)
 remove(correg_estado, correg_int)
 
 if (modelo == 1){
@@ -462,6 +462,30 @@ if (modelo == 1){
 }
 
 saveRDS(base_viol_mul, "./data-raw/base_viol_mul.rds")
+
+
+
+# Passo 08: Modelar e exportar bases para excel ---------------------------
+
+base_completa_excel <- readRDS("./data-raw/base_completa.rds") %>% 
+  select(-reg_ano, -cod_reg, -ano, -pop, -id) %>% 
+  write.csv2("base_completa.csv")
+
+base_viol_mulher_excel <- readRDS("./data-raw/base_viol_mul.rds") %>% 
+  rename(Total = contador) %>% 
+  select (-Tri) %>% 
+  filter(item %in% c("HOMICÍDIO DOLOSO (exclui FEMINICÍDIO)",
+                     "FEMINICÍDIO", 
+                     "HOMICÍDIO DOLOSO - TOTAL",
+                     "LESÃO CORPORAL DOLOSA")) %>% 
+  write.csv2("base_completa.csv")
+
+
+
+
+
+####REMOVER#######
+
 
 ########################### CRIAÇÃO DOS GRÁFICOS ###########################
 
