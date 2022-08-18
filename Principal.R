@@ -469,7 +469,7 @@ saveRDS(base_viol_mul, "./data-raw/base_viol_mul.rds")
 
 base_completa_excel <- readRDS("./data-raw/base_completa.rds") %>% 
   select(-reg_ano, -cod_reg, -ano, -pop, -id) %>% 
-  write.csv2("base_completa.csv")
+  xlsx::write.xlsx("base_completa.xlsx")
 
 base_viol_mulher_excel <- readRDS("./data-raw/base_viol_mul.rds") %>% 
   rename(Total = contador) %>% 
@@ -478,7 +478,7 @@ base_viol_mulher_excel <- readRDS("./data-raw/base_viol_mul.rds") %>%
                      "FEMINICÍDIO", 
                      "HOMICÍDIO DOLOSO - TOTAL",
                      "LESÃO CORPORAL DOLOSA")) %>% 
-  write.csv2("base_completa.csv")
+  xlsx::write.xlsx("base_viol_mulher.xlsx")
 
 
 
