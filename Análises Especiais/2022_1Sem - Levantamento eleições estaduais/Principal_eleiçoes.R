@@ -73,6 +73,8 @@ base_crimes <- base_crimes %>%
             lat_vitima =sum(t49),
             tot_estupro =sum(t201),
             estupro_vuln =sum(t202),
+            roubo_outros =sum(t81),
+            roubo_veiculos = sum(t80),
             roubo_total =sum(t77),
             extor_seq = sum(t15),
             lesao_morte = sum(t40)
