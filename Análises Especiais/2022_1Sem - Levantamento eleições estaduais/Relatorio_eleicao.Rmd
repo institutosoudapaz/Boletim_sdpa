@@ -61,6 +61,7 @@ theme_sdpa_deinter <- theme_classic()+
         aspect.ratio=11/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm'))
 
+
 cores <- c("#cec8c4", "#be9068","#042e3f")
 cores_2 <- c("#be9068", "#042e3f")
 
@@ -70,6 +71,7 @@ cores_2 <- c("#be9068", "#042e3f")
 # Gráfico crimes por ano/macroregião
 
 grafico_geral <- function(crime, titulo) { #selecionar o tipo de crime e titulo do gráfico
+
 
   p <- base_eleicao %>% 
     #filtra sem os deinter individuais
@@ -116,6 +118,7 @@ grafico_taxa_deinter <- function(crime, titulo, limite) { #selecionar o tipo de 
 
   #PESQUISAR max_y *1,2
   
+
 p <- base_eleicao %>% 
   filter(cod_reg >30 & cod_reg != 99) %>% 
   filter(periodo %in% c("2018/1º Semestre","2022/1º Semestre")) %>% 
@@ -164,7 +167,6 @@ grid.arrange(g, p, heights=c(1,9))
 
 ```
 
-
 ## Introdução
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
@@ -176,13 +178,37 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 \newpage
 
+<<<<<<< HEAD
+=======
+## Destaques
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
 
 ```{r letalidade violenta, echo=FALSE, fig.width=9, fig.height=6}
 
 # Gráfico letalidade violenta
 
+<<<<<<< HEAD
 p <- base_eleicao %>% 
   filter(periodo %in% c("2018/1º Semestre","2022/1º Semestre")) %>% 
+=======
+p <- base_completa %>% 
+  filter(periodo %in% c("2021/1º Semestre","2022/1º Semestre")) %>% 
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
   filter(cod_reg != 99 & cod_reg != 30) %>% 
   group_by(periodo) %>%
   summarise(hd_vitima = sum(hd_vitima),
@@ -192,7 +218,11 @@ p <- base_eleicao %>%
             let_fol = sum (let_fol, na.rm = TRUE),
             total = sum(hd_vitima, lat_vitima, lesao_morte, let_ser, let_fol)) %>% 
   pivot_longer(!periodo, names_to = "crime", values_to = "count") %>% 
+<<<<<<< HEAD
   ggplot(aes(fill=factor(periodo, levels=c("2018/1º Semestre", "2022/1º Semestre")), y= count,
+=======
+  ggplot(aes(fill=factor(periodo, levels=c("2021/1º Semestre", "2022/1º Semestre")), y= count,
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
              x= factor(crime, levels = c(
                "total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol"))))+ 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
@@ -206,7 +236,11 @@ p <- base_eleicao %>%
     serviço"), width = 21))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+<<<<<<< HEAD
   coord_flip(ylim=c(100, 2200))
+=======
+  coord_flip(ylim=c(100, 2000))
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Letalidade Violenta", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -214,37 +248,70 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 grid.arrange(g, p, heights=c(1,9))
 ```
 
+<<<<<<< HEAD
+=======
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
 
 ```{r crimes violentos, echo=FALSE, fig.dim = c(9, 6)}
 
 # Gráfico crimes violentos
 
+<<<<<<< HEAD
 p <- base_eleicao %>% 
   filter(periodo %in% c("2018/1º Semestre","2022/1º Semestre")) %>% 
+=======
+p <- base_completa %>% 
+  filter(periodo %in% c("2021/1º Semestre","2022/1º Semestre")) %>% 
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
   filter(cod_reg != 99 & cod_reg != 30) %>%
   group_by(periodo) %>%
   summarise(tot_estupro = sum(tot_estupro),
             extor_seq = sum(extor_seq),
             hd_ocorr = sum(hd_ocorr),
             lat_ocorr = sum(lat_ocorr),
+<<<<<<< HEAD
             roubo_veic = sum(roubo_veiculos),
             roubo_outros = sum(roubo_outros), 
             total = sum(tot_estupro,extor_seq, hd_ocorr,lat_ocorr, roubo_veic,roubo_outros)) %>% 
   pivot_longer(!periodo, names_to = "crime", values_to = "count") %>% 
   ggplot(aes(fill=factor(periodo, levels=c("2018/1º Semestre","2022/1º Semestre")), y= count, 
+=======
+            roubo_veic = sum(roubo_veic),
+            roubo_outros = sum(roubo_outros), 
+            total = sum(tot_estupro,extor_seq, hd_ocorr,lat_ocorr, roubo_veic,roubo_outros)) %>% 
+  pivot_longer(!periodo, names_to = "crime", values_to = "count") %>% 
+  ggplot(aes(fill=factor(periodo, levels=c("2021/1º Semestre","2022/1º Semestre")), y= count, 
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
              x= factor(crime, levels = c(
                "total", "roubo_outros", "roubo_veic","extor_seq", "tot_estupro", "lat_ocorr", "hd_ocorr")))) + 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.2,check_overlap = TRUE, size=3.2) +
   scale_fill_manual(values = cores_2) +
+<<<<<<< HEAD
   guides(color = "none") +
+=======
+  guides(color = "none")+
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
   scale_x_discrete(labels = str_wrap(
     c("Total de ocorrências", "Roubo (outros)","Roubo de veículo", "Extorsão mediante sequestro", "Estupro",
       "Latrocínio", "Homicídio doloso"), width = 24))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+<<<<<<< HEAD
   coord_flip(ylim=c(100, 185000))
+=======
+  coord_flip(ylim=c(100, 155000))
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
 
 g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
               textGrob("Crimes Violentos", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
@@ -255,6 +322,12 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
+<<<<<<< HEAD
+=======
+Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hendrerit, non tincidunt lectus euismod. Nullam vestibulum sapien vel lectus dapibus, eu dictum turpis sollicitudin. Praesent lacinia felis ligula, vel pharetra nulla mollis luctus. Vestibulum consequat, purus id porta euismod, lectus diam viverra felis, in auctor magna lectus sit amet sem. Vivamus feugiat lobortis vestibulum. Etiam in arcu mollis, feugiat lectus a, cursus nunc. Cras dignissim congue risus, a hendrerit nunc pellentesque id.
+Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
+
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
 <!-- HOMICÍDIOS  --> 
 
 ```{r homicidios macroreg, echo=FALSE, fig.dim = c(9, 6)}
@@ -268,6 +341,10 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
 ```{r taxa de homicidios por deinter, echo=FALSE, fig.dim = c(9, 6)}
 
 grafico_taxa_deinter(hd_ocorr, "Taxa de Homicídios por Deinter", 8.5)
@@ -362,7 +439,11 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 # Criar gráfico de proporção de estupros de vulneráveis por região
   
+<<<<<<< HEAD
 p <- base_eleicao %>% 
+=======
+p <- base_completa %>% 
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
   filter(cod_reg < 31 | cod_reg > 90) %>% 
   filter(periodo == "2022/1º Semestre") %>% 
   select(regiao, tot_estupro, estupro_vuln) %>% 
@@ -490,7 +571,11 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 # Criar gráfico de letalidade policial em serviço e fora por ano 
 
+<<<<<<< HEAD
 p <- base_eleicao %>% 
+=======
+p <- base_completa %>% 
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
   filter(cod_reg != 30 & cod_reg != 99) %>% 
   group_by(periodo) %>%
   summarise(let_ser = sum(let_ser),
@@ -526,7 +611,11 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 # Criar gráfico da participação da letalidade policial nas mortes cometidas por macroregiões
 
+<<<<<<< HEAD
 p <- base_eleicao %>% 
+=======
+p <- base_completa %>% 
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
   filter(periodo == "2022/1º Semestre") %>% 
   filter(cod_reg < 31 | cod_reg > 90) %>% 
   group_by(cod_reg) %>% 
@@ -591,7 +680,11 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 ```{r prisoes percentual, echo=FALSE, fig.dim = c(9, 6)}
 
+<<<<<<< HEAD
 p <- base_eleicao %>% 
+=======
+p <- base_completa %>% 
+>>>>>>> f3e432c38e1275589b1f291488eae0803c680989
   filter(periodo == "2022/1º Semestre") %>% 
   filter(cod_reg < 31 | cod_reg > 90) %>% 
   group_by(cod_reg) %>% 
