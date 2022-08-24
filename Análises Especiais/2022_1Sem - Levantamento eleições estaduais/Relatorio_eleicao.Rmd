@@ -225,6 +225,12 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 grid.arrange(g, p, heights=c(1,9))
 ```
 
+Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feugiat arcu, et dictum orci placerat quis. Duis metus ligula, fermentum non ante vitae, convallis rutrum elit. Sed tempus convallis nulla, eu rutrum libero feugiat ut. Proin feugiat vulputate malesuada. Praesent dictum ante condimentum augue tincidunt, id pulvinar quam finibus. Curabitur vestibulum sed turpis vestibulum rhoncus.
+
+Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
+
+\newpage
+
 ```{r crimes violentos, echo=FALSE, fig.dim = c(9, 6)}
 
 # Gráfico crimes violentos
@@ -357,11 +363,8 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 ## Letalidade e Vitimização Policial
 
-
 ```{r}
-
 grafico_geral(mdip, "Mortes Decorrentes de Intervenção Policial por região")  
-
 ```
 
 
@@ -398,9 +401,7 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 
 grid.arrange(g, p, heights=c(1,9))
 ```
-=======
-![](imgs\tabela let_vit_policial_2021_anual.jpg)
->>>>>>> bf8c931c4f388fd84044b356b5bd60f5fa480f00
+
 
 ```{r letalidade policial, echo=FALSE, fig.width=9, fig.height=6}
 
