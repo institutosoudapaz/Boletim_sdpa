@@ -310,7 +310,8 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 ```{r taxa de estupros por deinter, echo=FALSE, fig.dim = c(9, 6)}
 
-grafico_taxa_deinter(tot_estupro, "Taxa de Estupros por Deinter", 23)
+grafico_taxa_deinter(tot_estupro, "Taxa de Estupros por Deinter", 26)
+
 
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
@@ -356,8 +357,8 @@ Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis ne
 
 ## Letalidade e Vitimização Policial
 
-```{r}
 
+```{r}
 
 grafico_geral(mdip, "Mortes Decorrentes de Intervenção Policial por região")  
 
@@ -397,6 +398,9 @@ g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
 
 grid.arrange(g, p, heights=c(1,9))
 ```
+=======
+![](imgs\tabela let_vit_policial_2021_anual.jpg)
+>>>>>>> bf8c931c4f388fd84044b356b5bd60f5fa480f00
 
 ```{r letalidade policial, echo=FALSE, fig.width=9, fig.height=6}
 
