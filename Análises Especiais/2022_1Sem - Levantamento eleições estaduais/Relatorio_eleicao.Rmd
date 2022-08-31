@@ -330,11 +330,11 @@ Curabitur venenatis lorem eget varius venenatis. Proin gravida ligula a eros hen
 
 Sed quis euismod sapien. Duis aliquam placerat aliquam. Proin suscipit turpis nec malesuada facilisis. Suspendisse sagittis dui sagittis quam consectetur porta. Cras vitae tellus iaculis, sodales odio sit amet, mattis quam. Cras fermentum scelerisque aliquam. Integer eget ex ultrices, molestie nisi ac, imperdiet mi. Nam ac diam suscipit, porta erat eget, consequat arcu.
 
-<!-- ROUBO (TOTAL) --> 
+<!-- ROUBO (OUTROS) --> 
 
 ```{r roubos outros macroreg, echo=FALSE, fig.dim = c(9, 6)}
 
-grafico_geral(roubo_total, "Ocorrências de Roubos (Total)")  
+grafico_geral(roubo_total, "Ocorrências de Roubos (Outros)")  
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. Suspendisse ac maximus libero. Nam maximus condimentum odio vitae interdum. Cras ut metus lorem. Pellentesque arcu nibh, gravida vitae ipsum in, tristique blandit nisl. Sed nec eleifend purus. Etiam finibus, nibh sit amet condimentum finibus, sem diam imperdiet enim, nec posuere elit dui vel lacus.
 
@@ -345,7 +345,7 @@ Aliquam laoreet tristique varius. Sed sit amet aliquam justo. Sed tincidunt feug
 
 ```{r taxa de roubos (outros) por deinter, echo=FALSE, fig.dim = c(9, 6)}
 
-grafico_taxa_deinter(roubo_total, "Taxa de Roubos (Total) por Deinter", 440)
+grafico_taxa_deinter(roubo_total, "Taxa de Roubos (Outros) por Deinter", 440)
 
 ```
 Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut at ornare enim. Aenean ornare erat ut ornare tincidunt. Suspendisse vel laoreet nisi. Sed odio leo, sollicitudin vitae fringilla sed, sagittis eget ante. Duis feugiat varius sagittis. Sed felis odio, pulvinar eu augue a, porttitor egestas massa. Donec pharetra felis ac velit hendrerit pharetra. 
