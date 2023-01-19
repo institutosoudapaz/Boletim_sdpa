@@ -1,0 +1,487 @@
+---
+title: "Análise Especial - Eleições 2022"
+author: "ISDP"
+date: "19/08/2022"
+output: 
+  word_document:
+    reference_docx: Template_SDPA.docx
+    
+fontfamily: arev
+fontsize: 8.5pt
+geometry: "left=2cm,right=2cm,top=1.5cm,bottom=2cm"
+header-includes: 
+      - \usepackage{graphicx}
+      - \usepackage{fancyhdr}
+      - \pagestyle{fancy}
+      - \fancyhead{}
+      - \renewcommand{\headrule}{}
+      - \fancyfoot[R]{\includegraphics{./imgs/rodape.png}}
+
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+
+# Carregar bases
+
+filename <- file.choose()
+base_eleicao <- readRDS(filename)
+
+# Definir temas e cores
+
+theme_sdpa_macroreg <- theme_void()+
+  theme(legend.position = "bottom",
+        legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=12),
+        axis.text=element_text(size=10),
+        legend.title = element_blank(), 
+        aspect.ratio=8.5/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm'))
+
+theme_sdpa_let <- theme_void()+
+  theme(legend.position = "bottom",
+        legend.text=element_text(size=12),
+        axis.text.y=element_text(size=12),
+        legend.title = element_blank(),
+        aspect.ratio=11/20)
+
+theme_sdpa_deinter <- theme_classic()+
+  theme(legend.position = "bottom",
+        axis.text.y=element_text(size=10.5),
+        legend.title = element_blank(), 
+        legend.text=element_text(size=12),
+        axis.title=element_blank(),
+        axis.title.y=element_blank(),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm'))
+
+
+cores <- c("#cec8c4", "#be9068","#042e3f")
+cores_2 <- c("#be9068", "#042e3f")
+
+
+# FUNÇÕES PARA GERAR GRÁFICOS E MAPAS
+
+# Gráfico crimes por ano/macroregião
+
+grafico_geral <- function(crime, titulo) { #selecionar o tipo de crime e titulo do gráfico
+
+
+  p <- base_eleicao %>% 
+    #filtra sem os deinter individuais
+  filter(cod_reg <31) %>% 
+  group_by(regiao, periodo) %>%
+    #modela a base
+  summarise(tot_estupro = sum(tot_estupro),
+            extor_seq = sum(extor_seq),
+            hd_ocorr = sum(hd_ocorr),
+            lat_ocorr = sum(lat_ocorr),
+            roubo_veic = sum(roubo_veiculos),
+            roubo_outros = sum(roubo_outros),
+            roubo_total = sum(roubo_total),
+            mdip = sum(let_ser, let_fol)) %>% 
+  pivot_longer(cols = regiao, values_to = "regiao") %>% 
+    #gráfico
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
+             y= {{crime}}, x= periodo)) + 
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format({{crime}}, big.mark = ".", scientific = FALSE), 
+                colour =ifelse(regiao=="Capital", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.4) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  # descobrir como colocar o . como divisor dos valores no topo
+    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = periodo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+  scale_fill_manual(values = cores) +
+      scale_x_discrete(labels = str_wrap(
+    c("2018/1º Semestre","2018/2º Semestre", "2019/1º Semestre", "2019/2º Semestre", 
+      "2020/1º Semestre", "2020/2º Semestre", "2021/1º Semestre", "2021/2º Semestre", 
+      "2022/1º Semestre"), width = 4))+
+  guides(color = "none")+
+  theme_sdpa_macroreg +
+  guides(fill = guide_legend(reverse = TRUE))
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+                 textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=26, col="white", 
+                                          fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+# Gráfico das taxas de crimes por ano/deinter
+
+grafico_taxa_deinter <- function(crime, titulo, limite) { #selecionar o tipo de crime e titulo
+  # do gráfico
+
+  #PESQUISAR max_y *1,2
+  
+
+p <- base_eleicao %>% 
+  filter(cod_reg >30 & cod_reg != 99) %>% 
+  filter(periodo %in% c("2018/1º Semestre","2022/1º Semestre")) %>% 
+  group_by(periodo, deinter) %>% 
+  # Calcula já a taxa!
+  summarise(tot_estupro = sum(tot_estupro)/pop*100000,
+            extor_seq = sum(extor_seq)/pop*100000,
+            hd_ocorr = sum(hd_ocorr)/pop*100000,
+            lat_ocorr = sum(lat_ocorr)/pop*100000,
+            roubo_veic = sum(roubo_veiculos)/pop*100000,
+            roubo_outros = sum(roubo_outros)/pop*100000,
+            roubo_total = sum(roubo_total)/pop*100000) %>%
+  pivot_longer(cols = deinter , values_to = "deinter") %>% 
+  ggplot(aes(fill= periodo, y= {{crime}}, x= deinter)) + 
+  geom_col(width=0.85, position=position_dodge(0.8), size=.4, colour="light grey") +
+  geom_text(aes(label = round(..y.., 2)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.5,check_overlap = TRUE, size=3) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  coord_flip(ylim=c(0, {{limite}})) +
+  theme_sdpa_deinter+
+  scale_x_discrete(labels = c("Deinter 01 - São José dos Campos", 
+      "Deinter 02 - Campinas",
+      "Deinter 03 - Ribeirão Preto",
+      "Deinter 04 - Bauru",
+      "Deinter 05 - São José do Rio Preto",
+      "Deinter 06 - Santos",
+      "Deinter 07 - Sorocaba",
+      "Deinter 08 - Presidente Prudente",
+      "Deinter 09 - Piracicaba",
+      "Deinter 10 - Araçatuba"))+
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1, 
+                                                    decimal.mark = ','),
+                     expand = c(0, 0), n.breaks = 8)
+
+# mudar o separador das taxas de '." para ","
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob(titulo, x = 0.03, hjust = 0, gp=gpar(fontsize=22, col="white", 
+                                                            fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+
+}
+
+
+```
+
+## Análise Especial Eleições - 2022
+
+Às vésperas das eleições para o governo do estado de São Paulo, esta edição do Boletim Sou da Paz Analisa inclui uma análise especial que apresenta um panorama dos últimos quatro anos e os principais desafios da segurança pública para o novo governo que se inicia em janeiro de 2023.
+
+As páginas a seguir apresentam uma análise do período entre o primeiro semestre de 2018 e o primeiro semestre de 2022 para os principais indicadores de crimes violentos, especificamente os homicídios dolosos, estupros e roubos, e da letalidade policial no estado. Mais do que apontar como se configurou a série histórica desses crimes nos últimos quatro anos no estado de São Paulo, buscamos destacar onde houve melhorias na gestão da Segurança Pública e redução dos indicadores criminais, assim como ressaltar em quais  pontos as políticas de segurança pública precisam avançar durante a próxima gestão.
+
+É importante ressaltar que a série histórica analisada dos últimos quatro anos engloba os semestres no qual a pandemia de Covid-19 foi mais intensa no país, sobretudo no ano de 2020, marcado por medidas de isolamento social e uma menor circulação da população pelas vias públicas paulistas. Estas intensas mudanças no cotidiano afetaram de maneira diferenciada as distintas modalidades de crimes. Os homicídios dolosos aumentaram durante os primeiros meses da pandemia no estado, enquanto os roubos caíram vertiginosamente no mesmo período. Desta forma, é importante considerar que as variações percentuais e flutuações dos indicadores criminais entre o primeiro semestre de 2018 e o primeiro semestre de 2022 não traduzem completamente a complexidade das flutuações destes crimes durante os momentos mais críticos da pandemia de Covid-19.
+
+As análises a seguir permitem também um olhar mais apurado sobre as dinâmicas espaciais dos homicídios dolosos, estupros, roubos, e da letalidade policial no estado de São Paulo. Novamente os homicídios dolosos são um exemplo: entre o  primeiro semestre de 2018 e de 2022, as ocorrências desses crimes caíram -6,7% no estado como um todo. Porém, ao analisarmos isoladamente cada uma das três macrorregiões do estado – Capital, Grande São Paulo e Interior –, foi possível identificar na primeira metade de 2022 um aumento no Interior de 4,2% nos homicídios dolosos em comparação com o mesmo período de 2018. Olhando especificamente para os homicídios dolosos cometidos no Interior do estado, novamente é possível identificar as regiões onde esse aumento se concentrou: Deinter 10 - Araçatuba e Deinter 01 - São José dos Campos, regiões que tiveram aumentos de, respectivamente, 18% e 15% em suas taxas de homicídios por 100 mil habitantes. 
+
+Garantir uma melhor segurança pública é um dos principais desafios do Brasil e é parte das funções essenciais do Estado. É importante que os próximos gestores responsáveis pelas políticas de segurança pública no estado de São Paulo estejam atentos para os principais desafios da segurança pública paulista, e principalmente, que mantenham as iniciativas e políticas que têm funcionado e trazido ganhos efetivos à segurança dos(as) cidadãos(ãs) paulistas, como por exemplo, as medidas de controle do uso da força pela Polícia Militar de São Paulo, responsáveis por uma queda de 49,8% na letalidade policial entre o primeiro semestre de 2018 e de 2022. Esperamos que as análises aqui apresentadas fomentem o debate público, e contribuam para a reflexão e formulação de ações voltadas à redução da violência no estado.
+
+
+```{r letalidade violenta, echo=FALSE, fig.width=9, fig.height=6}
+
+# Gráfico letalidade violenta
+
+p <- base_eleicao %>% 
+  filter(periodo %in% c("2018/1º Semestre","2022/1º Semestre")) %>% 
+  filter(cod_reg != 99 & cod_reg != 30) %>% 
+  group_by(periodo) %>%
+  summarise(hd_vitima = sum(hd_vitima),
+            lat_vitima = sum(lat_vitima),
+            lesao_morte = sum(lesao_morte),
+            let_ser = sum(let_ser, na.rm = TRUE),
+            let_fol = sum (let_fol, na.rm = TRUE),
+            total = sum(hd_vitima, lat_vitima, lesao_morte, let_ser, let_fol)) %>% 
+  pivot_longer(!periodo, names_to = "crime", values_to = "count") %>% 
+  ggplot(aes(fill=factor(periodo, levels=c("2018/1º Semestre", "2022/1º Semestre")), y= count,
+             x= factor(crime, levels = c(
+               "total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol"))))+ 
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.2,check_overlap = TRUE, size=3.2) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("Total de vítimas", "Homicídio doloso", "Latrocínio", "Lesão corporal seguida de morte", 
+      "Mortos pela Polícia Civil e Militar em serviço", "Mortos pela Polícia Civil e Militar fora de 
+    serviço"), width = 21))+
+  theme_sdpa_let +
+  # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+  coord_flip(ylim=c(100, 2200))
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Letalidade Violenta - Número de Vítimas", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                                            fontface="bold")))
+grid.arrange(g, p, heights=c(1,9))
+```
+
+A análise da evolução da letalidade violenta no estado de São Paulo no período entre 2018 e 2022 revela uma melhora significativa em cinco dos seis indicadores que compõem a categoria. Em números totais foram 1.803 vítimas de letalidade violenta registrados na primeira metade de 2022, que, comparados aos 2.168 em no mesmo período de 2018, apresentam 365 mortes a menos, uma redução de 16% do número de vítimas.
+
+Somente os casos de lesão corporal seguida de morte tiveram piora no intervalo (um aumento de 36%). No campo oposto, se sobressai a redução da letalidade policial, tanto entre policiais em serviço quanto fora de serviço: dentre os policiais em serviço a redução observada foi de 58,8% vítimas, no total, 194 mortes a menos na comparação entre os períodos analisados. Já entre os policiais de folga, a redução na letalidade foi de 16,7%. 
+
+Os latrocínios, crimes que geram grande comoção e afetam profundamente a sensação de segurança da população, também tiveram uma redução significativa no número de vítimas na comparação entre a primeira metade de 2018 e de 2022: foram 54 vítimas a menos no primeiro semestre de 2022, uma redução de 38% na comparação com o número de vítimas dos roubos seguidos de mortes no mesmo período de 2018. 
+
+Finalmente, houve a manutenção da tendência de queda do número de vítimas de homicídios dolosos, que tem acontecido de maneira regular no estado desde os anos 2000. Nos primeiros seis meses de 2022 foram registrados 1.454 vítimas de homicídios dolosos no estado, uma redução de 7,4% na comparação com as 1.570 pessoas assassinadas entre janeiro e junho de 2018. 
+
+\newpage
+
+```{r crimes violentos, echo=FALSE, fig.dim = c(9, 6)}
+
+# Gráfico crimes violentos
+
+p <- base_eleicao %>% 
+  filter(periodo %in% c("2018/1º Semestre","2022/1º Semestre")) %>% 
+  filter(cod_reg != 99 & cod_reg != 30) %>%
+  group_by(periodo) %>%
+  summarise(tot_estupro = sum(tot_estupro),
+            extor_seq = sum(extor_seq),
+            hd_ocorr = sum(hd_ocorr),
+            lat_ocorr = sum(lat_ocorr),
+            roubo_veic = sum(roubo_veiculos),
+            roubo_outros = sum(roubo_total), 
+            total = sum(tot_estupro,extor_seq, hd_ocorr,lat_ocorr, roubo_veic,roubo_outros)) %>% 
+  pivot_longer(!periodo, names_to = "crime", values_to = "count") %>% 
+  ggplot(aes(fill=factor(periodo, levels=c("2018/1º Semestre","2022/1º Semestre")), y= count, 
+             x= factor(crime, levels = c(
+               "total", "roubo_outros", "roubo_veic","extor_seq", "tot_estupro", "lat_ocorr", "hd_ocorr")))) + 
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.2,check_overlap = TRUE, size=3.2) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("Total de ocorrências", "Roubo (outros)","Roubo de veículo", "Extorsão mediante sequestro", "Estupro",
+      "Latrocínio", "Homicídio doloso"), width = 24))+
+  theme_sdpa_let +
+  # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+  coord_flip(ylim=c(100, 185000))
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Crimes Violentos - Número de Ocorrências", x = 0.03, hjust = 0, gp=gpar(fontsize=30, col="white", 
+                                                                           fontface="bold")))
+grid.arrange(g, p, heights=c(1,9))
+```
+O período dos últimos quatro anos, entre o primeiro semestre de 2018 e de 2022, foi marcado pela redução do número de ocorrências de cinco dos seis crimes que compõem a categoria "criminalidade violenta" da Secretaria da Segurança Pública de São Paulo. Nos primeiros seis meses de 2022, o estado registrou um total de 145.104 ocorrências dos chamados crimes violentos, uma redução de 16,4% em relação às 173.473 ocorrências desses crimes registradas no mesmo período de 2018, e um total de 28.369 crimes violentos a menos registrados na comparação entre os dois períodos.
+
+A redução da criminalidade violenta no estado se deve principalmente às mudanças observadas nas dinâmicas de crimes patrimoniais no período, que incluem os roubos de veículos e os demais roubos (outros). Ambos os crimes de roubos vinham em tendência de queda desde 2018, marcada por um aprofundamento em 2020 devido à pandemia de Covid-19 e as mudanças na circulação de pessoas pelos espaços públicos. Foram registrados 18.511 veículos roubados no primeiro semestre de 2022, redução de 35,8% em relação aos 28.823 roubos de veículos ocorridos no mesmo período de 2018. Já em relação aos demais roubos (outros) foram registradas 119.016 ocorrências na primeira metade de 2022, uma queda de 13,1% em comparação ao mesmo intervalo de 2018. No entanto, como discutiremos a seguir, os roubos voltaram a crescer em 2021, e no primeiro semestre de 2022 algumas regiões, como a Capital, chegaram a registrar um número de ocorrências de roubos maior que aqueles vistos em 2019, antes da pandemia de Covid-19.
+
+Quanto aos crimes contra a vida, no primeiro semestre de 2022 o estado de São Paulo registrou 1.395 ocorrências de homicídio doloso, uma redução de 6,7% em comparação com o número de ocorrências do mesmo período de 2018. Por sua vez, os latrocínios tiveram uma redução de 50 ocorrências na comparação entre os intervalos analisados, uma queda de 37% dos casos.
+
+Finalmente, as ocorrências de crimes sexuais e de extorsão mediante sequestro continuaram estáveis durante o período analisado. No primeiro semestre de 2022 foram registradas um total de 6.080 ocorrências de estupro, uma pequena redução de 0,5% em relação ao mesmo período de 2018. Já as ocorrências dos crimes de extorsão mediante sequestro se mantiveram com 17 casos em ambos os períodos da análise. 
+
+
+<!-- HOMICÍDIOS  --> 
+
+```{r homicidios macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_geral(hd_ocorr, "Homicídios Dolosos - Ocorrências")  
+```
+Nos últimos quatro anos o estado de São Paulo manteve a tendência de redução dos homicídios dolosos, sobretudo graças às quedas registradas nas macrorregiões da Capital e da Grande São Paulo. No primeiro semestre de 2022 o estado registrou 1.395 homicídios, 100 ocorrências a menos que no mesmo período de 2018, e o equivalente a uma redução de 6,7% no período. 
+
+A Capital concentrou a redução mais intensa nas ocorrências de homicídios dolosos no período, passando de 344 homicídios na primeira metade de 2018, para 247 ocorrências após quatro anos, uma redução de 28,2%. Por sua vez, a macrorregião da Grande São Paulo teve uma redução de 11,9% nos homicídios dolosos entre o primeiro semestre de 2018 e de 2022. É importante destacar que, apesar desta redução dos assassinatos registrados nos municípios da Grande São Paulo, a região concentrou a maior parte do aumento dos homicídios ocorridos em 2020, primeiro ano da pandemia de Covid-19 e quando as medidas de isolamento social foram mais intensas.
+
+Por sua vez, a macrorregião do Interior do estado foi a única que registrou um aumento nos homicídios dolosos nos últimos quatro anos. Foram 868 ocorrências no primeiro semestre de 2022, um aumento de 4,2% em comparação com o mesmo período de 2018. Com este aumento, e a redução dos homicídios nas demais macrorregiões, os municípios do interior do estado, que no início de 2018 concentravam 55,3% de todas as ocorrências de homicídio doloso do estado de São Paulo, passaram a concentrar 61,8% de todos os homicídios dolosos cometidos no estado na primeira metade de 2022. 
+
+É essencial que o estado de São Paulo desenvolva ações com o objetivo de manter a tendência de queda dos homicídios dolosos, de forma que permaneça com a menor taxa deste crime entre os estados brasileiros. O gráfico acima evidencia que é especialmente importante compreender as dinâmicas dos assassinatos cometidos no Interior do estado, de forma que seja possível adotar medidas eficazes para a prevenção destes crimes nos municípios e regiões onde eles se concentram. 
+
+
+```{r taxa de homicidios por deinter, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_deinter(hd_ocorr, "Interior do estado - Taxa de Homicídios por Deinter", 8.5)
+
+```
+
+A macrorregião do Interior de São Paulo foi a única que registrou um aumento das ocorrências de homicídios dolosos nos últimos quatro anos. Este aumento dos homicídios no Interior se concentrou em seis dos dez Departamentos de Polícia Judiciária do Interior (Deinter) que registraram um aumento de suas taxas de ocorrências de homicídios dolosos por 100 mil habitantes. É importante ressaltar que estas taxas se referem aos primeiros semestres dos anos de, respectivamente, 2018 e 2022, e, portanto, não podem ser comparadas com as taxas anuais dos mesmos crimes.  
+
+Os maiores aumentos nas taxas de homicídios nos últimos quatro anos se deram no Deinter 10 - Araçatuba, cuja taxa semestral passou de 3,61 por 100 mil habitantes no 1° semestre de 2018 para 4,27 homicídios por cem mil habitantes, um aumento de cerca de 18% no período, e no Deinter 01 - São José dos Campos, cuja taxa aumentou de 6,53 ocorrências de homicídios dolosos por 100 mil habitantes para 7,58 ocorrências por cem mil na primeira metade de 2022, um aumento de cerca de 15% na taxa de homicídios.
+
+Por outro lado, alguns Departamentos de Polícia do Interior registraram uma redução em suas taxas de homicídios, com destaque para o Deinter 07 - Sorocaba, cuja taxa passou de 2,98 para 2,24 ocorrências por cem mil no 1° semestre de 2022, uma redução de cerca de um quarto da taxa de homicídios dolosos em um intervalo de quatro anos. O Deinter 08 - Presidente Prudente também teve uma redução significativa: de 3,03 ocorrências de homicídios dolosos por 100 mil habitantes na primeira metade de 2018 para 2,56 homicídios por 100 mil no mesmo período de 2022.
+
+É preciso compreender como, apesar do aumento dos homicídios no Interior do estado no período dos últimos quatro anos, foi alcançada uma redução nas taxas do Deinter 07 - Sorocaba e Deinter 08 - Presidente Prudente, e se esta queda se associa a uma mudança na dinâmica criminal destas regiões, ações específicas do sistema de segurança e de justiça criminal, ou ambos, de forma a elaborar estratégias de redução de homicídios nos demais Departamentos de Polícia Judiciária do Interior, sobretudo no Deinter 01 - São José dos Campos, que registrou  uma taxa de homicídios significativamente maior que a taxa do estado de São Paulo para o mesmo período.
+
+
+<!-- ESTUPROS --> 
+
+```{r estupros macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_geral(tot_estupro, "Ocorrências de Estupros por Região")  
+```
+Nos últimos quatro anos as ocorrências de estupro registradas no estado de São Paulo sofreram poucas variações. Na comparação entre as ocorrências de estupro do primeiro semestre de 2018 e as ocorrências registradas no mesmo período de 2022, houve uma redução de apenas 0,5%, ou 28 ocorrências de estupros a menos. O primeiro semestre de 2020 foi o período em que houve menos ocorrências - foram 1.037 registros a menos que o mesmo período em 2018 -, entretanto, vale destacar que o ano de 2020 teve dinâmicas extremamente atípicas ocasionadas pela pandemia de Covid-19, fator que possivelmente aumentou as subnotificações dos casos.
+
+Na Capital paulista, as ocorrências declinaram em -11,9% no comparativo entre os primeiros semestres de 2018 e 2022. A Capital é a região do estado que registrou no período a maior redução do número de ocorrências de estupros, e principal responsável pela queda das ocorrências deste crime no estado nos últimos quatro anos. 
+
+A região da Grande São Paulo teve 1.242 registros de ocorrências de estupro no primeiro semestre de 2022, exatamente a mesma quantidade de ocorrências registradas no mesmo período de 2018. Por sua vez, a região do Interior teve 3.665 ocorrências de estupro no primeiro semestre de 2022, um aumento de 3,7%, ou 130 estupros a mais que em 2018. Desta forma, os municípios do Interior, responsáveis por 6 a cada 10 dos estupros registrados no primeiro semestre de 2022, foram os únicos que tiveram um aumento nas ocorrências de estupros entre a primeira metade de 2018 e de 2022.
+
+É importante destacar que a maior parte destes estupros tem como vítimas vulneráveis - pessoas menores de 14 anos de idade ou cujas condições de saúde as impedem de discernir ou resistir ao ato sexual. No primeiro semestre de 2018 os estupros de vulneráveis representavam 71,8% de todos os estupros registrados no estado. Porém no mesmo período de 2022, os estupros contra vulneráveis passaram a representar 77,2% de todas as ocorrências deste crime no estado de São Paulo. Este aumento proporcional evidencia a concentração do crescimento dos estupros contra vulneráveis, que cresceram 7% na comparação entre o primeiro semestre de 2018, quando foram registradas 4.383 ocorrências de estupros de vulneráveis, e o primeiro semestre de 2022, que teve  4.691 ocorrências notificadas de estupros de vulneráveis no estado.
+
+
+```{r taxa de estupros por deinter, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_deinter(tot_estupro, "Interior do estado - Taxa de Estupros por Deinter", 26)
+
+
+```
+Ao direcionarmos a análise especificamente para a região do Interior, podemos observar que as taxas de estupro de cinco dos dez Departamentos de Polícia Judiciária de São Paulo Interior (Deinter) aumentaram na comparação entre o primeiro semestre dos anos de 2018 e 2022. 
+
+Os municípios que compõem o Deinter 10 - Araçatuba, tiveram 14,1% de aumento nas taxas de estupro por cem mil habitantes, passando de 16,68 estupros por 100 mil habitantes na primeira metade de 2018, para 19 estupros por 100 mil habitantes no mesmo intervalo de 2022. Outro destaque negativo é o Deinter 04 - Bauru, que passou de 16,4 estupros por 100 mil para uma taxa de 18,25 por 100 mil habitantes no primeiro semestre deste ano, um aumento de 11,1%. Os Deinter 03 - Ribeirão Preto e Deinter 05 - São José do Rio Preto, respectivamente, aumentaram em 7,6% e em 6,4% as taxas de estupro no primeiro semestre de 2022 comparado com o mesmo período de 2018.
+
+Dentre os Departamentos de Polícia Judiciária de São Paulo Interior que apresentaram reduções em suas taxas de estupros no intervalo analisado, se destacam o Deinter 01 - São José dos Campos, com uma queda -10,2% nas taxas de estupro por cem mil habitantes no primeiro semestre de 2022 comparado ao primeiro semestre de 2018, e o Deinter 06 - Santos, com uma queda de -8,3% nas taxas de estupros registradas no intervalo dos últimos quatro anos. 
+
+
+<!-- ROUBO (OUTROS) --> 
+
+```{r roubos outros macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_geral(roubo_total, "Ocorrências de Roubos (Outros)")  
+```
+Ao longo dos últimos quatro anos, o estado de São Paulo apresentou uma redução no número de ocorrências de roubos (outros) - que inclui todas as modalidades de roubos, exceto os de veículos. No primeiro semestre de 2018, o estado apresentava um total de 136.895 registros, e quatro anos depois, no mesmo período de 2022 teve um total de 119.016 ocorrências notificadas, uma redução de 13,1% no período, o que equivale a 17.879 roubos a menos. Ainda assim, entre janeiro e junho de 2022, o estado de São Paulo registrou uma média diária de 654 ocorrências notificadas de roubos.
+
+A macrorregião do Interior foi, dentre todas, a que apresentou a maior diminuição no número de roubos ao longo do período. No primeiro semestre de 2018, os municípios do interior paulista apresentavam um total de 32.918 ocorrências de roubo e, nos primeiros seis meses de 2022, esse número passou para 23.358 registros, uma redução de 29% no total. Ademais, as outras regiões do estado paulista também demonstraram reduções em seus totais de ocorrências de roubos na comparação com a primeira metade de 2018: os municípios da Grande São Paulo vem logo atrás do Interior, com uma redução de 19,5% no número de ocorrências no período. Por sua vez, a Capital paulista teve a menor redução dentre as três macrorregiões, apresentando nos primeiros meses de 2018 um total 70.732 casos de roubos e, no mesmo período de 2022, 68.907 ocorrências de roubos, uma redução de 2,58% nos últimos quatro anos.
+
+Um ponto de destaque na série histórica são os dados referentes aos períodos de maior gravidade da pandemia de Covid-19, entre o primeiro semestre de 2020 e o segundo de semestre de 2021, que apresentaram uma redução significativa dos números de ocorrências de roubos devido à implementação das políticas de distanciamento social e limitação da circulação da população. No entanto, é importante ressaltar que, apesar da retomada da dinâmica de roubos no estado a partir da segunda metade de 2021, sobretudo na capital, as ocorrências de crimes de roubo no estado ainda estão mais baixas que o registrado nos primeiros seis meses de 2018 e 2019, a despeito de um aumento da sensação de insegurança especificamente acerca dos crimes patrimoniais nas cidades paulistas.
+
+
+```{r taxa de roubos (outros) por deinter, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_taxa_deinter(roubo_total, "Interior do estado - Taxa de Roubos (Outros) por Deinter", 440)
+
+```
+Como observado nos dados agregados das macrorregiões na análise anterior, o Interior apresentou a maior taxa de redução na taxa de roubos dentre as três regiões e isso pode ser observado de forma destrinchada agora na visão separada entre os Departamentos de Polícia Judiciária do Interior (Deinter), onde todos os 10 departamentos apresentam reduções nas suas taxas de roubos por cem mil habitantes.
+
+Assim, como grandes expoentes e destaques, pode-se citar o Deinter 6 - Santos, que no 1° semestre de 2018 apresentava uma taxa de 392,45 roubos por 100 mil habitantes, teve uma redução de 26,6% para o primeiro semestre de 2022, passando para uma taxa de 287,92 roubos. Em seguida, o Deinter 1 - São José dos Campos, que demonstra uma redução de 47,4% em sua taxa no comparativo entre os primeiros meses de 2018 e 2022, saindo de 176 para 92,49 roubos por 100 mil habitantes.
+
+De forma consonante, o Deinter 9 - Piracicaba, exibe uma redução de 31,9% em sua taxa de roubos por cem mil habitantes na análise entre os primeiros semestres de 2018 e 2022, apresentando uma taxa no período inicial de 131,44 roubos e indo para 89,44 roubos no período final da análise. E por fim, o Deinter 2 - Campinas, assim como os já citados também apresentou uma das maiores reduções da taxa de roubos por 100 mil habitantes onde, no 1° semestre aparecia com 172,54 roubos, na primeira metade de 2022 o mesmo apresenta uma taxa de 131,7 roubos, uma redução de 23,6%.
+
+
+
+<!-- LETALIDADE POLICIAL --> 
+
+```{r mdip, echo=FALSE, fig.width=9, fig.height=6}
+grafico_geral(mdip, "Mortes Decorrentes de Intervenção Policial")  
+```
+A redução observada nos últimos quatro anos nas mortes decorrentes de intervenção policial, cometidas tanto em serviço como de folga, foi a principal responsável pela queda das taxas de mortes violentas no estado de São Paulo na comparação entre o primeiro semestre de 2018 e de 2022. O período analisado registrou uma queda de 49,8% no número de vitimizações pelos agentes de segurança pública: 420 pessoas foram mortas pelas polícias paulistas no primeiro semestre de de 2018, contra 221 mortes decorrentes de intervenção policial no mesmo período de 2022.
+
+Todas as três macrorregiões apresentaram reduções significativas na letalidade policial na análise dos últimos quatro anos. Os municípios da Grande São Paulo registraram uma redução de 67% nas mortes decorrentes de intervenção policial, ou seja, no primeiro semestre de 2022 a letalidade policial foi o equivalente a um terço da registrada no mesmo período de 2018. Por sua vez, a Capital registrou uma redução de 51,7% no período, e os municípios do Interior uma queda mais modesta, de 35,1% na comparação do primeiro semestre de 2018 e 2022.
+
+É importante observar que até o segundo semestre de 2020, o estado de São Paulo registrava um aumento da letalidade policial em todas as suas regiões, sobretudo no Interior. Foi a partir da segunda metade do ano de 2020, com a implementação de uma série de ações visando o controle do uso da força letal pela Polícia Militar de São Paulo, que a letalidade policial apresentou uma intensa redução no estado. Dentre estas medidas de controle da letalidade, se destaca o uso de câmeras corporais pelos policiais militares, mas é importante mencionar que tal medida foi amparada por um conjunto de ações tomadas pela Polícia Militar de São Paulo, como o fortalecimento da estrutura correcional, que disciplina os procedimentos adotados quando ocorrem casos de uso da força letal; as comissões de mitigação de risco, colegiado formado pelo comandante de área e policiais que analisam a conduta do agente envolvido no caso; o sistema de saúde mental da Polícia Militar; e a aquisição e incentivo do uso de armas menos letais pelo efetivo.
+
+\newpage
+
+
+```{r letalidade policial, echo=FALSE, fig.width=9, fig.height=4}
+
+# Criar gráfico de letalidade policial em serviço e fora por ano 
+
+p <- base_eleicao %>% 
+  filter(cod_reg != 30 & cod_reg != 99) %>% 
+  group_by(periodo) %>%
+  summarise(let_ser = sum(let_ser),
+            let_fol = sum(let_fol)) %>% 
+  pivot_longer(cols = let_ser:let_fol, values_to = "count", names_to = "letalidade") %>% 
+  ggplot(aes(fill=letalidade, x=periodo, y= count))+
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = count, colour =ifelse(letalidade == "let_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = periodo), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
+                    values = cores_2) +
+      scale_x_discrete(labels = str_wrap(
+    c("2018/1º Semestre","2018/2º Semestre", "2019/1º Semestre", "2019/2º Semestre", 
+      "2020/1º Semestre", "2020/2º Semestre", "2021/1º Semestre", "2021/2º Semestre", 
+      "2022/1º Semestre"), width = 4))+
+  scale_y_continuous(limits = c(0, 580))+
+  guides(fill = guide_legend(reverse = TRUE))+
+  theme_sdpa_macroreg 
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Letalidade Policial", x = 0.03, hjust = 0, 
+                       gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+```
+
+A redução da letalidade policial nos últimos quatro anos se deu majoritariamente dentre as mortes cometidas em serviço. Os policiais civis e militares em serviço vitimaram 330 pessoas entre janeiro e junho de 2018, e nos períodos de folga, foram 90 mortes. Já no mesmo período de 2022, foram 136 mortes decorrentes de intervenção policial em serviço, uma redução de 58,8%, e 75 vítimas de letalidade policial fora de serviço, queda de 16,7% em quatro anos. As mortes cometidas por policiais em serviço, que no primeiro semestre de 2018 respondiam por 78,6% das ocorrências de letalidade policial, passaram a representar 64,5% do total de mortes cometidas por policiais no mesmo período de 2022.
+
+```{r vitimização policial, echo=FALSE, fig.width=9, fig.height=4}
+
+# Criar gráfico de letalidade policial em serviço e fora por ano 
+
+p <- base_eleicao %>% 
+  filter(cod_reg != 30 & cod_reg != 99) %>% 
+  group_by(periodo) %>%
+  summarise(mort_fol = sum(mort_fol),
+            mort_ser = sum(mort_ser)) %>% 
+  pivot_longer(cols = mort_fol:mort_ser, values_to = "count", names_to = "mortalidade") %>% 
+  ggplot(aes(fill=mortalidade, x=periodo, y= count))+
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = count, colour =ifelse(mortalidade == "mort_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = periodo), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Mortalidade fora de serviço", "Mortalidade em serviço"), 
+                    values = cores_2) +
+      scale_x_discrete(labels = str_wrap(
+    c("2018/1º Semestre","2018/2º Semestre", "2019/1º Semestre", "2019/2º Semestre", 
+      "2020/1º Semestre", "2020/2º Semestre", "2021/1º Semestre", "2021/2º Semestre", 
+      "2022/1º Semestre"), width = 4))+
+  scale_y_continuous(limits = c(0, 35))+
+  guides(fill = guide_legend(reverse = TRUE))+
+  theme_sdpa_macroreg
+
+g <- grobTree(rectGrob(gp=gpar(fill="#042e3f")),
+              textGrob("Vitimização Policial", x = 0.03, hjust = 0, 
+                       gp=gpar(fontsize=22, col="white", fontface="bold")))
+
+grid.arrange(g, p, heights=c(1,9))
+```
+Também foi observada uma importante redução de cerca de um terço na vitimização policial nos últimos quatro anos. Ainda que as mortes de policiais tenham se reduzido tanto em serviço como de folga, foi neste último que houve uma maior redução: no primeiro semestre de 2018 foram registradas 21 mortes de policiais de folga, enquanto no mesmo período de 2022 foram 13 policiais vitimados fora de serviço, uma redução de 38,1% no período.
+
+
+\newpage
+
+## Considerações Finais
+
+Considerando o ano de eleição de novos representantes para o governo de São Paulo, esta Análise Especial Eleições buscou trazer a análise de cinco indicadores prioritários para se pensar a segurança pública no estado: os homicídios dolosos, estupros, roubos, letalidade e vitimização policial em todo o estado. Entendemos que estes itens, embora longe de esgotarem as preocupações sobre as dinâmicas de violência no estado, compõem um cerne de questões prioritárias que devem ser o pilar para o debate sobre as políticas de segurança pública da gestão estadual que se inicia em janeiro de 2023.
+
+Os homicídios dolosos seguiram a tendência de queda no estado nos últimos quatro anos. O estado de São Paulo registrou 1.395 homicídios no primeiro semestre de 2022, uma redução de 6,7% em comparação com o mesmo período de 2018. Desta forma, o estado segue com a menor taxa de homicídios dolosos do país. A Capital paulista liderou a redução no período analisado, com 28,2% homicídios a menos na primeira metade de 2022, enquanto os municípios do Interior seguiram uma tendência contrária, com um aumento de 4,2% nos homicídios em comparação com o mesmo período de 2018. É essencial que os próximos gestores estaduais tenham um olhar atento para as dinâmicas de homicídios no interior do estado, sobretudo nas regiões dos Deinter 01 – Araçatuba e Deinter 10 – São José dos Campos, que registraram os maiores aumentos nas taxas de homicídios no interior. 
+
+Também em relação aos homicídios, é importante que o estado de São Paulo intensifique os esforços para elucidação desses crimes. O relatório Onde Mora a Impunidade, publicado anualmente pelo Instituto Sou da Paz aponta uma redução do esclarecimento de homicídios no estado: apenas 34% dos assassinatos cometidos em 2019 foram elucidados, uma redução significativa em comparação ao ano anterior, no qual 46% dos homicídios cometidos em 2018 no estado foram elucidados. O Instituto Sou da Paz ouviu dezenas de policiais do Brasil para formular novas Diretrizes Nacionais de Esclarecimento de Homicídios que podem auxiliar a identificar prioridades para reverter esse quadro nos próximos quatro anos.
+
+O número de ocorrências de estupros se manteve relativamente estável nos últimos quatro anos, com uma redução de apenas 0,5% nos registros deste crime. Depois da intensa redução dos registros de estupros no primeiro semestre de 2020, devido ao isolamento social e dificuldade de notificação do crime, rapidamente o número de ocorrências de estupros voltou ao patamar registrado antes da pandemia, com cerca de 6 mil notificações de estupro por semestre. Novamente, a macrorregião do Interior, responsável por 6 a cada 10 dos estupros registrados no estado, foi a única que registrou um aumento nas ocorrências entre a primeira metade de 2018 e de 2022, com um crescimento de 3,7% deste crime. 
+
+O estupro no estado de São Paulo atinge majoritariamente crianças de até 14 anos - elas e outras categorias de vulneráveis foram as vítimas em 77,2% dos casos de estupros registrados no estado no primeiro semestre de 2022. Trata-se de um tipo de violência oculta, que em geral acontece entre pessoas com vínculos familiares, de amizade ou de vizinhança, o que torna ainda mais desafiador seu enfrentamento. Uma política efetiva de prevenção e combate deve envolver cooperação da Secretaria de Segurança Pública com serviços de educação, assistência e saúde, assim como investimento em atendimento e investigação adequadas. Essa é uma urgência para a próxima gestão no governo do estado. A violência sexual é um crime grave, violento, com possíveis consequências físicas e psicológicas difíceis de tratar, prejudicando ainda mais o desenvolvimento humano quando é cometido contra crianças e adolescentes. 
+
+Nos últimos quatro anos, o estado de São Paulo apresentou uma redução de 13,1% no número de ocorrências de roubos (outros) - todos os roubos, exceto os de veículos. As ocorrências de roubos também foram diretamente impactadas pela pandemia de Covid-19 e as medidas de isolamento social, sobretudo em 2020. No entanto, com a expansão da cobertura vacinal e o retorno às atividades rotineiras, os roubos novamente aumentaram e, na Capital paulista, já retornaram praticamente aos mesmos patamares anteriores à pandemia. 
+
+Uma dinâmica que tem chamado a atenção da população paulista, ainda que não possa ser identificada nos dados analisados acima, é a proliferação de roubos e furtos de celulares, visando não apenas a venda do aparelho, mas sobretudo, o acesso das contas bancárias das vítimas, por meio de grupos especializados em desbloquear tanto os telefones como as transações por meio do sistema Pix para realizar transferências. A próxima gestão estadual precisa direcionar esforços em identificar e desmontar estas quadrilhas que atuam na dinâmica de roubos, receptação e operações fraudulentas, sobretudo na capital. Essa dinâmica também sinaliza para a necessidade de aprimorar as estatísticas e as ferramentas de investigação para lidar com todos os crimes cometidos no ambiente digital, uma tendência em crescimento em diversas regiões do mundo. 
+
+Entre os indicadores analisados, a maior redução registrada nos últimos quatro anos se deu no número de vítimas de letalidade policial. As mortes cometidas por policiais em serviço e de folga tiveram uma redução de 49,8% na comparação entre o primeiro semestre de 2018 e de 2022. Todas as regiões apresentaram quedas significativas, mas a maior parte desta queda na letalidade policial se deu nos municípios da Grande São Paulo e na Capital, e sobretudo nas mortes cometidas por policiais em serviço:  os policiais civis e militares vitimaram 330 pessoas em serviço entre janeiro e junho de 2018, enquanto no mesmo período de 2022, foram 136 mortes decorrentes de intervenção policial em serviço, uma redução de 58,8% em quatro anos. O período dos últimos quatro anos também registrou uma redução de 37% no número de policiais mortos em serviço e fora de serviço no estado.
+
+A intensa queda da letalidade policial em São Paulo se inicia a partir do segundo semestre de 2020, quando o governo estadual opta por fazer uma gestão mais profissional do uso da força após uma série de protestos e diálogos com movimentos sociais motivados por casos de excessos emblemáticos que foram documentados. Esse processo de mudança, sistematizado no documento  Mecanismos de controle do uso da força e da letalidade implementados pela Polícia Militar do Estado de São Paulo em 2020 e 2021, envolveu a implantação de comissões de estudo de ocorrências com mortes, reforço do uso de armamentos menos letais e o início do uso de câmeras corporais instaladas nas fardas de policiais militares. A estratégia de uso de câmeras corporais tem se disseminado rapidamente em diversas unidades da federação, sendo positivo o reconhecimento do problema do uso da força e da vitimização policial, mas é importante que seja implementada com cautelas quanto os uso das captações e junto de outras medidas e estratégias de redução da letalidade policial, tal como tem sido feito de maneira exitosa no estado de São Paulo. 
+
+É essencial que estas iniciativas do controle do uso da força pelas polícias paulistas sejam mantidas e aprimoradas pelos novos gestores estaduais. Elas têm contribuído para a redução de mortes que atingem especialmente jovens, pessoas negras e moradoras das periferias, assim como tem também mostrado valor na proteção dos próprios policiais. É benéfico para todos e todas que as forças policiais do estado continuem sendo reconhecidas por sua profissionalização, e sobretudo, que a população possa efetivamente se sentir segura com o serviço de policiamento oferecido por estes(as) servidores(as).
+
+As análises trazidas neste Especial Eleições 2022, ainda que sintéticas, apontam indicadores e regiões que se destacam como prioridades para se pensar as políticas de segurança pública do estado de São Paulo nos próximos quatro anos. O detalhamento das estratégias para lidar com fatores presentes nesses crimes inclui, por exemplo, o uso de novas metodologias de gestão para resultados, combate ao tráfico de armas e ao crime organizado, investimento em capacidade analítica e de investigação, cooperação para lidar com vulnerabilidades socioeconômicas, entre outras.
+
+Apesar dos desafios, sobretudo do aumento das ocorrências de roubos e estupros nos últimos anos, o estado de São Paulo está em posição estratégica para se solidificar como um exemplo nacional de boas-práticas não apenas na redução de homicídios, mas também no controle da letalidade policial e profissionalização do uso da força por suas polícias. Para isso, é central que os próximos gestores responsáveis pelas políticas de segurança pública no estado adotem medidas efetivas e orientadas por resultados concretos tanto para lidar com desafios da segurança pública no estado, mas também, consolidar e expandir políticas de segurança que têm demonstrado resultados concretos para a população do estado de São Paulo.
+
+
+```{r base para análise, echo=FALSE}
+base_eleicao_excel <- base_eleicao %>% 
+  select (-reg_ano,-cod_reg,-pop,-id) %>% 
+  xlsx::write.xlsx("base_eleicao_excel.xlsx")
+```
+
