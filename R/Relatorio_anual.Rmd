@@ -1,0 +1,27 @@
+---
+title: "Boletim Sou da Paz Analisa 2022 - Panorama"
+author: "Instituto Sou da Paz"
+date: "`r Sys.Date()`"
+output: 
+  word_document:
+    reference_docx: template_doc.docx
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Criamos e estilos de título que devem ser chamados com ::: como a seguir:
+
+# :::{custom-style="EstiloX"}
+#Inserir título aqui
+# :::
+
+# Estilo1 - Título de seção, azul escuro fonte 16
+# Estilo2 - Título de análise, azul claro fonte 14
+# Estilo3 - subítulo, preto em negrito fonte 12
+
+```
+
+
+
+
