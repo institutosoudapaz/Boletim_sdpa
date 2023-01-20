@@ -411,9 +411,9 @@ base_pop_mun <- readRDS("../Boletim_sdpa/data-raw/pop_munic.RDS") %>%
 
 base_mensal_munic <- left_join(base_mensal_munic, base_pop_mun, by = "mun_ano")
 
-saveRDS(base_mensal_munic, "base_mensal_munic.rds")
-saveRDS(base_mensal_dp, "base_mensal_dp.rds")
-saveRDS(base_mensal, "base_mensal.rds")
+saveRDS(base_mensal_munic, "./data-raw/base_mensal_munic.rds")
+saveRDS(base_mensal_dp, "./data-raw/base_mensal_dp.rds")
+saveRDS(base_mensal, "./data-raw/base_mensal.rds")
 
 # Dados violência contra a mulher -------------------------------------------------------------
 
