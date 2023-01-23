@@ -10,6 +10,8 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+base_completa <- readRDS("../data-raw/base_completa.rds")
+
 # Criamos e estilos de título que devem ser chamados com ::: como a seguir:
 
 # :::{custom-style="EstiloX"}
@@ -20,8 +22,81 @@ knitr::opts_chunk$set(echo = TRUE)
 # Estilo2 - Título de análise, azul claro fonte 14
 # Estilo3 - subítulo, preto em negrito fonte 12
 
+# DEFINIÇÕES DAS VISUALIZAÇÕES
+
+# Cores
+
+cores <- c("#03A9F4", "#0288D1")
+
+# Temas
+
+theme_sdpa_let <- theme_void()+
+  theme(legend.position = "bottom",
+        legend.text=element_text(size=12),
+        axis.text.y=element_text(size=12),
+        legend.title = element_blank(),
+        aspect.ratio=11/20)
+
 ```
 
 
+:::{custom-style="Estilo2"}
+APRESENTAÇÃO
+:::
+
+Texto introdutório sobre o objetivo do boletim, os dados usados e a análise especil.
+
+\pagebreak
+
+:::{custom-style="Estilo2"}
+Criminalidade e Letalidade Violenta 
+:::
+
+Texto de descrição do *principal* destaque dos dados
+
+```{r crimes violentos, echo=FALSE, fig.dim = c(9, 6)}
+
+# Gráfico crimes violentos
+
+
+base_completa %>% 
+  filter(ano %in% 2021:2022) |> 
+  filter(cod_reg == 99) %>%
+  group_by(periodo) %>%
+  summarise(tot_estupro = sum(tot_estupro),
+            extor_seq = sum(extor_seq),
+            hd_ocorr = sum(hd_ocorr),
+            lat_ocorr = sum(lat_ocorr),
+            roubo_veic = sum(roubo_veic),
+            roubo_outros = sum(roubo_outros), 
+            total = sum(tot_estupro,extor_seq, hd_ocorr,lat_ocorr, roubo_veic,roubo_outros)) %>% 
+  pivot_longer(!periodo, names_to = "crime", values_to = "count") %>% 
+  group_by(crime) %>%
+    arrange(crime) %>%
+    mutate(variacao = 100 * (count - lag(count))/lag(count)) |> 
+  ggplot(aes(fill=factor(periodo, levels=c("2021","2022")), y= count, 
+             x= factor(crime, levels = c(
+               "total", "roubo_outros", "roubo_veic","extor_seq","lat_ocorr", "tot_estupro", "hd_ocorr")))) + 
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
+            position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.2, check_overlap = FALSE, size=3.2) +
+  geom_text(aes(y = 85000, 
+            label = scales::percent(round((variacao/100),3)),
+                        colour = "#03A9F4",
+            vjust = -0.6, hjust = -8, check_overlap = TRUE, size= 4,
+            na.rm = TRUE)) +
+  scale_fill_manual(values = cores) +
+  scale_color_identity() + 
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("Total de ocorrências", "Roubo (outros)","Roubo de veículo", "Extorsão mediante sequestro", "Estupro",
+      "Latrocínio", "Homicídio doloso"), width = 24))+
+  theme_sdpa_let +
+  # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+  coord_flip(ylim=c(0, 320000))
+
+
+```
 
 
