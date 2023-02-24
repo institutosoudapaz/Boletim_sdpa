@@ -1,0 +1,205 @@
+---
+title: "Boletim Sou da Paz Analisa 2022 - Panorama"
+author: "Instituto Sou da Paz"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+  word_document:
+    reference_docx: template_doc.docx
+---
+
+```{r setup, include=FALSE}
+
+library(ggplot2)
+library(tidyverse)
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+base_completa <- readRDS("../data-raw/base_completa.rds")
+
+ano_referencia <- 2022
+
+```
+
+```{r graficos e temas, include=FALSE}
+
+# Criamos e estilos de título que devem ser chamados com ::: como a seguir:
+
+# :::{custom-style="EstiloX"}
+#Inserir título aqui
+# :::
+
+# Estilo1 - Título de seção, azul escuro fonte 16
+# Estilo2 - Título de análise, azul claro fonte 14
+# Estilo3 - subítulo, preto em negrito fonte 12
+
+# DEFINIÇÕES DAS VISUALIZAÇÕES
+
+# Cores
+
+cores <- c("#03A9F4", "#0288D1")
+cores_2 <- c("#cec8c4", "#be9068","#042e3f")
+
+# Temas
+
+theme_sdpa_let <- theme_void()+
+  theme(legend.position = "bottom",
+        legend.text=element_text(size=12),
+        axis.text.y=element_text(size=12),
+        legend.title = element_blank(),
+        aspect.ratio=11/20)
+
+theme_sdpa_macroreg <- theme_void()+
+  theme(legend.position = "bottom",
+        legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=12),
+        axis.text.x=element_text(size=12),
+        legend.title = element_blank(), 
+        aspect.ratio=8.5/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm'))
+
+# FUNÇÕES PARA OS GRÁFICOS
+
+# Gráfico crimes por ano/macroregião
+
+grafico_geral <- function(crime) { #selecionar o tipo de crime
+
+base_completa %>% 
+    #filtra sem os deinter individuais
+  filter(cod_reg < 31) %>% 
+  group_by(regiao, periodo) %>%
+    #modela a base
+  summarise(tot_estupro = sum(tot_estupro),
+            extor_seq = sum(extor_seq),
+            hd_ocorr = sum(hd_ocorr),
+            lat_ocorr = sum(lat_ocorr),
+            roubo_veic = sum(roubo_veic),
+            roubo_outros = sum(roubo_outros),
+            ap_armas = sum(ap_armas),
+            prisoes = sum(prisoes)) %>% 
+  pivot_longer(cols = regiao, values_to = "regiao") %>% 
+  #gráfico
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
+             y= {{crime}}, x= periodo)) + 
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format({{crime}}, big.mark = ".", scientific = FALSE), 
+                colour =ifelse(regiao=="Capital", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.4) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = periodo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+  scale_fill_manual(values = cores_2) +
+  guides(color = "none")+
+  theme_sdpa_macroreg +
+  guides(fill = guide_legend(reverse = TRUE))
+
+
+}
+
+```
+
+::: {custom-style="Estilo2"}
+APRESENTAÇÃO
+:::
+
+Texto introdutório sobre o objetivo do boletim, os dados usados e a análise especial.
+
+\pagebreak
+
+::: {custom-style="Estilo2"}
+Criminalidade e Letalidade Violenta
+:::
+
+Texto de descrição do *principal* destaque dos dados
+
+```{r crimes violentos, echo=FALSE, fig.dim = c(9, 6)}
+
+# Gráfico crimes violentos
+
+base_completa %>% 
+  filter(ano %in% 2021:2022) |> 
+  filter(cod_reg == 99) %>%
+  group_by(periodo) %>%
+  summarise(tot_estupro = sum(tot_estupro),
+            extor_seq = sum(extor_seq),
+            hd_ocorr = sum(hd_ocorr),
+            lat_ocorr = sum(lat_ocorr),
+            roubo_veic = sum(roubo_veic),
+            roubo_outros = sum(roubo_outros), 
+            total = sum(tot_estupro,extor_seq, hd_ocorr,lat_ocorr, roubo_veic,roubo_outros)) %>% 
+  pivot_longer(!periodo, names_to = "crime", values_to = "count") %>% 
+  group_by(crime) %>%
+    arrange(crime) %>%
+    mutate(variacao = 100 * (count - lag(count))/lag(count)) |> 
+  ggplot(aes(fill=factor(periodo, levels=c("2021","2022")), y= count, 
+             x= factor(crime, levels = c(
+               "total", "roubo_outros", "roubo_veic","extor_seq","lat_ocorr", "tot_estupro", "hd_ocorr")))) + 
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
+            position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.2, check_overlap = FALSE, size=3.2) +
+  geom_text(aes(y = 85000, 
+            label = scales::percent(round((variacao/100),3)),
+                        colour = "#03A9F4",
+            vjust = -0.6, hjust = -8, check_overlap = TRUE, size= 4,
+            na.rm = TRUE)) +
+  scale_fill_manual(values = cores) +
+  scale_color_identity() + 
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("Total de ocorrências", "Roubo (outros)","Roubo de veículo", "Extorsão mediante sequestro", "Estupro",
+      "Latrocínio", "Homicídio doloso"), width = 24))+
+  theme_sdpa_let +
+  # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+  coord_flip(ylim=c(0, 320000))
+
+```
+
+```{r letalidade violenta, echo=FALSE, fig.width=9, fig.height=6}
+
+# Gráfico letalidade violenta
+
+base_completa %>% 
+  filter(periodo > (ano_referencia-2)) %>% 
+  filter(cod_reg != 99 & cod_reg != 30) %>% 
+  group_by(periodo) %>%
+  summarise(hd_vitima = sum(hd_vitima),
+            lat_vitima = sum(lat_vitima),
+            lesao_morte = sum(lesao_morte),
+            let_ser = sum(let_ser, na.rm = TRUE),
+            let_fol = sum (let_fol, na.rm = TRUE),
+            total = sum(hd_vitima, lat_vitima, lesao_morte, let_ser, let_fol)) %>% 
+  pivot_longer(!periodo, names_to = "crime", values_to = "count") %>% 
+  ggplot(aes(fill=factor(periodo, levels=c("2021", "2022")), y= count, 
+             x= factor(crime, levels = c(
+               "total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol"))))+ 
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
+            vjust = 0.43, hjust = -0.2,check_overlap = TRUE, size=3.2) +
+  scale_fill_manual(values = cores) +
+  guides(color = "none")+
+  scale_x_discrete(labels = str_wrap(
+    c("Total de vítimas", "Homicídio doloso", "Latrocínio", 
+      "Lesão corporal seguida de morte", 
+      "Mortos pela Polícia Civil e Militar em serviço", 
+      "Mortos pela Polícia Civil e Militar fora de serviço"), width = 24))+
+  theme_sdpa_let +
+  # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+  coord_flip(ylim=c(100, 4250))
+
+```
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Homicídios
+:::
+
+```{r homicidios macroreg, echo=FALSE, fig.dim = c(9, 6)}
+
+grafico_geral(hd_ocorr)
+
+```

@@ -88,8 +88,10 @@ base_crimes <- base_crimes %>%
                              cod_reg == 38 ~ "Deinter 08",
                              cod_reg == 39 ~ "Deinter 09",
                              cod_reg == 40 ~ "Deinter 10")) 
+
+# Extrai o ano. Rodar apenas nas análises trimestrais e semestrais
 base_crimes <- base_crimes %>% 
-  mutate (ano= substr(periodo, start = 1, stop = 4))
+  mutate (ano = substr(periodo, start = 1, stop = 4))
 
 base_crimes <- base_crimes%>% 
   unite(
@@ -99,9 +101,8 @@ base_crimes <- base_crimes%>%
     remove = FALSE
   )
 
-###Passo 02: Criando os tabelas de população----
 
-# Criando os tabelas de população -------------------------------------------------------------
+# Passo 02: Criando os tabelas de população -------------------------------
 
 base_pop <- readxl::read_xlsx("../Boletim_sdpa/data-raw/pop_mun.xlsx") |> 
   pivot_longer(cols = starts_with("20"), names_to = "ano") |> 
@@ -121,7 +122,6 @@ base_pop <- readxl::read_xlsx("../Boletim_sdpa/data-raw/pop_mun.xlsx") |>
       departa == "Deinter 9" ~ "Piracicaba",
       departa == "Deinter 10" ~ "Araçatuba")
   )  
-
 
 base_pop <- base_pop %>% 
   mutate(
@@ -238,16 +238,18 @@ summarise(let_ser = sum(let_ser, na.rm = TRUE),
           let_fol = sum(let_fol, na.rm = TRUE),
           mort_ser = sum(mort_ser, na.rm = TRUE),
           mort_fol = sum(mort_fol, na.rm = TRUE))
+
 correg_estado <-  correg_estado %>% 
   mutate(cod_reg = 99)
 
 correg_int <- base_corregedoria %>% 
-  filter(cod_reg>30) %>% 
+  filter(cod_reg > 30) %>% 
   group_by(cod_ano,trimestre,semestre) %>% 
   summarise(let_ser = sum(let_ser, na.rm = TRUE),
             let_fol = sum(let_fol, na.rm = TRUE),
             mort_ser = sum(mort_ser, na.rm = TRUE),
             mort_fol = sum(mort_fol, na.rm = TRUE))
+
 correg_int <-  correg_int %>% 
   mutate(cod_reg = 30)
 
@@ -294,7 +296,6 @@ base_completa <- left_join(base_crimes, base_corregedoria,by ="id") |>
   rename(cod_reg = cod_reg.x)
 
 saveRDS(base_completa, "./data-raw/base_completa.rds")
-
 
 # Preparar a base mensal (tem dados dos DPs) --------------------------------------------------
 
@@ -405,7 +406,8 @@ base_mensal_munic <- base_mensal %>%
   mutate(ano = (str_sub(periodo,start = 1, end = 4)),
          mun_ano = paste(nom_mun,"-", ano, sep = ""))
 
-base_pop_mun <- readRDS("../Boletim_sdpa/data-raw/pop_munic.RDS") %>%
+# CRIAR BASE DE POP MUNICIPIOS NO FORMATO CORRETO
+base_pop_mun <- readxl::read_xlsx("./data-raw/pop_mun.xlsx") %>%
   mutate(mun_ano = paste(municipio_nome,"-", Ano, sep = "")) %>% 
   select(mun_ano,Pop)
 
@@ -459,7 +461,7 @@ saveRDS(base_viol_mul, "./data-raw/base_viol_mul.rds")
 
 base_completa_excel <- readRDS("./data-raw/base_completa.rds") %>% 
   select(-reg_ano, -cod_reg, -ano, -pop, -id) %>% 
-  xlsx::write.xlsx("base_completa.xlsx")
+  writexl::write_xlsx("./data-raw/base_completa.xlsx")
 
 base_viol_mulher_excel <- readRDS("./data-raw/base_viol_mul.rds") %>% 
   rename(Total = contador) %>% 
@@ -468,5 +470,5 @@ base_viol_mulher_excel <- readRDS("./data-raw/base_viol_mul.rds") %>%
                      "FEMINICÍDIO", 
                      "HOMICÍDIO DOLOSO - TOTAL",
                      "LESÃO CORPORAL DOLOSA")) %>% 
-  xlsx::write.xlsx("base_viol_mulher.xlsx")
+  writexl::write_xlsx("./data-raw/base_viol_mulher.xlsx")
 
