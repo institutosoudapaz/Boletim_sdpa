@@ -3,10 +3,9 @@ title: "Boletim Sou da Paz Analisa 2022 - Panorama"
 author: "Instituto Sou da Paz"
 date: "`r Sys.Date()`"
 output:
+  word_document:
   html_document:
     df_print: paged
-  word_document:
-    reference_docx: template_doc.docx
 ---
 
 ```{r setup, include=FALSE}
@@ -17,8 +16,10 @@ library(tidyverse)
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
 base_completa <- readRDS("../data-raw/base_completa.rds")
-
+base_viol_mul <- readRDS("~/Boletim_sdpa/data-raw/base_viol_mul.rds")
 ano_referencia <- 2022
+
+
 
 ```
 
@@ -38,10 +39,18 @@ ano_referencia <- 2022
 
 # Cores
 
-cores <- c("#03A9F4", "#0288D1")
+azuis_sdp <- c("#134a86", "#4a8ecc","#c1cddb") #contrastes em tons de azul
+azuis_claros <- c("#134a86","#5e7da2"," #7a94b2"," #91a7bf", "#b4c3d3", "#a4b6ca", "#c1cddb")
+cores_op <- c("#F57923","#4a8ecc") #laranja e azul claro sdp, para criar contrastes
 cores_2 <- c("#cec8c4", "#be9068","#042e3f")
-
+cores_sdp <- c("#F57923", "#134a86", "#4a8ecc")
+#paleta_sdp
+tons_sdp <- c("#FA7921", "#FE9920","#B9A44C","#566E3D", "#0C4767")
+tons_claros <- c( "#FF8811","#F4D06F", "#FFF8F0", "#9DD9D2", "#392F5A")
+tons_pasteis <- c("#f9aa74","#fcdbc5", "#c1cddb", "#4e7099","#7eba75")
+cor_stack <- c("#97bb77","#fed685","#7c9885")
 # Temas
+
 
 theme_sdpa_let <- theme_void()+
   theme(legend.position = "bottom",
@@ -91,7 +100,7 @@ base_completa %>%
     stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
                                group = periodo), 
                geom = "text",size=3.4, vjust = -0.5) +
-  scale_fill_manual(values = cores_2) +
+  scale_fill_manual(values = cor_stack) +
   guides(color = "none")+
   theme_sdpa_macroreg +
   guides(fill = guide_legend(reverse = TRUE))
@@ -99,7 +108,39 @@ base_completa %>%
 
 }
 
+# Criar gráficos de violência contra mulheres por macroregião
+
+vio_mulher <- function(crime) { #selecionar o tipo de crime e titulo # do gráfico
+              # as opções são "LESÃOCORPORALDOLOSA" e "HOMICÍDIODOLOSO-TOTAL" (com aspas mesmo)
+base_viol_mul %>% 
+  mutate(across(where(is.character), str_remove_all, pattern = fixed(" "))) %>% 
+  mutate(regiao = case_when(cod_reg == 10 ~ "Capital", 
+                            cod_reg == 20 ~ "Grande São Paulo",
+                            cod_reg > 20 ~ "Interior")) %>% 
+  group_by(regiao, periodo, item) %>%
+  summarise(total = sum(contador)) %>% 
+  filter(item == {{crime}}) %>% 
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
+               y= total, x= periodo)) + 
+    geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+    geom_text(aes(label = format(total, big.mark = ".", scientific = FALSE), 
+                  colour =ifelse(regiao=="Capital", "white", "black")), 
+              position=position_stack(vjust=0.5), size=3.4) +
+    scale_colour_manual(values=c("white"="white", "black"="black")) +
+    # descobrir como colocar o . como divisor aqui
+    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), 
+    nsmall=0, big.mark="."),group = periodo), 
+    geom = "text",size=3.4, vjust = -0.5) +
+    scale_fill_manual(values = cor_stack) +
+    guides(color = "none")+
+    theme_sdpa_macroreg +
+    guides(fill = guide_legend(reverse = TRUE))
+  
+}
+
+
 ```
+
 
 ::: {custom-style="Estilo2"}
 APRESENTAÇÃO
@@ -110,13 +151,12 @@ Texto introdutório sobre o objetivo do boletim, os dados usados e a análise es
 \pagebreak
 
 ::: {custom-style="Estilo2"}
-Criminalidade e Letalidade Violenta
+Criminalidade Violenta
 :::
 
 Texto de descrição do *principal* destaque dos dados
 
 ```{r crimes violentos, echo=FALSE, fig.dim = c(9, 6)}
-
 # Gráfico crimes violentos
 
 base_completa %>% 
@@ -137,7 +177,7 @@ base_completa %>%
   ggplot(aes(fill=factor(periodo, levels=c("2021","2022")), y= count, 
              x= factor(crime, levels = c(
                "total", "roubo_outros", "roubo_veic","extor_seq","lat_ocorr", "tot_estupro", "hd_ocorr")))) + 
-  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey")+
   geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
             position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.2, check_overlap = FALSE, size=3.2) +
@@ -146,7 +186,7 @@ base_completa %>%
                         colour = "#03A9F4",
             vjust = -0.6, hjust = -8, check_overlap = TRUE, size= 4,
             na.rm = TRUE)) +
-  scale_fill_manual(values = cores) +
+  scale_fill_manual(values = azuis_claros) +
   scale_color_identity() + 
   guides(color = "none")+
   scale_x_discrete(labels = str_wrap(
@@ -157,7 +197,11 @@ base_completa %>%
   coord_flip(ylim=c(0, 320000))
 
 ```
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
 
+::: {custom-style="Estilo2"}
+Letalidade Violenta
+:::
 ```{r letalidade violenta, echo=FALSE, fig.width=9, fig.height=6}
 
 # Gráfico letalidade violenta
@@ -179,7 +223,7 @@ base_completa %>%
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
   geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), position = position_dodge(0.94), 
             vjust = 0.43, hjust = -0.2,check_overlap = TRUE, size=3.2) +
-  scale_fill_manual(values = cores) +
+  scale_fill_manual(values = azuis_sdp) +
   guides(color = "none")+
   scale_x_discrete(labels = str_wrap(
     c("Total de vítimas", "Homicídio doloso", "Latrocínio", 
@@ -191,6 +235,8 @@ base_completa %>%
   coord_flip(ylim=c(100, 4250))
 
 ```
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+
 
 \newpage
 
@@ -203,3 +249,41 @@ Homicídios
 grafico_geral(hd_ocorr)
 
 ```
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+
+\newpage
+::: {custom-style="Estilo1"}
+Latrocínio
+:::
+```{r lat ocorrencia macroreg, echo=FALSE, fig.dim = c(9, 6)}
+grafico_geral(lat_ocorr)
+```
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+
+\newpage
+::: {custom-style="Estilo1"}
+Lesão corporal mulheres
+:::
+```{r lesao mulheres macroreg, echo=FALSE, fig.dim = c(9, 6)}
+vio_mulher("LESÃOCORPORALDOLOSA")
+```
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+
+::: {custom-style="Estilo1"}
+Estupro
+:::
+```{r estupro, echo=FALSE, fig.dim = c(9, 6)}
+grafico_geral(tot_estupro)
+```
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+
+\newpage
+::: {custom-style="Estilo1"}
+Roubo outros
+:::
+```{r roubo, echo=FALSE, fig.dim = c(9, 6)}
+grafico_geral(c(roubo_outros + roubo_veic))
+               
+```
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
