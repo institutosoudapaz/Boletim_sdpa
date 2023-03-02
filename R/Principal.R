@@ -431,7 +431,7 @@ base_viol_mul <- readxl::read_xlsx("./data-raw/vio_mulher.xlsx") %>%
   ) %>% 
   select(Sem, Tri, Mês, Ano, cod_reg, item,contador) |> 
   # Selecionar categorias crimes de violencia contra mulher
-  filter(item =="HOMICÍDIO DOLOSO - TOTAL" |item ==	"LESÃO CORPORAL DOLOSA")
+  filter(item =="HOMICÍDIO DOLOSO - TOTAL" |item ==	"LESÃO CORPORAL DOLOSA"|item== "FEMINICÍDIO")
 
 if (modelo == 1){
   base_viol_mul <- base_viol_mul %>% 
