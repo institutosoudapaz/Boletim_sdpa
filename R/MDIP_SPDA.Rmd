@@ -84,13 +84,13 @@ mdip_mp <- mdip_mp |> mutate(ano = str_sub(data, end = 4))
 
 
 ```{r  situação e cor_peleporação, include= FALSE}
-mdip<- mdip%>% 
+mdip_ssp <- mdip_ssp %>% 
   mutate(situacao = case_when( situacao == "folga" ~ "Folga",
                                   situacao == "serviço" ~ "Serviço",
                                   situacao == "Folga" ~ "Folga",
                                   situacao == "Serviço" ~"Serviço"))  
 
-mdip <- mdip %>% 
+mdip_ssp <- mdip_ssp %>% 
   mutate (coorporacao = case_when (coorporacao == "PC" ~ "Polícia Civil",
                                    coorporacao == "PM" ~ "Polícia Militar")) 
 
@@ -98,7 +98,7 @@ mdip <- mdip %>%
 
 ## Gráficos
 ### Série Histórica Situação
-gs<- mdip |> 
+gs<- mdip_ssp |> 
   count(ano_estatistica, situacao) %>%  
   ggplot(aes(x = ano_estatistica, y = n, color = situacao)) +
   geom_line(size= 1.5)+
@@ -110,7 +110,7 @@ gs<- mdip |>
 gs
 ## Série Histórica por cor_peleporação 2016-2021
 
-gc<- mdip %>% 
+gc<- mdip_ssp %>% 
   count(ano_estatistica, coorporacao) %>% 
   ggplot(aes(x = ano_estatistica, y = n, color= coorporacao)) +
   geom_line(size= 1) +
@@ -122,7 +122,7 @@ gc<- mdip %>%
 
 gc
 ## cor_peleporação 1o trimestre 2016-2022
-gct<- mdip %>% 
+gct<- mdip_ssp %>% 
   mutate(mes_estatistica = case_when( mes_estatistica < 4 ~ "1o trimestre",
                                       between(mes_estatistica, 3,6) ~ "2o trimestre",
                                       between(mes_estatistica, 7,9) ~ "3o trimestre",
@@ -141,7 +141,7 @@ gct
 
 
 ## Situação 1o Trimestre 2016-2022
-gst <- mdip %>% filter (mes_estatistica <= 4) %>% 
+gst <- mdip_ssp %>% filter (mes_estatistica <= 4) %>% 
   count(ano_estatistica, situacao) %>%  
    ggplot(aes(x = ano_estatistica, y = n, fill= situacao)) +
   geom_bar(stat = "identity", position = "dodge") +
@@ -152,7 +152,7 @@ gst <- mdip %>% filter (mes_estatistica <= 4) %>%
 
 gst
 ## Situação do Evento por cor_peleporação no Estado de São Paulo
-gsc_est <- mdip |>  
+gsc_est <- mdip_ssp |>  
    ggplot(aes(x = ano_estatistica, fill = situacao )) + 
   geom_bar(stat = "count", position = "dodge") +
   facet_wrap(~coorporacao) +
