@@ -16,7 +16,7 @@ library(tidyverse)
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
 base_completa <- readRDS("../data-raw/base_completa.rds")
-base_viol_mul <- readRDS("~/Boletim_sdpa/data-raw/base_viol_mul.rds")
+base_viol_mul2 <- readRDS("~/Boletim_sdpa/data-raw/base_viol_mul.rds")
 ano_referencia <- 2022
 
 
@@ -146,7 +146,10 @@ base_viol_mul %>%
 APRESENTAÇÃO
 :::
 
-Texto introdutório sobre o objetivo do boletim, os dados usados e a análise especial.
+O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela Secretaria da Segurança Pública de São Paulo (SSP/SP) desde 2012, a fim de contribuir para a melhor compreensão das dinâmicas criminais e atividades policiais no estado de São Paulo e em suas grandes regiões - Capital, Grande São Paulo e Interior. Além dos dados mensal e trimestralmente divulgados pela SSP/SP, são consideradas informações produzidas pelas Corregedorias das Polícias Civil e Militar do Estado de São Paulo publicadas no Diário Oficial.
+Nesta edição do Sou da Paz Analisa, damos destaque aos casos de extorsão mediante sequestro, que tiveram aumento de 143,5% em 2022, comparado ao ano anterior. Nesta modalidade de crime, são registrados os casos que ficaram popularmente conhecidos como "golpe do pix", dinâmica criminal que vem se popularizando desde 2020.
+Nos crimes de letalidade violenta, as mortes cometidas por policiais em serviço reduziram em -39% no período. Os casos de homicídio doloso aumentaram em 7,2%, com destaque para a região da Grande São Paulo, com representativos 21,2% de casos a mais registrados em 2022. Os casos de latrocínio aumentaram em 46,5%. Os casos de violência contra a mulher, mais especificamente a modalidade de lesão corporal, vêm aumentando de maneira substancial. As pessoas vulneráveis foram as maiores vitimadas nos casos de estupro registrados em 2022, representando 77% do total dos casos. As dinâmicas de roubo voltaram a subir, com destaque para a Capital, com 12,4% de novos casos no período.
+
 
 \pagebreak
 
@@ -190,14 +193,14 @@ base_completa %>%
   scale_color_identity() + 
   guides(color = "none")+
   scale_x_discrete(labels = str_wrap(
-    c("Total de ocorrências", "Roubo (outros)","Roubo de veículo", "Extorsão mediante sequestro", "Estupro",
-      "Latrocínio", "Homicídio doloso"), width = 24))+
+    c("Total de ocorrências", "Roubo (outros)","Roubo de veículo", "Extorsão mediante sequestro",  "Latrocínio","Estupro",
+     "Homicídio doloso"), width = 24))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
   coord_flip(ylim=c(0, 320000))
 
 ```
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+Em 2022, a criminalidade violenta no estado de São Paulo apresentou aumento em todos os tipos criminais analisados, porém a extorsão mediante sequestro é, entre todos, o crime que teve o maior acréscimo, dobrando o número de casos na comparação entre os anos de 2021 e 2022. Esta elevação pode ter como um dos principais fatores uma nova dinâmica, chamada de “sequestros do pix”, modalidade de crime que surgiu com o advento da tecnologia de transferências monetárias de forma imediata, o pix, lançado pelo Banco Central em 2020. O aumento no número total de ocorrências no ano de 2022 também se atrela ao fim das políticas de redução de circulação social e da campanha de vacinação contra Covid-19 que, ao longo dos anos de 2020 e 2021, reduziram o número de pessoas em circulação nas ruas. Ao observarmos outros crimes, também é constatado o aumento nos números de casos, como o estrupo com um acréscimo de 7,3% de registros — mantendo o total agregado acima de 10.000 casos desde a pandemia de Covid-19 —, e o latrocínio e homicídios dolosos que apresentaram aumentos de 7,3% e 7,2%, respectivamente, mas com pouca variação bruta.
 
 ::: {custom-style="Estilo2"}
 Letalidade Violenta
@@ -235,7 +238,9 @@ base_completa %>%
   coord_flip(ylim=c(100, 4250))
 
 ```
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+As mortes cometidas por policiais em serviço reduziram significativamente no estado de São Paulo em 2022. Foram -39% de mortes registradas, comparado ao ano anterior. Em contrapartida, os casos de mortes cometidas por policiais fora de serviço aumentaram em 8% no período analisado, mantendo caráter oscilatório, após queda notável ocorrida em 2019 . Os casos de latrocínio aumentaram em 24%. Num panorama do total de vítimas, houve pouca variação (2%), fenômeno que pode ser explicado se observado a redução dos casos de mortos pela polícia em serviço e o aumento de latrocínios no estado.
+
+
 
 
 \newpage
@@ -250,7 +255,7 @@ grafico_geral(hd_ocorr)
 
 ```
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+Os casos de homicídio doloso seguem com suas variações, que podem ser observadas desde o início da série histórica. Ao comparar o ano de 2022 com 2018, é notada uma redução mínima de -1,4% de casos registrados. Já comparado com 2019, ano pré-pandemia de covid-19, houve aumento de 4,7%. Entre 2022 e 2020, ano em que ocorreram diversas mudanças no comportamento da sociedade em decorrência da pandemia, notamos aumento de 0,6% nos casos de homicídio no estado de São Paulo. Neste período, destaca-se somente a redução da Capital, região em manteve diversas políticas de isolamento social, com -15% de casos registrados. Em 2022, os casos voltaram a subir de maneira notável, com 7,2% de casos de homicídios a mais registrados em São Paulo. O destaque fica com a região da Grande São Paulo, que teve 21,2% de casos a mais no período analisado. No Interior, houve aumento de 5,6% e na Capital, queda de -0,5%. Com esta série é possível constatar que o período pandêmico sofrido entre os anos de 2020 e 2021 não afetou os índices de homicídio doloso no estado de São Paulo, visto que houve pouca variação se comparado aos anos que antecederam a pandemia.
 
 \newpage
 ::: {custom-style="Estilo1"}
@@ -259,7 +264,9 @@ Latrocínio
 ```{r lat ocorrencia macroreg, echo=FALSE, fig.dim = c(9, 6)}
 grafico_geral(lat_ocorr)
 ```
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+Em 2022 houveram 178 casos de latrocínios registrados pela polícia paulista, aumento de 7,6% se comparado ao ano anterior. A Capital foi a região que apresentou maior alta no número de casos de latrocínio, saindo de 53 em 2021, para 63 em 2022, um salto de 18,8%. Na comparação entre os anos de 2020 e 2022, não se observa redução significativa no total de casos, porém, a Capital tem o maior acréscimo (46,5%) observado no total de casos entre os dois anos, o que é explicado pela redução do número de pessoas em circulação nas ruas durante o ano de 2020 em razão da pandemia de Covid-19, cenário normalizado em 2022.
+
+
 
 \newpage
 ::: {custom-style="Estilo1"}
@@ -268,7 +275,7 @@ Lesão corporal mulheres
 ```{r lesao mulheres macroreg, echo=FALSE, fig.dim = c(9, 6)}
 vio_mulher("LESÃOCORPORALDOLOSA")
 ```
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+Ao menos 52.672 casos de lesão corporal de mulheres foram registrados em 2022 no estado de São Paulo, um aumento de 1,38% em comparação a 2021. Desde o início da série histórica esta modalidade de crime vem sofrendo variações. Sua queda em 2020 pode estar atrelada às subnotificações dos casos, provocada pelo isolamento social em decorrência da pandemia de covid-19. O aumento progressivo que vem sendo observado desde então denota a urgência de se pensar políticas públicas para a redução efetiva dos casos de lesão corporal contra a mulher.
 
 ::: {custom-style="Estilo1"}
 Estupro
@@ -276,7 +283,11 @@ Estupro
 ```{r estupro, echo=FALSE, fig.dim = c(9, 6)}
 grafico_geral(tot_estupro)
 ```
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+Os casos de estupro aumentaram 7,3% em comparação a 2021, e uma variação geral no período de 2019 a 2022 de 1,9%. A tendência de crescimento nos casos de violência sexual também se confirma entre estupro de vulneráveis, que aumentou 5,4% para o mesmo período. Entre 2021 e 2022, foram registrados 715 casos a mais de estupro de vulnerável, uma média 2 casos registrados por dia no estado. Somente na Capital houve redução nas ocorrências estupro (de vulnerável ou não), respectivamente, de -8,1% e -4,7%. Na Grande São Paulo, o aumento foi de 5,8% para vulnerável, e 7,8% para estupro em geral, enquanto no Interior houve aumento de 4,3% nos casos de estupro, e 8,1% nos casos de estupro de vulnerável entre 2018 e 2022. O estupro de vulneráveis (contra vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual) compõe 77% do total dos casos de estupros registrados em 2022.
+
+```{r feminicídio,  fig.dim = c(8, 6)}
+vio_mulher("FEMINICÍDIO")
+```
 
 \newpage
 ::: {custom-style="Estilo1"}
@@ -286,4 +297,5 @@ Roubo outros
 grafico_geral(c(roubo_outros + roubo_veic))
                
 ```
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut faucibus ligula. Nunc in faucibus diam. Praesent consectetur dapibus neque, ornare venenatis urna fermentum id. Donec quis mi laoreet, cursus felis quis, volutpat orci. Etiam sagittis scelerisque magna et commodo. Integer porta turpis ut augue vestibulum rhoncus. In non erat justo. Nulla a efficitur elit. Ut congue molestie diam, eu pellentesque ipsum molestie ut. Nullam elementum facilisis erat, et fringilla massa facilisis at. Fusce hendrerit ornare nunc non imperdiet. Cras a velit nec diam scelerisque mattis sed ullamcorper nisi. Nam mattis, massa non accumsan gravida, diam massa placerat magna, vel finibus ante nibh nec sapien. Morbi eleifend est et facilisis vehicula. Mauris quis nulla vel ante efficitur condimentum ac eget massa.
+O ano de 2022 terminou com um total de 286.573 casos de roubos (outros) em todo o estado de São Paulo, 10,75% maior que o total do ano anterior, que fechou com 258.747 casos registrados pela polícia, com a Capital paulista demonstrando o maior aumento percentual dentre todas ass regiões do estado, crescimento de 12,4%. Este aumento também é elevado quando se compara os totais de 2020 com 2022, apresentando um aumento de 14,30%, o que pode se inferir sendo um reflexo da pandemia de Covid-19, que durante o ano de 2020 teve seu maior pico de contágio e as políticas de redução de livre circulação de maior rigor, diminuindo a quantidade de pessoas em movimento nas ruas, o que em 2022 não é mais observado, com a população voltando completamente à circulação.
+
