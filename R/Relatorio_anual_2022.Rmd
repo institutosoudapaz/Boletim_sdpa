@@ -301,6 +301,8 @@ Feminicídio
 ```{r feminicídio, echo=FALSE, fig.dim = c(8, 6)}
 vio_mulher("FEMINICÍDIO")
 ```
+
+Feminicídio 2022
 \newpage
 
 ::: {custom-style="Estilo1"}
