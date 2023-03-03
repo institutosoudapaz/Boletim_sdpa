@@ -15,71 +15,23 @@ library(kableExtra)
 library(ggrepel)
 library(hrbrthemes)
 library(readxl)
+    
 ```
 
-```{r banco mdip, echo=FALSE, warning=FALSE}
-mdip_13<- read_excel('../data-raw/MDIP_2013_2022.xlsx', sheet = "2013", col_types = c("text","text", "text", "text", "text", "text", "text", "numeric", "numeric", "text","text", "numeric", "text", "text", "text", "text", "date", "text", "text", 
-"text", "text", "text", "text", "text", 
-"text", "numeric", "text", "text", 
- "text", "text")) |> janitor::clean_names()
-
-mdip_14<- read_excel("../data-raw/MDIP_2013_2022.xlsx", sheet = "2014", col_types = c("text","text", "text", "text", "text", "text", "text", "numeric", "numeric", "text","text", "numeric", "text", "text", "text", "text", "date", "text", "text", 
-"text", "text", "text", "text", "text", 
-"text", "numeric", "text", "text", 
- "text", "text")) |> janitor::clean_names()
-
-mdip_15<- read_excel("../data-raw/MDIP_2013_2022.xlsx", sheet = "2015", col_types = c("text","text", "text", "text", "text", "text", "text", "numeric", "numeric", "text","text", "numeric", "text", "text", "text", "text", "date", "text", "text", 
-"text", "text", "text", "text", "text", 
-"text", "numeric", "text", "text", 
- "text", "text")) |> janitor::clean_names()
-
-mdip_16<- read_excel("../data-raw/MDIP_2013_2022.xlsx", sheet = "2016",  col_types = c("text","text", "text", "text", "text", "text", "text", "numeric", "numeric", "text","text", "numeric", "text", "text", "text", "text", "date", "text", "text", 
-"text", "text", "text", "text", "text", 
-"text", "numeric", "text", "text", 
- "text", "text")) |> janitor::clean_names()
-
-mdip_17<- readxl::read_excel("../data-raw/MDIP_2013_2022.xlsx", sheet = "2017",  col_types = c("text","text", "text", "text", "text", "text", "text", "numeric", "numeric", "text","text", "numeric", "text", "text","text", "text", "date", "text", "text", 
-"text", "text", "text", "text", "text", 
-"text", "numeric", "text", "text", 
- "text", "text")) |> janitor::clean_names()
-mdip_18<- readxl::read_excel("../data-raw/MDIP_2013_2022.xlsx", sheet = "2018", col_types = c("text","text", "text", "text", "text", "text", "text", "numeric", "numeric", "text","text", "numeric", "text", "text","text", "text", "date", "text", "text", 
-"text", "text", "text", "text", "text", 
-"text", "numeric", "text", "text", 
- "text", "text")) |> janitor::clean_names()
-mdip_19<- readxl::read_excel("../data-raw/MDIP_2013_2022.xlsx", sheet = "2019",  col_types = c("text","text", "text", "text", "text", "text", "text", "numeric", "numeric", "text","text", "numeric", "text", "text", "text", "text", "date", "text", "text", 
-"text", "text", "text", "text", "text", 
-"text", "numeric", "text", "text", 
- "text", "text")) |> janitor::clean_names()
-mdip_20<- readxl::read_excel("../data-raw/MDIP_2013_2022.xlsx", sheet = "2020",  col_types = c("text","text", "text", "text", "text", "text", "text", "numeric", "numeric", "text","text", "numeric", "text", "text","text", "text", "date", "text", "text", 
-"text", "text", "text", "text", "text", 
-"text", "numeric", "text", "text", 
- "text", "text")) |> janitor::clean_names()
-mdip_21<- readxl::read_excel("../data-raw/MDIP_2013_2022.xlsx", sheet = "2021", col_types = c("text","text", "text", "text", "text", "text", "text", "numeric", "numeric", "text","text", "numeric", "text", "text","text", "text", "date", "text", "text", 
-"text", "text", "text", "text", "text", 
-"text", "numeric", "text", "text", 
- "text", "text")) |> janitor::clean_names()
-mdip_22<- readxl::read_excel("../data-raw/MDIP_2013_2022.xlsx", sheet = "2022", col_types = c("text","text", "text", "text", "text", "text", "text", "numeric", "numeric", "text","text", "numeric", "text", "text","text", "text", "date", "text", "text", 
-"text", "text", "text", "text", "text", 
-"text", "numeric", "text", "text", 
- "text", "text")) |> janitor::clean_names()
-
-mdip_ssp <- dplyr::bind_rows(mdip_13, mdip_14, mdip_15, mdip_16, mdip_17, mdip_18, mdip_19, mdip_20, mdip_21, mdip_22)
-
- mdip_mp <- readxl::read_excel("../data-raw/letalidade_policial.xlsx", sheet = "LETALIDADE", col_types = c("text", 
-        "text", "date", "date", "text", "text", 
-        "text", "text", "text", "text", "text", 
-        "numeric", "text", "numeric"))|> janitor::clean_names()
-colnames(mdip_ssp)
-colnames(mdip_mp)
-
+```{r bancos mdip, echo=FALSE, warning=FALSE}
+mdip_ssp <- readRDS("../data-raw/mdip_ssp.rds")
+mdip_mp <- readRDS("../data-raw/mdip_mp.rds")
 
 ```
  
 **situação (folga ou serviço)**.
 
-```{r}
-#cria a coluna ano na base mdip_mp
-mdip_mp <- mdip_mp |> mutate(ano = str_sub(data, end = 4))
+
+```{r descritivas}
+
+mdip_mp  |>  group_by(batalhao) |> summarise(total = n()) |> arrange(desc(total)) |> mutate(mean= mean(total), sd = sd(total)) |>   view()
+
+
 ```
 
 
