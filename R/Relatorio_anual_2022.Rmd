@@ -280,7 +280,7 @@ Lesão corporal mulheres
 vio_mulher("LESÃOCORPORALDOLOSA")
 ```
 
-Ao menos 52.672 casos de lesão corporal de mulheres foram registrados em 2022 no estado de São Paulo, um aumento de 1,38% em comparação a 2021. Desde o início da série histórica esta modalidade de crime vem sofrendo variações. Sua queda em 2020 pode estar atrelada às subnotificações dos casos, provocada pelo isolamento social em decorrência da pandemia de covid-19. O aumento progressivo que vem sendo observado desde então denota a urgência de se pensar políticas públicas para a redução efetiva dos casos de lesão corporal contra a mulher.
+Ao menos 52.672 casos de lesão corporal de mulheres foram registrados em 2022 no estado de São Paulo, um aumento residual de 1,38% em comparação a 2021. Dentre as regiões analisadas, somente a Capital apresentou aumento em relação ao ano anterior, 3.909 casos a mais. Tanto o Interior, quanto a Grande São Paulo tiveram queda nas notificações. O aumento progressivo que vem sendo observado desde então denota a urgência de se pensar políticas públicas para a redução efetiva dos casos de lesão corporal contra a mulher.
 \newpage
 
 ::: {custom-style="Estilo1"}
@@ -302,7 +302,8 @@ Feminicídio
 vio_mulher("FEMINICÍDIO")
 ```
 
-Feminicídio 2022
+Os casos de feminicídio também aumentaram 27% em 2022, alcançando o maior patamar dos último quatro anos. Dentre eles, 24,60% foram cometidos na Grande São Paulo, 19,7% na Capital e 55,6% no Interior.
+
 \newpage
 
 ::: {custom-style="Estilo1"}
