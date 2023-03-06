@@ -6,7 +6,7 @@ output:
   html_document: default
   pdf_document: default
 ---
-```{r setup, message=FALSE, include=FALSE}
+```{r setup, message=FALSE, include=FALSE, warning=FALSE}
 library(tidyverse)
 library(janitor)
 library(rio)
@@ -19,6 +19,7 @@ library(readxl)
 ```
 
 ```{r bancos mdip, echo=FALSE, warning=FALSE}
+
 mdip_ssp <- readRDS("../data-raw/mdip_ssp.rds")
 mdip_mp <- readRDS("../data-raw/mdip_mp.rds")
 
@@ -31,8 +32,15 @@ mdip_mp <- readRDS("../data-raw/mdip_mp.rds")
 
 mdip_mp  |>  group_by(batalhao) |> summarise(total = n()) |> arrange(desc(total)) |> mutate(mean= mean(total), sd = sd(total)) |>   view()
 
+mdip_mp %>% group_by (ano) %>% count()
+mdip_ssp %>%group_by(ano_estatistica) %>% count()
+
+ unique(mdip_mp$vitimas)
+
 
 ```
+A base do MP apresenta 447 casos de MDIP em 2022, já  a base da SSP registrou 419 casos no mesmo ano.
+Em 2021 a base do MP registrou 555 casos, já a da SSP, 570. Em 2020 a a do MP 732 contra 814 casos presentes na base da SSP.
 
 
 ```{r  situação e cor_peleporação, include= FALSE}
