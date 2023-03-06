@@ -204,5 +204,5 @@ mdip_ssp %>%  mutate (municipio_limpo = case_when(
   
   TRUE = as.character(cidade)
 ))
-grupo_pesquisa <- c("Ingrid", "Pedro", "Malu")
+
 
