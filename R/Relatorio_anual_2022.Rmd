@@ -49,6 +49,7 @@ tons_sdp <- c("#FA7921", "#FE9920","#B9A44C","#566E3D", "#0C4767")
 tons_claros <- c( "#FF8811","#F4D06F", "#FFF8F0", "#9DD9D2", "#392F5A")
 tons_pasteis <- c("#f9aa74","#fcdbc5", "#c1cddb", "#4e7099","#7eba75")
 cor_stack <- c("#97bb77","#fed685","#7c9885")
+
 # Temas
 
 
