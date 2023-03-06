@@ -479,11 +479,17 @@ unique(mdip_mp$cidade)
 
 #código 
 
-mdip_mp %>%  mutate (municipio_limpo = case_when(
-  cidade == "S.PAULO" ~ "SÃO PAULO",
-  cidade == "nome_antigo" ~ "nome_novo",
+mdip_ssp %>%  mutate (municipio_limpo = case_when(
+  municipio_circunscricao %in% c("S.PAULO","SÃO PAULO") ~ "São Paulo",
+  municipio_circunscricao %in% c("ORLANDIA", "ORLÂNDIA") ~ "nome_novo",
+  municipio_circunscricao == "AGUAÍ"~ "Aguaí",
+  municipio_circunscricao == "ÁGUAS DE LINDÓIA"~"Águas de Lindóia",
+  #municipio_circunscricao == ou %in% "nome_antigo" ~"nome_novo",
   
   
+
   
   TRUE = as.character(cidade)
 ))
+grupo_pesquisa <- c("Ingrid", "Pedro", "Malu")
+
