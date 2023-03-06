@@ -1,6 +1,0 @@
-Como atualizar a base vio_mulher (Sou da Paz Analisa)
-Verificar o último mês de preenchimento.
-Abrir base -> Atribuir o  Semestre, Trimestre, Mês e ano 
-Abrir a página <https://www.ssp.sp.gov.br/Estatistica/ViolenciaMulher.aspx>
-Copiar os dados do último mês liberado e colar ao lado das informações de tempo correspondente
-Salvar a base e subir no Git.
