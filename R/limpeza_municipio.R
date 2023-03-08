@@ -230,7 +230,7 @@ mdip_ssp %>%  mutate (municipio_limpo = case_when(
   municipio_circunscricao == "Cubatao" ~ "Cubatão",
   #municipio_circunscricao == ou %in% "nome_antigo" ~"nome_novo",
   
-
+##Di, na linha 224, se só tem um nome é no ==, nao precisa do %in% c()
   
   TRUE = as.character(cidade)
 ))
