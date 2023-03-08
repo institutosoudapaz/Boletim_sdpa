@@ -35,12 +35,11 @@ mdip_mp  |>  group_by(batalhao) |> summarise(total = n()) |> arrange(desc(total)
 mdip_mp %>% group_by (ano) %>% count()
 mdip_ssp %>%group_by(ano_estatistica) %>% count()
 
- unique(mdip_mp$vitimas)
-
-
+mdip_mp %>% filter (ano ==2022)
 ```
 A base do MP apresenta 447 casos de MDIP em 2022, já  a base da SSP registrou 419 casos no mesmo ano.
 Em 2021 a base do MP registrou 555 casos, já a da SSP, 570. Em 2020 a a do MP 732 contra 814 casos presentes na base da SSP.
+Foram 30 casos com mais de uma vítima em 2022.
 
 
 ```{r  situação e cor_peleporação, include= FALSE}
