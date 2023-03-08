@@ -197,6 +197,7 @@ mdip_ssp %>%  mutate (municipio_limpo = case_when(
   municipio_circunscricao %in% c("ORLANDIA", "ORLÂNDIA") ~ "nome_novo",
   municipio_circunscricao == "AGUAÍ"~ "Aguaí",
   municipio_circunscricao == "ÁGUAS DE LINDÓIA"~"Águas de Lindóia",
+  #municipio_circunscricao == ou %in% "nome_antigo" ~"nome_novo",
   municipio_circunscricao == "Aguai" ~ "Aguaí",
   municipio_circunscricao %in% c("Aguas De S. Barbara", "Águas De Santa Bárbara") ~ "Águas de Santa Bárbara",
   municipio_circunscricao == "Águas De Lindóia" ~ "Águas de Lindóia",
@@ -228,7 +229,6 @@ mdip_ssp %>%  mutate (municipio_limpo = case_when(
   municipio_circunscricao == "Cosmopolis" ~ "Cosmópolis",
   municipio_circunscricao == "Cubatao" ~ "Cubatão",
   #municipio_circunscricao == ou %in% "nome_antigo" ~"nome_novo",
-  
   
 
   
