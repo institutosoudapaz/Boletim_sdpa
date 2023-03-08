@@ -73,7 +73,7 @@ mdip_mp <- mdip_mp |> mutate(hora = str_sub(hora,  start = 12))
 #limpa hora ssp
 mdip_ssp <- mdip_ssp |> mutate(hora_fato = str_sub(hora_fato,  start = 12))
 
-#limpando a variável municipio_circunscricao e cidade 
+#limpando as variáveis de locais 
 mdip_ssp$municipio_circunscricao <- str_to_title(mdip_ssp$municipio_circunscricao)
 mdip_mp$cidade <- str_to_title(mdip_mp$cidade)
 mdip_mp$estado <- str_to_title(mdip_mp$estado)
@@ -83,11 +83,27 @@ mdip_ssp$profissao <- str_to_title(mdip_ssp$profissao)
 mdip_ssp$municipio_elaboracao <- str_to_title(mdip_ssp$municipio_elaboracao)
 mdip_ssp$municipio_circunscricao <- str_to_title(mdip_ssp$municipio_circunscricao)
 
+#torna todas as linhas uma observação 
+#(cria um indice de replicação a partir da var. vitimas)
+ idx <- rep(1:nrow(mdip_mp), mdip_mp$vitimas)
+#replica no banco os casos com mais de uma vitima
+ mdip_mp <- mdip_mp[idx,]
+#muda o número de vitimas para 1 em todos os casos 
+mdip_mp<- mdip_mp %>%  mutate(vitimas = 1)
 
 #cria coluna COP (se o batalhão usa COP)
 ##testes
- mdip_mp |> filter(ano == 2022, cidade =="GUARULHOS") |> view()
-mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="GUARULHOS") |> view()
+ mdip_mp |> filter(ano == 2022, cidade =="Guarulhos") |> view()
+mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="Guarulhos") |> view()
+
+ mdip_mp |> filter(ano == 2022, cidade =="Ribeirão Preto") |> view()
+mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="Ribeirao Preto") |> view()
+
+ mdip_mp |> filter(ano == 2022, cidade =="Santo André") |> view()
+mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.andre") |> view()
+
+ mdip_mp |> filter(ano == 2022, cidade =="São Carlos") |> view()
+mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.carlos") |> view()
 
 ```
 
