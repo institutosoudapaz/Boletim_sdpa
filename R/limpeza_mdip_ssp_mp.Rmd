@@ -88,8 +88,8 @@ mdip_ssp$municipio_circunscricao <- str_to_title(mdip_ssp$municipio_circunscrica
  idx <- rep(1:nrow(mdip_mp), mdip_mp$vitimas)
 #replica no banco os casos com mais de uma vitima
  mdip_mp <- mdip_mp[idx,]
-#muda o número de vitimas para 1 em todos os casos 
-mdip_mp<- mdip_mp %>%  mutate(vitimas = 1)
+#apaga a coluna vitimas
+ mdip_mp <- mdip_mp %>% select(-vitimas)
 
 #cria coluna COP (se o batalhão usa COP)
 ##testes
