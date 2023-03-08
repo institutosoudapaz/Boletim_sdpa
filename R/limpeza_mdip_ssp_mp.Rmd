@@ -76,6 +76,13 @@ mdip_ssp <- mdip_ssp |> mutate(hora_fato = str_sub(hora_fato,  start = 12))
 #limpando a variável municipio_circunscricao e cidade 
 mdip_ssp$municipio_circunscricao <- str_to_title(mdip_ssp$municipio_circunscricao)
 mdip_mp$cidade <- str_to_title(mdip_mp$cidade)
+mdip_mp$estado <- str_to_title(mdip_mp$estado)
+mdip_mp$bairro <- str_to_title(mdip_mp$bairro)
+mdip_ssp$logradouro <- str_to_title(mdip_ssp$logradouro)
+mdip_ssp$profissao <- str_to_title(mdip_ssp$profissao)
+mdip_ssp$municipio_elaboracao <- str_to_title(mdip_ssp$municipio_elaboracao)
+mdip_ssp$municipio_circunscricao <- str_to_title(mdip_ssp$municipio_circunscricao)
+
 
 #cria coluna COP (se o batalhão usa COP)
 ##testes
