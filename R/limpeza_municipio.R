@@ -193,10 +193,6 @@ unique(mdip_mp$cidade)
 #código 
 
 mdip_ssp %>%  mutate (municipio_limpo = case_when(
-  municipio_circunscricao %in% c("S.PAULO","SÃO PAULO") ~ "São Paulo",
-  municipio_circunscricao %in% c("ORLANDIA", "ORLÂNDIA") ~ "nome_novo",
-  municipio_circunscricao == "AGUAÍ"~ "Aguaí",
-  municipio_circunscricao == "ÁGUAS DE LINDÓIA"~"Águas de Lindóia",
   #municipio_circunscricao == ou %in% "nome_antigo" ~"nome_novo",
   municipio_circunscricao == "Aguai" ~ "Aguaí",
   municipio_circunscricao %in% c("Aguas De S. Barbara", "Águas De Santa Bárbara") ~ "Águas de Santa Bárbara",
@@ -282,13 +278,10 @@ mdip_ssp %>%  mutate (municipio_limpo = case_when(
     
   
   #municipio_circunscricao == ou %in% "nome_antigo" ~"nome_novo",
-  
-##Di, na linha 224, se só tem um nome é no ==, nao precisa do %in% c()
-    ## corrigido. obrigada!
-  
+
   ##Pedro, começa da letra O, linhas 202 e 169
   
-  TRUE = as.character(cidade)
+  TRUE = as.character(municipio_circunscricao)
 ))
 
 
