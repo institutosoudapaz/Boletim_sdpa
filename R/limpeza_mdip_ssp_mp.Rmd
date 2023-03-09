@@ -90,6 +90,16 @@ mdip_ssp$municipio_circunscricao <- str_to_title(mdip_ssp$municipio_circunscrica
  mdip_mp <- mdip_mp[idx,]
 #apaga a coluna vitimas
  mdip_mp <- mdip_mp %>% select(-vitimas)
+ 
+#Cria coluna para join
+mdip_ssp <- mdip_ssp|> mutate(var_join = paste(datahora_registro_bo, hora_fato, no_mun, sep ="-" )) 
+
+mdip_mp <- mdip_mp |>  mutate(var_join = paste(data, hora_fato, no_mun, sep ="-" )) 
+
+mdip_ssp <- mdip_ssp |>mutate(rdo = paste(num_bo, ano_bo, sep= "/"))
+
+#Une os bancos
+mdip_total<- merge(mdip_ssp, mdip_mp, by = "rdo", all = TRUE)
 
 #cria coluna COP (se o batalhão usa COP)
 ##testes
@@ -104,6 +114,11 @@ mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.andre")
 
  mdip_mp |> filter(ano == 2022, cidade =="São Carlos") |> view()
 mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.carlos") |> view()
+
+mdip_mp |> filter(ano == 2022, cidade =="São Caetano Do Sul") |> view()
+mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.caetano Do Sul") |> view()
+
+
 
 ```
 
