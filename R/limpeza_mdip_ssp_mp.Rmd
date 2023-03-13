@@ -59,7 +59,8 @@ mdip_ssp <- dplyr::bind_rows(mdip_13, mdip_14, mdip_15, mdip_16, mdip_17, mdip_1
         "text", "text", "text", "text", "text", 
         "numeric", "text", "numeric"))|> janitor::clean_names()
 
-
+ estim_pop <- readxl::read_excel("../data-raw/estim_pop_sp.xls") |> 
+   janitor::clean_names()
 
 ```
 
@@ -91,15 +92,33 @@ mdip_ssp$municipio_circunscricao <- str_to_title(mdip_ssp$municipio_circunscrica
 #apaga a coluna vitimas
  mdip_mp <- mdip_mp %>% select(-vitimas)
  
-#Cria coluna para join
-mdip_ssp <- mdip_ssp|> mutate(var_join = paste(datahora_registro_bo, hora_fato, no_mun, sep ="-" )) 
-
-mdip_mp <- mdip_mp |>  mutate(var_join = paste(data, hora_fato, no_mun, sep ="-" )) 
-
+ 
+#cria RDO para ssp
 mdip_ssp <- mdip_ssp |>mutate(rdo = paste(num_bo, ano_bo, sep= "/"))
 
+# renomeia cidade 
+estim_pop <- estim_pop |>  rename(municipio_limpo = nome_do_municipio)
+
 #Une os bancos
-mdip_total<- merge(mdip_ssp, mdip_mp, by = "rdo", all = TRUE)
+mdip_rdo<- merge(mdip_ssp, mdip_mp, by = "rdo", all = TRUE)
+
+mdip_ssp_total<- merge(mdip_ssp, estim_pop, by = "municipio_limpo", all = TRUE)
+mdip_mp_total<- merge(mdip_mp, estim_pop, by = "municipio_limpo", all = TRUE)
+
+#limpa casos com NAs(usa rdo como var referência)
+
+mdip_mp_total <- mdip_mp[complete.cases(mdip_mp$rdo), ]
+mdip_ssp_total <- mdip_ssp[complete.cases(mdip_ssp$rdo), ]
+
+#Cria coluna para join
+mdip_ssp <- mdip_ssp_total|> mutate(var_join = paste(data_fato, hora_fato, municipio_limpo, sep ="/" )) 
+
+mdip_mp <- mdip_mp_total|>  mutate(var_join = paste(data, hora, municipio_limpo, sep ="/" ))
+
+mdip_ssp17<- mdip_ssp |>filter(ano_estatistica >=2017)
+
+#junta bases
+mdip_total<- merge(mdip_mp, mdip_ssp17, by= "var_join", all=TRUE)
 
 #cria coluna COP (se o batalhão usa COP)
 ##testes
