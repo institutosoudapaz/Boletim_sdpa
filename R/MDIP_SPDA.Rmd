@@ -15,6 +15,8 @@ library(kableExtra)
 library(ggrepel)
 library(hrbrthemes)
 library(readxl)
+library(viridis)
+library(ggrepel)
     
 ```
 
@@ -59,15 +61,16 @@ mdip_ssp <- mdip_ssp %>%
 ### Série Histórica Situação
 gs<- mdip_ssp |> 
   count(ano_estatistica, situacao) %>%  
-  ggplot(aes(x = ano_estatistica, y = n, color = situacao)) +
+  ggplot(aes(x = ano_estatistica, y = n, color = situacao, label= n)) +
   geom_line(size= 1.5)+
+  geom_label_repel(fill = "white") +
   scale_color_brewer ( palette ="Set1") +
   labs(x = "Ano", y= "Frequência", color = "Situação", 
        title = "MDIP por Situação", subtitle = "2016-2021")+
   theme_minimal()
 
 gs
-## Série Histórica por cor_peleporação 2016-2021
+## Série Histórica por cor_peleporação 2016-2022
 
 gc<- mdip_ssp %>% 
   count(ano_estatistica, coorporacao) %>% 
@@ -75,24 +78,25 @@ gc<- mdip_ssp %>%
   geom_line(size= 1) +
   scale_color_brewer ( type = "seq", palette ="Set2") +
   labs(x = "Ano", y= "Frequência", color = "cor_peleporação", 
-       title = "MDIP por cor_peleporação", subtitle = "2016-2021")+
+       title = "MDIP por cor_peleporação", subtitle = "2016-2022")+
   theme_minimal()
 
 
 gc
-## cor_peleporação 1o trimestre 2016-2022
+
+## corporação 1o trimestre 2016-2022
 gct<- mdip_ssp %>% 
   mutate(mes_estatistica = case_when( mes_estatistica < 4 ~ "1o trimestre",
                                       between(mes_estatistica, 3,6) ~ "2o trimestre",
                                       between(mes_estatistica, 7,9) ~ "3o trimestre",
-                                      between(mes_estatistica, 10,12)~"4o trimetre")) |>
+                                      between(mes_estatistica, 10,12)~"4o trimetre"))|>
   group_by(mes_estatistica, coorporacao) |> 
 summarise(n = n()) |> 
   ggplot(aes(x = mes_estatistica, y=n, fill= coorporacao, label = n)) +
   geom_bar(stat = "identity", position = "dodge") +
     geom_label_repel(fill = "white")+
-  labs(x = "", y= "Frequência", fill = "cor_peleporação",  
-  title = "MDIP por cor_peleporação em 2022", subtitle = "")+
+  labs(x = "", y= "Frequência", fill = "corporação",  
+  title = "MDIP por corporação em 2022", subtitle = "")+
   scale_fill_viridis(discrete=TRUE, option = "D") +
     theme_ipsum()
 gct
@@ -100,7 +104,8 @@ gct
 
 
 ## Situação 1o Trimestre 2016-2022
-gst <- mdip_ssp %>% filter (mes_estatistica <= 4) %>% 
+gst <- mdip_ssp %>% 
+  filter (mes_estatistica <= 4) %>% 
   count(ano_estatistica, situacao) %>%  
    ggplot(aes(x = ano_estatistica, y = n, fill= situacao)) +
   geom_bar(stat = "identity", position = "dodge") +
@@ -126,7 +131,7 @@ gsc_est <- mdip_ssp |>
 
 ```{r tabs, echo=FALSE}
 ##Tabelas
-kable (mdip %>% 
+kable (mdip_ssp%>% 
    filter (ano !=2022) %>%
   tabyl(situacao, cor_peleporacao) %>% 
 adorn_totals("row") %>% 
