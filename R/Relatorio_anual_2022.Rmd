@@ -18,8 +18,8 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 base_completa <- readRDS("../data-raw/base_completa.rds")
 base_viol_mul <- readRDS("~/Boletim_sdpa/data-raw/base_viol_mul.rds")
 ano_referencia <- 2022
-
-
+base_ssp <- readRDS("../data-raw/mdip_ssp.rds")
+#subir base ssp após completa integração entre os dados ssp e mp
 
 ```
 
