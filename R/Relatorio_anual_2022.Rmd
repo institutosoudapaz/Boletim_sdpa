@@ -10,7 +10,7 @@ output:
 
 ```{r setup, include=FALSE}
 
-library(ggplot2)
+
 library(tidyverse)
 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
@@ -316,4 +316,31 @@ grafico_geral(c(roubo_outros + roubo_veic))
 ```
 
 O ano de 2022 terminou com um total de 286.573 casos de roubos (outros) em todo o estado de São Paulo, 10,75% maior que o total do ano anterior, que fechou com 258.747 casos registrados pela polícia, com a Capital paulista demonstrando o maior aumento percentual dentre todas ass regiões do estado, crescimento de 12,4%. Este aumento também é elevado quando se compara os totais de 2020 com 2022, apresentando um aumento de 14,30%, o que pode se inferir sendo um reflexo da pandemia de Covid-19, que durante o ano de 2020 teve seu maior pico de contágio e as políticas de redução de livre circulação de maior rigor, diminuindo a quantidade de pessoas em movimento nas ruas, o que em 2022 não é mais observado, com a população voltando completamente à circulação.
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Letalidade policial em serviço e em folga
+:::
+```{r letalidade, echo=FALSE, fig.dim = c(9, 6)}
+# Criar gráfico de letalidade policial em serviço e fora por ano 
+
+ base_completa %>% 
+  filter(cod_reg == 99) %>% 
+
+   pivot_longer(cols = let_ser:let_fol, values_to = "count", names_to = "letalidade") %>% 
+  ggplot(aes(fill=letalidade, x=periodo, y=count))+
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = count, colour =ifelse(letalidade == "let_fol", "black", "white")), 
+            position=position_stack(vjust=0.5)) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+  stat_summary(fun = sum, aes(label = ..y.., group = periodo), 
+               geom = "text",size=4, vjust = -0.5) +
+  guides(color = "none")+
+  scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
+                    values = cores_2) +
+  guides(fill = guide_legend(reverse = TRUE))+
+  theme_sdpa_macroreg
+               
+```
 
