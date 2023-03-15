@@ -344,3 +344,30 @@ Letalidade policial em serviço e em folga
                
 ```
 
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Raça e idade das vitímas MDIP
+:::
+```{r raça e idade, echo=FALSE, fig.dim = c(9, 6)}
+
+base_ssp %>%
+  filter(tipo_do_cvli == "Homicídio doloso - Art. 121 do CPB") %>%
+  group_by(cor_pele, idade_pessoa) %>%
+  summarise(total=n()) %>%
+ggplot(aes(x = idade, fill = sexo_vit)) +
+  geom_bar(position = "dodge", stat = "bin", binwidth = 2) +
+  coord_flip() +
+  scale_x_reverse() +
+  facet_grid(~sexo_vit) +
+  labs(title = "Pirâmide etária agrupada por Raça/cor",
+       x = "Idade",
+       y = "Raça/cor",
+       fill = "Raça/cor") +
+  theme_classic()
+
+#analisando possibilidades para construção do gráfico --> ainda trabalhando
+
+```
+
