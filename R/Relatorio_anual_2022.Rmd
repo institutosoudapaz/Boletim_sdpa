@@ -366,17 +366,26 @@ Raça e idade das vitímas MDIP
     cor_pele %in% c("Outros", "NULL","Amarela","Ignorada","REGISTRADO NA PF","Policia Federal") ~ NA,
     TRUE ~ as.character (cor_pele)))
   
+  base_ssp |>  
+    filter(between(ano_bo, 2018, 2022)) |> 
+    count( cor_pele_agregada)
+
   view(base_ssp)
  install.packages("ggcharts")
  library(ggcharts)
+ library(dplyr)
 
-    base_ssp |>
-  filter(cor_pele_agregada != "NA") %>%
-  filter(!is.na(idade_pessoa_agregada)) %>%
+  base_ssp |>
+   filter(cor_pele_agregada != "NA") %>%
+   filter(!is.na(idade_pessoa_agregada)) %>%
+    filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
    group_by(cor_pele_agregada, idade_pessoa_agregada) %>%
-  summarise(cnt= n()) %>%
-  ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = cor_pele_agregada)
-ggcharts::ggcharts_set_theme("theme_ng")
+   summarise(cnt= n()) %>%
+   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = cor_pele_agregada)
+  # ggcharts::ggcharts_set_theme("theme_ng")
+    ggsave("../imgs/piramide_etaria.png", width = 40, height = 20, units = "cm")
+   
+  
 
 ```
 
