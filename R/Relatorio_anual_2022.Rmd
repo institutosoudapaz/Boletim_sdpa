@@ -322,26 +322,32 @@ O ano de 2022 terminou com um total de 286.573 casos de roubos (outros) em todo 
 ::: {custom-style="Estilo1"}
 Letalidade policial em serviço e em folga
 :::
+As mortes cometidas por policiais em serviço reduziram substancialmente após as políticas e novas práticas adotadas pelas polícias (como as câmeras corporais, em 2020). Em contrapartida, as mortes cometidas fora de serviço seguem em caráter de de estabilidade, com notável aumento de 8,4% nos casos registrados em 2022, comparado ao ano anterior. Os casos de vitimização de policiais em folga tiveram atenuado aumento. Foram 52,9% de casos a mais em 2022 comparado a 2021. Já durante o serviço, foram -12,5% de casos registrados. O aumento de mortes cometidas por policiais fora de serviço e de policiais vitimados em folga podem apresentar uma nova dinâmica que necessita de atenção. É necessário verificar as dinâmicas dos fatos (se houve conflito ou outro tipo de delito) e em local aquele policial ocupava no momento da morte cometida ou vitimada (se tentava conter um assalto, ou se fora vítima de assalto, por exemplo). Analisar tais dinâmicas e compreender como a sociedade tem se movimentado para as gestões governamentais manterem o compromisso com a redução dos homicídios no estado.
+
 ```{r letalidade, echo=FALSE, fig.dim = c(9, 6)}
-# Criar gráfico de letalidade policial em serviço e fora por ano 
+# Criar NOVO gráfico DE TESTE PARA letalidade policial em serviço e fora por ano 
 
  base_completa %>% 
   filter(cod_reg == 99) %>% 
-
-   pivot_longer(cols = let_ser:let_fol, values_to = "count", names_to = "letalidade") %>% 
-  ggplot(aes(fill=letalidade, x=periodo, y=count))+
-  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
-  geom_text(aes(label = count, colour =ifelse(letalidade == "let_fol", "black", "white")), 
-            position=position_stack(vjust=0.5)) +
-  scale_colour_manual(values=c("white"="white", "black"="black")) +
-  stat_summary(fun = sum, aes(label = ..y.., group = periodo), 
-               geom = "text",size=4, vjust = -0.5) +
-  guides(color = "none")+
-  scale_fill_manual(labels = c("Letalidade fora de serviço", "Letalidade em serviço"), 
-                    values = cores_2) +
-  guides(fill = guide_legend(reverse = TRUE))+
-  theme_sdpa_macroreg
-               
+   pivot_longer(cols = let_ser:let_fol, values_to = "count", names_to = "letalidade") %>%
+    ggplot(aes(x=ano, y=count, fill=letalidade)) +
+    geom_bar(stat="identity", position="dodge", size= .4)+
+    viridis::scale_color_viridis(discrete = TRUE) +
+    theme(legend.position="periodo") +
+    ggtitle("Letalidade policial em serviço e em folga, por ano") +
+    coord_flip()+
+   theme_classic()
+ 
+ base_completa %>% 
+  filter(cod_reg == 99) %>% 
+   pivot_longer(cols = mort_ser:mort_fol, values_to = "count", names_to = "vit_pol") %>%
+    ggplot(aes(x=ano, y=count, fill=vit_pol)) +
+    geom_bar(stat="identity", position="dodge")+
+    viridis::scale_color_viridis(discrete = TRUE) +
+    theme(legend.position="periodo") +
+    ggtitle("Vitimização policial em serviço e em folga, por ano") +
+    coord_flip()+
+   theme_classic()
 ```
 
 
