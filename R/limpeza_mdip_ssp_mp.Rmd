@@ -96,7 +96,15 @@ mdip_ssp$municipio_circunscricao <- str_to_title(mdip_ssp$municipio_circunscrica
 #cria RDO para ssp
 mdip_ssp <- mdip_ssp |>mutate(rdo = paste(num_bo, ano_bo, sep= "/"))
 
-# renomeia cidade 
+#função para limpeza de municipios
+
+mdip_ssp <- mdip_ssp |>
+  mutate(municipio_limpo = limpeza_municipio(municipio_circunscricao))
+
+mdip_mp <- mdip_mp |>
+  mutate(municipio_limpo = limpeza_municipio(cidade))
+
+# renomeia cidade/nome_do_municipio 
 estim_pop <- estim_pop |>  rename(municipio_limpo = nome_do_municipio)
 
 #Une os bancos
@@ -119,8 +127,6 @@ mdip_ssp17<- mdip_ssp |>filter(ano_estatistica >=2017)
 
 #junta bases
 mdip_total<- merge(mdip_mp, mdip_ssp17, by= "var_join", all=TRUE)
-
-#cria coluna COP (se o batalhão usa COP)
 ##testes
  mdip_mp |> filter(ano == 2022, cidade =="Guarulhos") |> view()
 mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="Guarulhos") |> view()
@@ -137,7 +143,7 @@ mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.carlos"
 mdip_mp |> filter(ano == 2022, cidade =="São Caetano Do Sul") |> view()
 mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.caetano Do Sul") |> view()
 
-
+#cria coluna COP (se o batalhão usa COP)
 
 ```
 
