@@ -390,6 +390,5 @@ Raça e idade das vitímas MDIP
   # ggcharts::ggcharts_set_theme("theme_ng")
     ggsave("../imgs/piramide_etaria.png", width = 40, height = 20, units = "cm")
 
-
 ```
 
