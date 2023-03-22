@@ -12,11 +12,12 @@ output:
 
 
 library(tidyverse)
+library(ggcharts)
 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
 base_completa <- readRDS("../data-raw/base_completa.rds")
-base_viol_mul <- readRDS("~/Boletim_sdpa/data-raw/base_viol_mul.rds")
+base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds")
 ano_referencia <- 2022
 base_ssp <- readRDS("../data-raw/mdip_ssp.rds")
 #subir base ssp após completa integração entre os dados ssp e mp
@@ -51,7 +52,6 @@ tons_pasteis <- c("#f9aa74","#fcdbc5", "#c1cddb", "#4e7099","#7eba75")
 cor_stack <- c("#97bb77","#fed685","#7c9885")
 
 # Temas
-
 
 theme_sdpa_let <- theme_void()+
   theme(legend.position = "bottom",
@@ -165,41 +165,42 @@ Texto de descrição do *principal* destaque dos dados
 # Gráfico crimes violentos
 
 base_completa %>% 
-  filter(ano %in% 2021:2022) |> 
-  filter(cod_reg == 99) %>%
-  group_by(periodo) %>%
-  summarise(tot_estupro = sum(tot_estupro),
-            extor_seq = sum(extor_seq),
-            hd_ocorr = sum(hd_ocorr),
-            lat_ocorr = sum(lat_ocorr),
-            roubo_veic = sum(roubo_veic),
-            roubo_outros = sum(roubo_outros), 
-            total = sum(tot_estupro,extor_seq, hd_ocorr,lat_ocorr, roubo_veic,roubo_outros)) %>% 
-  pivot_longer(!periodo, names_to = "crime", values_to = "count") %>% 
-  group_by(crime) %>%
+    filter(ano %in% 2021:2022) |> 
+    filter(cod_reg == 99) %>%
+    group_by(periodo) %>%
+    summarise(tot_estupro = sum(tot_estupro),
+              extor_seq = sum(extor_seq),
+              hd_ocorr = sum(hd_ocorr),
+              lat_ocorr = sum(lat_ocorr),
+              roubo_veic = sum(roubo_veic),
+              roubo_outros = sum(roubo_outros), 
+              total = sum(tot_estupro,extor_seq, hd_ocorr,lat_ocorr, roubo_veic,roubo_outros)) %>% 
+    pivot_longer(!periodo, names_to = "crime", values_to = "count") %>% 
+    group_by(crime) %>%
     arrange(crime) %>%
     mutate(variacao = 100 * (count - lag(count))/lag(count)) |> 
-  ggplot(aes(fill=factor(periodo, levels=c("2021","2022")), y= count, 
-             x= factor(crime, levels = c(
-               "total", "roubo_outros", "roubo_veic","extor_seq","lat_ocorr", "tot_estupro", "hd_ocorr")))) + 
-  geom_bar(position="dodge", stat="identity", size=.4, colour="light grey")+
-  geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
-            position = position_dodge(0.94), 
-            vjust = 0.43, hjust = -0.2, check_overlap = FALSE, size=3.2) +
-  geom_text(aes(y = 85000, 
-            label = scales::percent(round((variacao/100),3)),
-                        colour = "#03A9F4",
-            vjust = -0.6, hjust = -8, check_overlap = TRUE, size= 4,
-            na.rm = TRUE)) +
-  scale_fill_manual(values = azuis_claros) +
-  scale_color_identity() + 
-  guides(color = "none")+
-  scale_x_discrete(labels = str_wrap(
-    c("Total de ocorrências", "Roubo (outros)","Roubo de veículo", "Extorsão mediante sequestro",  "Latrocínio","Estupro",
-     "Homicídio doloso"), width = 24))+
-  theme_sdpa_let +
-  # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-  coord_flip(ylim=c(0, 320000))
+    ggplot(aes(fill=factor(periodo, levels=c("2021","2022")), y= count, 
+               x= factor(crime, levels = c(
+                   "total", "roubo_outros", "roubo_veic","extor_seq","lat_ocorr", "tot_estupro", "hd_ocorr")))) + 
+    geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+    geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
+              position = position_dodge(0.94), 
+              vjust = 0.43, hjust = -0.2, check_overlap = FALSE, size=3.2) +
+    geom_text(aes(y = 365000, 
+                  label = scales::percent(round((variacao/100),3)),
+                  #colour = "#03A9F4",
+                  vjust = 0.1, hjust = 1, check_overlap = FALSE))+
+    scale_fill_manual(values = azuis_claros) +
+    scale_color_identity() + 
+    guides(color = "none")+
+    scale_x_discrete(labels = str_wrap(
+        c("Total de ocorrências", "Roubo (outros)","Roubo de veículo", "Extorsão mediante sequestro",  "Latrocínio","Estupro",
+          "Homicídio doloso"), width = 24))+
+    theme_sdpa_let +
+    # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+    coord_flip(ylim=c(0, 380000))
+
+ggsave("../imgs/crimes_violentos.jpg", width = 40, height = 20, units = "cm")
 
 ```
 
@@ -366,20 +367,18 @@ Raça e idade das vitímas MDIP
     idade_pessoa >= 31 & idade_pessoa <= 40 ~ "31-40",
     idade_pessoa >= 41 & idade_pessoa <= 50 ~ "41-50",
     idade_pessoa >= 51 & idade_pessoa <= 60 ~ "51-60",
-    idade_pessoa >= 61 ~ "61+")) %>%         
+    idade_pessoa >= 61 ~ "61+")) |> 
     mutate(cor_pele_agregada = case_when(
-    cor_pele %in% c("Parda","Preta") ~ "Negra",
-    cor_pele %in% c("Outros", "NULL","Amarela","Ignorada","REGISTRADO NA PF","Policia Federal") ~ NA,
-    TRUE ~ as.character (cor_pele)))
+      cor_pele %in% c("Parda","Preta") ~ "Negra",
+      cor_pele %in% c("Outros", "NULL","Amarela",
+                      "Ignorada","REGISTRADO NA PF","Policia Federal") ~ "NA",
+      TRUE ~ as.character (cor_pele)))
   
-  base_ssp |>  
+ base_ssp |>  
     filter(between(ano_bo, 2018, 2022)) |> 
     count( cor_pele_agregada)
 
-  view(base_ssp)
- install.packages("ggcharts")
- library(ggcharts)
- library(dplyr)
+ view(base_ssp)
 
   base_ssp |>
    filter(cor_pele_agregada != "NA") %>%
@@ -390,8 +389,7 @@ Raça e idade das vitímas MDIP
    ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = cor_pele_agregada)
   # ggcharts::ggcharts_set_theme("theme_ng")
     ggsave("../imgs/piramide_etaria.png", width = 40, height = 20, units = "cm")
-   
-  
+
 
 ```
 
