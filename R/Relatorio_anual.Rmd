@@ -10,6 +10,8 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+library(tidyverse)
+
 base_completa <- readRDS("../data-raw/base_completa.rds")
 
 # Criamos e estilos de título que devem ser chamados com ::: como a seguir:
