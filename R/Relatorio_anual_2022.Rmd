@@ -46,6 +46,7 @@ base_ssp <- readRDS("../data-raw/mdip_ssp.rds")
 
 azuis_sdp <- c("#134a86", "#4a8ecc","#c1cddb") #contrastes em tons de azul
 azuis_claros <- c("#134a86","#5e7da2"," #7a94b2"," #91a7bf", "#b4c3d3", "#a4b6ca", "#c1cddb")
+azul_2 <- c("#134a86","#A4B6CA")
 cores_op <- c("#F57923","#4a8ecc") #laranja e azul claro sdp, para criar contrastes
 cores_2 <- c("#cec8c4", "#be9068","#042e3f")
 cores_sdp <- c("#F57923", "#134a86", "#4a8ecc")
@@ -53,8 +54,16 @@ cores_sdp <- c("#F57923", "#134a86", "#4a8ecc")
 tons_sdp <- c("#FA7921", "#FE9920","#B9A44C","#566E3D", "#0C4767")
 tons_claros <- c( "#FF8811","#F4D06F", "#FFF8F0", "#9DD9D2", "#392F5A")
 tons_pasteis <- c("#f9aa74","#fcdbc5", "#c1cddb", "#4e7099","#7eba75")
+
 cor_stack <- c("#97bb77","#fed685","#7c9885")
 
+teste_1<- c ("#ffad72","#76a7dc","#b3ee98")
+
+teste_2 <- c("#ECBB5F","#E9842C", "#46667A")
+
+teste_3 <- c("#00798C","#D1495B","#EDAE49")
+
+teste_4 <- c("#264653","#2A9D8F","#E9C46A")
 # Temas
 
 theme_sdpa_let <- theme_void()+
@@ -105,7 +114,7 @@ base_completa %>%
     stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
                                group = periodo), 
                geom = "text",size=3.4, vjust = -0.5) +
-  scale_fill_manual(values = cor_stack) +
+  scale_fill_manual(values = teste_2) +
   guides(color = "none")+
   theme_sdpa_macroreg +
   guides(fill = guide_legend(reverse = TRUE))
@@ -136,7 +145,7 @@ base_viol_mul %>%
     stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), 
     nsmall=0, big.mark="."),group = periodo), 
     geom = "text",size=3.4, vjust = -0.5) +
-    scale_fill_manual(values = cor_stack) +
+    scale_fill_manual(values = teste_2) +
     guides(color = "none")+
     theme_sdpa_macroreg +
     guides(fill = guide_legend(reverse = TRUE))
@@ -196,7 +205,7 @@ base_completa %>%
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
                   vjust = 0.1, hjust = 1, check_overlap = FALSE))+
-    scale_fill_manual(values = azuis_claros) +
+    scale_fill_manual(values = azul_2) +
     scale_color_identity() + 
     guides(color = "none")+
     scale_x_discrete(labels = str_wrap(
@@ -250,7 +259,7 @@ base_completa %>%
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
                   vjust = 0.1, hjust = 1, check_overlap = FALSE))+
-    scale_fill_manual(values = azuis_claros) +
+    scale_fill_manual(values = azul_2) +
     scale_color_identity() + 
     guides(color = "none")+
     scale_x_discrete(labels = str_wrap(
