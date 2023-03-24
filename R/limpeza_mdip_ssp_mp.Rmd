@@ -92,7 +92,6 @@ mdip_ssp$municipio_circunscricao <- str_to_title(mdip_ssp$municipio_circunscrica
 #apaga a coluna vitimas
  mdip_mp <- mdip_mp %>% select(-vitimas)
  
- 
 #cria RDO para ssp
 mdip_ssp <- mdip_ssp |>mutate(rdo = paste(num_bo, ano_bo, sep= "/"))
 
@@ -126,7 +125,11 @@ mdip_mp <- mdip_mp_total|>  mutate(var_join = paste(data, hora, municipio_limpo,
 mdip_ssp17<- mdip_ssp |>filter(ano_estatistica >=2017)
 
 #junta bases
-mdip_total<- merge(mdip_mp, mdip_ssp17, by= "var_join", all=TRUE)
+mdip<- merge(mdip_mp, mdip_ssp17, by= "var_join", all=TRUE)
+
+#cria variável COP
+
+#cria rds com a base nova
 ##testes
  mdip_mp |> filter(ano == 2022, cidade =="Guarulhos") |> view()
 mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="Guarulhos") |> view()
