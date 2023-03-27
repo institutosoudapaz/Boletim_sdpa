@@ -133,24 +133,8 @@ mdip_ssp17<- mdip_ssp |> filter(ano_estatistica > 2017)
 mdip_mp17<- mdip_mp |> filter(ano > 2017 & ano < 2023) |> select(-idade)
 
 #junta bases
-mdip_total <- merge(mdip_mp17, mdip_ssp17, by= "var_join", all=TRUE) |> 
-  distinct(var_join, idade_pessoa, data_nascimento_pessoa, profissao, .keep_all = TRUE)
 
-##testes
- mdip_mp |> filter(ano == 2022, cidade =="Guarulhos") |> view()
-mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="Guarulhos") |> view()
-
- mdip_mp |> filter(ano == 2022, cidade =="Ribeirão Preto") |> view()
-mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="Ribeirao Preto") |> view()
-
- mdip_mp |> filter(ano == 2022, cidade =="Santo André") |> view()
-mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.andre") |> view()
-
- mdip_mp |> filter(ano == 2022, cidade =="São Carlos") |> view()
-mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.carlos") |> view()
-
-mdip_mp |> filter(ano == 2022, cidade =="São Caetano Do Sul") |> view()
-mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.caetano Do Sul") |> view()
+mdip<- merge(mdip_mp, mdip_ssp17, by= "var_join", all=TRUE)
 
 #cria coluna COP (se o batalhão usa COP)
 

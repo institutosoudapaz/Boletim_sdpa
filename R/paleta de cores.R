@@ -23,6 +23,17 @@
 
   tons_claros <- c( "#FF8811","#F4D06F", "#FFF8F0", "#9DD9D2", "#392F5A")
   
+  teste_1<- c ("#ffad72","#76a7dc","#b3ee98")
+  
+  teste_2 <- c("#ECBB5F","#E9842C", "#46667A")
+  
+  teste_3 <- c("#00798C","#D1495B","#EDAE49")
+  
+  teste_4 <- c("#264653","#2A9D8F","#E9C46A")
+  
+  sdp_oficial<- c ("#ee8a42","#134a86","#95e470")
+  
+  #refrencia:https://coolors.co/f57923-134a86-4a8ecc 
   
   tons_pasteis <- c("#f9aa74","#fcdbc5", "#c1cddb", "#4e7099","#7eba75")
   #referencia: https://coolors.co/palette/f68a3c-fcdbc5-c1cddb-4e7099-7eba75

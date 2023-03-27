@@ -46,6 +46,7 @@ base_ssp <- readRDS("../data-raw/mdip_ssp.rds")
 
 azuis_sdp <- c("#134a86", "#4a8ecc","#c1cddb") #contrastes em tons de azul
 azuis_claros <- c("#134a86","#5e7da2"," #7a94b2"," #91a7bf", "#b4c3d3", "#a4b6ca", "#c1cddb")
+azul_2 <- c("#134a86","#A4B6CA")
 cores_op <- c("#F57923","#4a8ecc") #laranja e azul claro sdp, para criar contrastes
 cores_2 <- c("#cec8c4", "#be9068","#042e3f")
 cores_sdp <- c("#F57923", "#134a86", "#4a8ecc")
@@ -53,8 +54,16 @@ cores_sdp <- c("#F57923", "#134a86", "#4a8ecc")
 tons_sdp <- c("#FA7921", "#FE9920","#B9A44C","#566E3D", "#0C4767")
 tons_claros <- c( "#FF8811","#F4D06F", "#FFF8F0", "#9DD9D2", "#392F5A")
 tons_pasteis <- c("#f9aa74","#fcdbc5", "#c1cddb", "#4e7099","#7eba75")
+
 cor_stack <- c("#97bb77","#fed685","#7c9885")
 
+teste_1<- c ("#ffad72","#76a7dc","#b3ee98")
+
+teste_2 <- c("#ECBB5F","#E9842C", "#46667A")
+
+teste_3 <- c("#00798C","#D1495B","#EDAE49")
+
+teste_4 <- c("#264653","#2A9D8F","#E9C46A")
 # Temas
 
 theme_sdpa_let <- theme_void()+
@@ -105,7 +114,7 @@ base_completa %>%
     stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
                                group = periodo), 
                geom = "text",size=3.4, vjust = -0.5) +
-  scale_fill_manual(values = cor_stack) +
+  scale_fill_manual(values = teste_2) +
   guides(color = "none")+
   theme_sdpa_macroreg +
   guides(fill = guide_legend(reverse = TRUE))
@@ -136,7 +145,7 @@ base_viol_mul %>%
     stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), 
     nsmall=0, big.mark="."),group = periodo), 
     geom = "text",size=3.4, vjust = -0.5) +
-    scale_fill_manual(values = cor_stack) +
+    scale_fill_manual(values = teste_2) +
     guides(color = "none")+
     theme_sdpa_macroreg +
     guides(fill = guide_legend(reverse = TRUE))
@@ -196,7 +205,7 @@ base_completa %>%
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
                   vjust = 0.1, hjust = 1, check_overlap = FALSE))+
-    scale_fill_manual(values = azuis_claros) +
+    scale_fill_manual(values = azul_2) +
     scale_color_identity() + 
     guides(color = "none")+
     scale_x_discrete(labels = str_wrap(
@@ -250,7 +259,7 @@ base_completa %>%
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
                   vjust = 0.1, hjust = 1, check_overlap = FALSE))+
-    scale_fill_manual(values = azuis_claros) +
+    scale_fill_manual(values = azul_2) +
     scale_color_identity() + 
     guides(color = "none")+
     scale_x_discrete(labels = str_wrap(
@@ -444,5 +453,39 @@ Raça e idade das vitímas MDIP
    ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = cor_pele_agregada)
   # ggcharts::ggcharts_set_theme("theme_ng")
     ggsave("../imgs/piramide_etaria.png", width = 40, height = 20, units = "cm")
+
+```
+
+Durante o período de 2018 a 2022, o estado de São Paulo contabilizou um total de 3431 Mortes Decorrente de Intervenção Policial (MDIP) e éevidente a proeminência de mortes decorrentes da intervenção policial entre pessoas com idades entre 21 e 30 anos, compreendendo um total de 1107 casos, sendo 711 de pessoas negras e 396 brancas - uma variação de 79,5% entre os dois grupos -, seguido do grupo de jovens de 11 a 20 anos que compreende um total de 820 registros, sendo 538 de jovens negros e 282 de jovens brancos - uma variação de 90,8% entre os grupos.
+E, ao se olhar para o conjunto global dos dados, que compreende todo o período de 2018 a 2022, do total de 3431 casos ao longo destes anos, as mortes de pessoas de 11 a 30 anos de idade somam-se 1927 ocorrências o que representa 56,2% do todo observado de 01 de janeiro de 2018 até o dia 31 de janeiro de 2022.
+
+\newpage
+
+:::
+{custom-style="Estilo1"}
+Perfil racial das vitímas MDIP
+:::
+```{r raça, echo=FALSE, fig.dim = c(9, 6)}
+
+install.packages("kableExtra")
+library(kableExtra)
+
+
+ view(base_ssp)
+ count(base_ssp, cor_pele)
+
+  base_ssp |> 
+  filter(between(ano_bo, 2018, 2022)) |> 
+  mutate(cor_pele_todas = case_when(
+      cor_pele %in% c("Parda","Preta") ~ "Negra",
+      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",
+      TRUE ~ as.character (cor_pele))) |>
+  group_by(cor_pele_todas) |> 
+  summarise(total = n()) |> 
+  mutate(freq = round(total / sum(total)*100, 2)) |> 
+ kbl(col.names = c("Cor", "Total", "Frequência")) |>  
+  kable_paper("hover", full_width = F) |>  
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
+
 
 ```
