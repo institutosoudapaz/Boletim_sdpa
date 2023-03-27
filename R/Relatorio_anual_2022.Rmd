@@ -320,6 +320,7 @@ Ao menos 52.672 casos de lesão corporal de mulheres foram registrados em 2022 n
 Dentre as regiões analisadas, somente a Capital apresentou aumento em relação ao ano anterior, 3.909 casos a mais.
 Tanto o Interior, quanto a Grande São Paulo tiveram queda nas notificações.
 O aumento progressivo que vem sendo observado desde então denota a urgência de se pensar políticas públicas para a redução efetiva dos casos de lesão corporal contra a mulher.
+
 \newpage
 
 ::: {custom-style="Estilo1"}
@@ -379,7 +380,7 @@ O aumento de mortes cometidas por policiais fora de serviço e de policiais viti
 É necessário verificar as dinâmicas dos fatos (se houve conflito ou outro tipo de delito) e em local aquele policial ocupava no momento da morte cometida ou vitimada (se tentava conter um assalto, ou se fora vítima de assalto, por exemplo).
 Analisar tais dinâmicas e compreender como a sociedade tem se movimentado para as gestões governamentais manterem o compromisso com a redução dos homicídios no estado.
 
-```{r letalidade, echo=FALSE, fig.dim = c(9, 6)}
+```{r letalidade, echo=FALSE, fig.width=8, fig.height=4.5}
 # Criar NOVO gráfico DE TESTE PARA letalidade policial em serviço e fora por ano 
 
  base_completa %>% 
@@ -411,7 +412,7 @@ Analisar tais dinâmicas e compreender como a sociedade tem se movimentado para 
 Raça e idade das vitímas MDIP
 :::
 
-```{r raça e idade, echo=FALSE, fig.dim = c(9, 6)}
+```{r raça e idade, echo=FALSE, fig.width=8, fig.height=4.5}
  
  base_ssp <- base_ssp |>
   mutate(idade_pessoa_agregada = case_when(

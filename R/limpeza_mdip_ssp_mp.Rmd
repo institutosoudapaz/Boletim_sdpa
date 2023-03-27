@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(janitor)
 library(readxl)
+
+source("../R/limpeza_municipio.R")
 ```
 
 ```{r bancos mdip, echo=FALSE, warning=FALSE}
@@ -54,12 +56,12 @@ mdip_22<- readxl::read_excel("../data-raw/MDIP_2013_2022.xlsx", sheet = "2022", 
 
 mdip_ssp <- dplyr::bind_rows(mdip_13, mdip_14, mdip_15, mdip_16, mdip_17, mdip_18, mdip_19, mdip_20, mdip_21, mdip_22)
 
- mdip_mp <- readxl::read_excel("../data-raw/letalidade_policial.xlsx", sheet = "LETALIDADE", col_types = c("text", 
+mdip_mp <- readxl::read_excel("../data-raw/letalidade_policial.xlsx", sheet = "LETALIDADE", col_types = c("text", 
         "text", "date", "date", "text", "text", 
         "text", "text", "text", "text", "text", 
         "numeric", "text", "numeric"))|> janitor::clean_names()
 
- estim_pop <- readxl::read_excel("../data-raw/estim_pop_sp.xls") |> 
+estim_pop <- readxl::read_excel("../data-raw/estim_pop_sp.xls") |> 
    janitor::clean_names()
 
 ```
@@ -84,14 +86,21 @@ mdip_ssp$profissao <- str_to_title(mdip_ssp$profissao)
 mdip_ssp$municipio_elaboracao <- str_to_title(mdip_ssp$municipio_elaboracao)
 mdip_ssp$municipio_circunscricao <- str_to_title(mdip_ssp$municipio_circunscricao)
 
+# limpar coorporação na base do MP (que vem com dados de GCM, PF, etc)
+
+mdip_mp <- mdip_mp |> 
+  mutate(forca_limpo = case_when
+  (forca %in% c("PM", "PM-GCM", "PM/GCM JUNDIAÍ", "PM/GCM") ~ "PM",
+    forca %in% c("PC", "PC-GCM") ~ "PC",
+    forca %in% c("PC-PM", "PM-PC") ~ "PM-PC",
+    TRUE ~ as.character(forca))) |> 
+  filter((forca_limpo %in% c("PM", "PC", "PM-PC")))
+
 #torna todas as linhas uma observação 
 #(cria um indice de replicação a partir da var. vitimas)
  idx <- rep(1:nrow(mdip_mp), mdip_mp$vitimas)
 #replica no banco os casos com mais de uma vitima
  mdip_mp <- mdip_mp[idx,]
-#apaga a coluna vitimas
- mdip_mp <- mdip_mp %>% select(-vitimas)
- 
  
 #cria RDO para ssp
 mdip_ssp <- mdip_ssp |>mutate(rdo = paste(num_bo, ano_bo, sep= "/"))
@@ -103,9 +112,6 @@ mdip_ssp <- mdip_ssp |>
 
 mdip_mp <- mdip_mp |>
   mutate(municipio_limpo = limpeza_municipio(cidade))
-
-# renomeia cidade/nome_do_municipio 
-estim_pop <- estim_pop |>  rename(municipio_limpo = nome_do_municipio)
 
 #Une os bancos
 mdip_rdo<- merge(mdip_ssp, mdip_mp, by = "rdo", all = TRUE)
@@ -123,10 +129,13 @@ mdip_ssp <- mdip_ssp_total|> mutate(var_join = paste(data_fato, hora_fato, munic
 
 mdip_mp <- mdip_mp_total|>  mutate(var_join = paste(data, hora, municipio_limpo, sep ="/" ))
 
-mdip_ssp17<- mdip_ssp |>filter(ano_estatistica >=2017)
+mdip_ssp17<- mdip_ssp |> filter(ano_estatistica > 2017)
+mdip_mp17<- mdip_mp |> filter(ano > 2017 & ano < 2023) |> select(-idade)
 
 #junta bases
-mdip_total<- merge(mdip_mp, mdip_ssp17, by= "var_join", all=TRUE)
+mdip_total <- merge(mdip_mp17, mdip_ssp17, by= "var_join", all=TRUE) |> 
+  distinct(var_join, idade_pessoa, data_nascimento_pessoa, profissao, .keep_all = TRUE)
+
 ##testes
  mdip_mp |> filter(ano == 2022, cidade =="Guarulhos") |> view()
 mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="Guarulhos") |> view()
@@ -145,14 +154,40 @@ mdip_ssp |> filter(ano_estatistica == 2022, municipio_circunscricao =="S.caetano
 
 #cria coluna COP (se o batalhão usa COP)
 
+mdip_total <- mdip_total |> 
+  mutate(COP = case_when
+  (batalhao %in% c("07º BPM/M", "7º BPM/M", "11º BPM/M", "13º BPM/M", "07º BAEP", "7º BAEP",
+                   "03º BPM/M", "3º BPM/M", "12º BPM/M", "46º BPM/M", "05º BPM/M", "5º BPM/M",
+                   "09º BPM/M", "9º BPM/M", "18º BPM/M", "43º BPM/M", "02º BPM/M", "2º BPM/M", 
+                   "29º BPM/M", "39º BPM/M", "48º BPM/M", "04º BAEP", "4º BAEP", "04º BPM/M",  
+                   "4º BPM/M", "4º BPM/M", "49º BPM/M", "19º BPM/M", "28º BPM/M", "38º BPM/M", 
+                   "01º BPM/M", "1º BPM/M", "22º BPM/M", "27º BPM/M", "37º BPM/M", "50º BPM/M", 
+                   "16º BPM/M", "23º BPM/M", "08º BPM/M", "8º BPM/M", "21º BPM/M", "2º BPChoque",
+                   "2º BPCh", "1º BPChoque (ROTA)", "1º BPChoque (Rota)", "1º BPCh e 49ºBPM/M",
+                   "1º BPCh e 28º BPM/M", "1º BPCh (ROTA)", "1º BPCh (Rota)", "1º BPCh - ROTA",
+                   "1º BPCh-ROTA", "6º BPM/M", "06º BPM/M", "10º BPM/M", "24º BPM/M", "30º BPM/M", 
+                   "6º BAEP", "15º BPM/M", "26º BPM/M", "31º BPM/M", "15º BAEP", "14º BPM/M", 
+                   "20º BPM/M", "25º BPM/M", "33º BPM/M", "36º BPM/M", "5º BAEP", "05º BAEP", 
+                   "17º BPM/M", "32º BPM/M", "35º BPM/M", "46º BPM/I", "03º BAEP", "3º BAEP", 
+                   "08º BPM/I","8º BPM/I", "21º BPM/I", "48º BPM/I", "2º BAEP", "02º BAEP",  
+                   "1º BAEP",  "01º BAEP", "03º BAEP", "3º BAEP", "1º BPRv", "01º BPRv", 
+                   "6º BPRv", "APMBB", "ESSgt", "ESSd", "EEF", "CAvPM") ~ "SIM",
+    TRUE ~ "NÃO"))
+
+# Comparação letalidade batalhões com e sem câmera EM SERVIÇO após 2020
+mdip_total |> filter (ano > 2020 & servico == "SIM")|> group_by(COP, ano) |> count()
+
 ```
 
 
 ```{r salva rds bancos, echo=FALSE, warning=FALSE}
-saveRDS(mdip_ssp, "data-raw/mdip_ssp.rds")
-saveRDS(mdip_mp, "data-raw/mdip_mp.rds")
+saveRDS(mdip_ssp, "../data-raw/mdip_ssp.rds")
+saveRDS(mdip_mp, "../data-raw/mdip_mp.rds")
+saveRDS(mdip_total, "../data-raw/mdip_total.rds")
+
+# Gera excel para verificarmos inconsistencias na base mdip_total
+
+writexl::write_xlsx(mdip_total, "../data-raw/mdip_total.xlsx")
 
 ```
-
-
 
