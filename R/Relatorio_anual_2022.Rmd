@@ -485,7 +485,10 @@ E, ao se olhar para o conjunto global dos dados, que compreende todo o período 
 
 \newpage
 
-::: {custom-style="Estilo1"} Análise exploratória perfil das vítimas de MDIP e COP :::
+:::
+{custom-style="Estilo1"}
+Análise exploratória perfil das vítimas de MDIP e COP
+:::
 
 ```{r perfil raca e cor cop, echo=FALSE, fig.dim = c(9, 6)}
 
@@ -524,6 +527,33 @@ base_ssp  |>
     theme_minimal() +
   facet_wrap(~ COP)
 
+# Comparação perfil racial dos batalhões com e sem COP antes e depois das câmeras EM SERVIÇO 
+
+base_ssp  |> 
+  filter (servico == "SIM" & coorporacao == "PM")|> 
+  filter (cor_pele %in% c("Branca", "Preta", "Ignorada")) |> 
+  group_by(ano, cor_pele,COP ) |> 
+  count() |> 
+   ggplot( aes(x=ano, y=n, group=cor_pele, color=cor_pele)) +
+    geom_line() + 
+  scale_color_viridis(discrete = TRUE) +
+    ggtitle("Perfil racial das vítimas de MDIP nos batalhões com e sem COP") +
+    theme_minimal() +
+  facet_wrap(~ COP)
+
+# Comparação perfil racial dos batalhões com e sem COP antes e depois das câmeras EM SERVIÇO 
+
+base_ssp  |> 
+  filter (servico == "SIM" & coorporacao == "PM")|> 
+  filter (cor_pele %in% c("Branca", "Preta", "Ignorada")) |> 
+  group_by(ano, cor_pele,COP ) |> 
+  count() |> 
+   ggplot( aes(x=ano, y=n, group=cor_pele, color=cor_pele)) +
+    geom_line() + 
+  scale_color_viridis(discrete = TRUE) +
+    ggtitle("Perfil racial das vítimas de MDIP nos batalhões com e sem COP") +
+    theme_minimal() +
+  facet_wrap(~ COP)
 
 # Comparação perfil racial dos batalhões com  COP antes e depois das câmeras EM SERVIÇO  E EM FOLGA
 
@@ -622,7 +652,8 @@ base_ssp  |>
 
 ```
 
-```{r municipio e batalhao cop, echo=FALSE, fig.dim = c(9, 6)}
+
+```{r municipio e batalhao cop, echo=FALSE, fig.dim = c(9, 6)}  
 # Tabela de variação do MDIP em Serviço antes (2018 e 2019) e depois das COP (2021 e 2022) por municipio
 
 library(DT)
@@ -661,3 +692,4 @@ base_ssp  |>
             colnames = c("Batalhão", "Antes das COP", "Após as COP", "Variação %", "Tem COP"))
 
 ```
+
