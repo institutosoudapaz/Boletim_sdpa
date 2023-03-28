@@ -158,9 +158,6 @@ mdip_total <- mdip_total |>
                    "6º BPRv", "APMBB", "ESSgt", "ESSd", "EEF", "CAvPM") ~ "SIM",
     TRUE ~ "NÃO"))
 
-# Comparação letalidade batalhões com e sem câmera EM SERVIÇO após 2020
-mdip_total |> filter (ano > 2020 & servico == "SIM")|> group_by(COP, ano) |> count()
-
 ```
 
 
