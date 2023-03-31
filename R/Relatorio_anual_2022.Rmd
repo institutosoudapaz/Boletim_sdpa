@@ -332,11 +332,28 @@ O aumento progressivo que vem sendo observado desde então denota a urgência de
 \newpage
 
 ::: {custom-style="Estilo1"}
+Feminicídio
+:::
+
+```{r feminicídio, echo=FALSE, fig.width=8, fig.height=4.5}
+vio_mulher("FEMINICÍDIO")
+
+vio_mulher("HOMICÍDIODOLOSO-TOTAL")
+vio_mulher("INVASÃODEDOMICÍLIO")
+```
+
+Os casos de feminicídio também aumentaram 27% em 2022, alcançando o maior patamar dos último quatro anos.
+Dentre eles, 24,60% foram cometidos na Grande São Paulo, 19,7% na Capital e 55,6% no Interior.
+Os 187 casos de feminicídio representam 45% dos homicídios dolosos contra mulheres.
+
+\newpage
+::: {custom-style="Estilo1"}
 Estupro
 :::
 
 ```{r estupro, echo=FALSE, fig.width=8, fig.height=4.5}
 grafico_geral(tot_estupro)
+vio_mulher("ESTUPRODEVULNERÁVELCONSUMADO")
 ```
 
 Os casos de estupro aumentaram 7,3% em comparação a 2021, e uma variação geral no período de 2019 a 2022 de 1,9%.
@@ -344,20 +361,8 @@ A tendência de crescimento nos casos de violência sexual também se confirma e
 Entre 2021 e 2022, foram registrados 715 casos a mais de estupro de vulnerável, uma média 2 casos registrados por dia no estado.
 Somente na Capital houve redução nas ocorrências estupro (de vulnerável ou não), respectivamente, de -8,1% e -4,7%.
 Na Grande São Paulo, o aumento foi de 5,8% para vulnerável, e 7,8% para estupro em geral, enquanto no Interior houve aumento de 4,3% nos casos de estupro, e 8,1% nos casos de estupro de vulnerável entre 2018 e 2022.
-O estupro de vulneráveis (contra vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual) compõe 77% do total dos casos de estupros registrados em 2022.
+O estupro de vulneráveis (contra vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual) compõe 73% do total dos casos de estupros registrados em 2022.
 
-\newpage
-
-::: {custom-style="Estilo1"}
-Feminicídio
-:::
-
-```{r feminicídio, echo=FALSE, fig.width=8, fig.height=4.5}
-vio_mulher("FEMINICÍDIO")
-```
-
-Os casos de feminicídio também aumentaram 27% em 2022, alcançando o maior patamar dos último quatro anos.
-Dentre eles, 24,60% foram cometidos na Grande São Paulo, 19,7% na Capital e 55,6% no Interior.
 
 \newpage
 
@@ -485,5 +490,6 @@ E, ao se olhar para o conjunto global dos dados, que compreende todo o período 
 
 \newpage
 
+::: {custom-style="Estilo1"} 
+
 :::
-{custom-style="Estilo1"}
