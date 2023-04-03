@@ -193,17 +193,17 @@ base_completa %>%
     group_by(crime) %>%
     arrange(crime) %>%
     mutate(variacao = 100 * (count - lag(count))/lag(count)) |> 
-    ggplot(aes(fill=factor(periodo, levels=c("2021","2022")), y= count, 
+    ggplot(aes(fill=factor(periodo, levels=c("2022","2021")), y= count, 
                x= factor(crime, levels = c(
                    "total", "roubo_outros", "roubo_veic","extor_seq","lat_ocorr", "tot_estupro", "hd_ocorr")))) + 
     geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
     geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
               position = position_dodge(0.94), 
-              vjust = 0.43, hjust = -0.2, check_overlap = FALSE, size=3.2) +
+              vjust = 0.43, hjust = -0.1, check_overlap = FALSE, size= 3.2) +
     geom_text(aes(y = 385000, 
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
-                  vjust = 0.1, hjust = 1, check_overlap = FALSE))+
+                  vjust = 0.1, hjust = 1, check_overlap = FALSE), size= 2.6) +
     scale_fill_manual(values = azul_2) +
     scale_color_identity() + 
     guides(color = "none")+
@@ -247,17 +247,17 @@ base_completa %>%
   group_by(crime) %>%
     arrange(crime) %>%
     mutate(variacao = 100 * (count - lag(count))/lag(count)) |> 
-  ggplot(aes(fill=factor(periodo, levels=c("2021", "2022")), y= count, 
+  ggplot(aes(fill=factor(periodo, levels=c("2022", "2021")), y= count, 
              x= factor(crime, levels = c(
                "total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol"))))+ 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
-    geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
+     geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
               position = position_dodge(0.94), 
-              vjust = 0.43, hjust = -0.2, check_overlap = FALSE, size=3.2) +
+              vjust = 0.43, hjust = -0.1, check_overlap = FALSE, size= 3.2) +
     geom_text(aes(y = 4450, 
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
-                  vjust = 0.1, hjust = 1, check_overlap = FALSE))+
+                  vjust = 0.1, hjust = 1, check_overlap = FALSE), size= 2.6) + 
     scale_fill_manual(values = azul_2) +
     scale_color_identity() + 
     guides(color = "none")+
@@ -303,6 +303,62 @@ Com esta série é possível constatar que o período pandêmico sofrido entre o
 \newpage
 
 ::: {custom-style="Estilo1"}
+Homicídios no Interior do estado
+:::
+
+```{r homicidios deinter, echo=FALSE, fig.width=8, fig.height=4.5}
+
+# Trata base
+base_taxa <- base_completa %>% 
+  filter(periodo > (ano_referencia-2)) %>% 
+  filter(cod_reg != 99 & cod_reg > 30) %>% 
+  group_by(periodo, deinter) %>%
+  summarise(hd_taxa = (hd_ocorr/pop) * 100000) |> 
+    pivot_wider(names_from = periodo, values_from = hd_taxa) |> 
+  mutate(var = `2022` - `2021`) |> 
+  mutate(trend = ifelse(var < 0, "queda", "aumento")) |> 
+  pivot_longer(cols = c(`2021`, `2022`), names_to = "periodo", values_to = "hd_taxa") 
+  
+base_taxa |> 
+  ggplot(aes(factor(periodo), hd_taxa, group = deinter, color = trend)) +
+  # altera espessura da linha
+
+  geom_line(size = 0.4) +
+  geom_point(aes(color = trend), size = 3) + 
+  geom_text_repel(data = base_taxa, 
+        aes(x = ifelse(periodo == 2021, 1 - 0.35, 2 + 0.35),
+          label = glue::glue("{deinter} ({scales::number(hd_taxa, accuracy = 0.1)} por 100 mil)")), 
+    size = 4, nudge_x = 0, direction = "y",
+    segment.size = 0)+
+  scale_x_discrete(position = "top") +
+  scale_size_identity() +
+  coord_cartesian(clip = "off") +
+  scale_color_manual(
+    # altera cores das taxas que cairam e aumentaram 
+    values = c("queda" = "#092044", "aumento" = "#C33C2E")) +
+  guides(col = "none") +
+  labs(subtitle = "Taxa de ocorrências de homicídios dolosos por 100 mil habitantes") +
+  theme_minimal(base_size = 10) + 
+  theme (
+    plot.background = element_rect(color = NA, fill = "white"),
+    panel.grid = element_blank(),
+    panel.grid.major.x = element_line(color = "#ECEEF2", size = 5),
+    text = element_text(color = "#555555"),
+    axis.title = element_blank(),
+    axis.text.x = element_text(size = 14, face = "bold", color = "grey38"),
+    axis.text.y = element_blank(),
+    plot.margin = margin(t = 6, l = 16, r = 16, b = 4),
+    plot.title = element_text(size = 14, color = "grey12"))
+    
+
+```
+
+Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise 
+
+\newpage
+
+
+::: {custom-style="Estilo1"}
 Latrocínio
 :::
 
@@ -332,11 +388,28 @@ O aumento progressivo que vem sendo observado desde então denota a urgência de
 \newpage
 
 ::: {custom-style="Estilo1"}
+Feminicídio
+:::
+
+```{r feminicídio, echo=FALSE, fig.width=8, fig.height=4.5}
+vio_mulher("FEMINICÍDIO")
+
+vio_mulher("HOMICÍDIODOLOSO-TOTAL")
+vio_mulher("INVASÃODEDOMICÍLIO")
+```
+
+Os casos de feminicídio também aumentaram 27% em 2022, alcançando o maior patamar dos último quatro anos.
+Dentre eles, 24,60% foram cometidos na Grande São Paulo, 19,7% na Capital e 55,6% no Interior.
+Os 187 casos de feminicídio representam 45% dos homicídios dolosos contra mulheres.
+
+\newpage
+::: {custom-style="Estilo1"}
 Estupro
 :::
 
 ```{r estupro, echo=FALSE, fig.width=8, fig.height=4.5}
 grafico_geral(tot_estupro)
+vio_mulher("ESTUPRODEVULNERÁVELCONSUMADO")
 ```
 
 Os casos de estupro aumentaram 7,3% em comparação a 2021, e uma variação geral no período de 2019 a 2022 de 1,9%.
@@ -344,20 +417,8 @@ A tendência de crescimento nos casos de violência sexual também se confirma e
 Entre 2021 e 2022, foram registrados 715 casos a mais de estupro de vulnerável, uma média 2 casos registrados por dia no estado.
 Somente na Capital houve redução nas ocorrências estupro (de vulnerável ou não), respectivamente, de -8,1% e -4,7%.
 Na Grande São Paulo, o aumento foi de 5,8% para vulnerável, e 7,8% para estupro em geral, enquanto no Interior houve aumento de 4,3% nos casos de estupro, e 8,1% nos casos de estupro de vulnerável entre 2018 e 2022.
-O estupro de vulneráveis (contra vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual) compõe 77% do total dos casos de estupros registrados em 2022.
+O estupro de vulneráveis (contra vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual) compõe 73% do total dos casos de estupros registrados em 2022.
 
-\newpage
-
-::: {custom-style="Estilo1"}
-Feminicídio
-:::
-
-```{r feminicídio, echo=FALSE, fig.width=8, fig.height=4.5}
-vio_mulher("FEMINICÍDIO")
-```
-
-Os casos de feminicídio também aumentaram 27% em 2022, alcançando o maior patamar dos último quatro anos.
-Dentre eles, 24,60% foram cometidos na Grande São Paulo, 19,7% na Capital e 55,6% no Interior.
 
 \newpage
 
@@ -496,211 +557,6 @@ Dentre o total de 3405 vítimas de MDIP no período de 2018 a 2022, com a decomp
 
 \newpage
 
+::: {custom-style="Estilo1"} 
+
 :::
-{custom-style="Estilo1"}
-Análise exploratória perfil das vítimas de MDIP e COP
-:::
-
-```{r perfil raca e cor cop, echo=FALSE, fig.dim = c(9, 6)}
-
-# Comparação letalidade batalhões com e sem câmera EM SERVIÇO após 2020
-base_ssp  |> filter (ano > 2020 & servico == "SIM")|> group_by(COP, ano) |> count()
-
-# Comparação letalidade batalhões antes e depois das câmeras EM SERVIÇO 
-base_ssp  |> filter (COP == "SIM" & servico == "SIM")|> group_by(ano) |> count()
-
-# Comparação perfil racial dos batalhões antes e depois das câmeras EM SERVIÇO 
-library(viridis)
-
-base_ssp  |> 
-  filter (COP == "SIM" & servico == "SIM")|> 
-    filter (cor_pele_agregada %in% c("Branca", "Negra")) |> 
-  group_by(ano, cor_pele_agregada ) |> 
-  count() |> 
-   ggplot( aes(x=ano, y=n, group=cor_pele_agregada, color=cor_pele_agregada)) +
-    geom_line() + 
-   geom_vline(xintercept=c(2020,2021), linetype='dotted', col = 'red')+
-  scale_color_viridis(discrete = TRUE) +
-    ggtitle("Perfil racial das vítimas de MDIP nos batalhões com COP") +
-    theme_minimal()
-  
-# Comparação perfil racial dos batalhões com e sem COP antes e depois das câmeras EM SERVIÇO 
-
-base_ssp  |> 
-  filter (servico == "SIM" & coorporacao == "PM")|> 
-    filter (cor_pele_agregada %in% c("Branca", "Negra")) |> 
-  group_by(ano, cor_pele_agregada, COP ) |> 
-  count() |> 
-   ggplot( aes(x=ano, y=n, group=cor_pele_agregada, color=cor_pele_agregada)) +
-    geom_line() + 
-  scale_color_viridis(discrete = TRUE) +
-    ggtitle("Perfil racial das vítimas de MDIP nos batalhões com e sem COP") +
-    theme_minimal() +
-  facet_wrap(~ COP)
-
-# Comparação perfil racial dos batalhões com e sem COP antes e depois das câmeras EM SERVIÇO 
-
-base_ssp  |> 
-  filter (servico == "SIM" & coorporacao == "PM")|> 
-  filter (cor_pele %in% c("Branca", "Preta", "Ignorada")) |> 
-  group_by(ano, cor_pele,COP ) |> 
-  count() |> 
-   ggplot( aes(x=ano, y=n, group=cor_pele, color=cor_pele)) +
-    geom_line() + 
-  scale_color_viridis(discrete = TRUE) +
-    ggtitle("Perfil racial das vítimas de MDIP nos batalhões com e sem COP") +
-    theme_minimal() +
-  facet_wrap(~ COP)
-
-# Comparação perfil racial dos batalhões com e sem COP antes e depois das câmeras EM SERVIÇO 
-
-base_ssp  |> 
-  filter (servico == "SIM" & coorporacao == "PM")|> 
-  filter (cor_pele %in% c("Branca", "Preta", "Ignorada")) |> 
-  group_by(ano, cor_pele,COP ) |> 
-  count() |> 
-   ggplot( aes(x=ano, y=n, group=cor_pele, color=cor_pele)) +
-    geom_line() + 
-  scale_color_viridis(discrete = TRUE) +
-    ggtitle("Perfil racial das vítimas de MDIP nos batalhões com e sem COP") +
-    theme_minimal() +
-  facet_wrap(~ COP)
-
-# Comparação perfil racial dos batalhões com  COP antes e depois das câmeras EM SERVIÇO  E EM FOLGA
-
-base_ssp  |> 
-  mutate(servico = case_when(servico %in% c("Sim", "SIM") ~ "Em Serviço",
-                             servico == "NÃO" ~ "Folga",
-         TRUE ~ as.character (servico))) |>
-  filter (coorporacao == "PM" & COP == "SIM")|> 
-  filter (cor_pele_agregada %in% c("Branca", "Negra")) |> 
-  group_by(ano, cor_pele_agregada,COP, servico ) |> 
-  count() |> 
-   ggplot( aes(x=ano, y=n, group=cor_pele_agregada, color=cor_pele_agregada)) +
-    geom_line() + 
-  scale_color_viridis(discrete = TRUE) +
-    ggtitle("Perfil racial das vítimas de MDIP nos batalhões com COP em serviço e folga") +
-    theme_minimal() +
-  facet_wrap(~ servico)
-
-# Comparação perfil racial dos batalhões SEM  COP antes e depois das câmeras EM SERVIÇO  E EM FOLGA
-
-base_ssp  |> 
-  mutate(servico = case_when(servico %in% c("Sim", "SIM") ~ "Em Serviço",
-                             servico == "NÃO" ~ "Folga",
-         TRUE ~ as.character (servico))) |>
-  filter(!is.na(servico)) |> 
-  filter (coorporacao == "PM" & COP == "NÃO")|> 
-  filter (cor_pele_agregada %in% c("Branca", "Negra")) |> 
-  group_by(ano, cor_pele_agregada,COP, servico ) |> 
-  count() |> 
-   ggplot( aes(x=ano, y=n, group=cor_pele_agregada, color=cor_pele_agregada)) +
-    geom_line() + 
-  scale_color_viridis(discrete = TRUE) +
-    ggtitle("Perfil racial das vítimas de MDIP nos batalhões SEM COP em serviço e folga") +
-    theme_minimal() +
-  facet_wrap(~ servico)
-
-# Faixa etária das vítimas de MDIP em batalhões com e sem COP EM TODO O PERIODO
-
-  base_ssp |>
-   filter(!is.na(idade_pessoa_agregada)) %>%
-    filter(ano >= 2018 & ano <= 2022) |> 
-   group_by(COP, idade_pessoa_agregada) %>%
-   summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = COP)
-  
-  
-# Faixa etária das vítimas de MDIP em batalhões com e sem COP APÓS AS CAMERAS
-
-  base_ssp |>
-   filter(!is.na(idade_pessoa_agregada)) %>%
-    filter(ano > 2020 & ano <= 2022) |> 
-   group_by(COP, idade_pessoa_agregada) %>%
-   summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = COP)
-  
-  # Faixa etária das vítimas de MDIP em todos os batalhões ANTES E APÓS AS CAMERAS (SEM 2020)
-
-  base_ssp |>
-    filter (coorporacao == "PM") |> 
-   filter(!is.na(idade_pessoa_agregada)) %>%
-      mutate(periodo = case_when(ano > 2017 & ano < 2020 ~ "Antes COP",
-                                ano > 2020 & ano < 2023 ~ "Após COP")) |> 
-    filter(!is.na(periodo)) %>%
-   group_by(periodo, idade_pessoa_agregada) %>%
-   summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = periodo)
-  
-# Comparação local dos MDIP dos batalhões antes e depois das câmeras EM SERVIÇO 
-
-base_ssp  |> 
-  filter (COP == "SIM" & servico == "SIM")|> 
-  filter (desc_tipolocal %in% c("Via pública", "Residência")) |> 
-  group_by(ano, desc_tipolocal ) |> 
-  count() |> 
-   ggplot( aes(x=ano, y=n, group=desc_tipolocal, color=desc_tipolocal)) +
-    geom_line() + 
-   geom_vline(xintercept=c(2020,2021), linetype='dotted', col = 'red')+
-  scale_color_viridis(discrete = TRUE) +
-    ggtitle("Local das ocorrências de MDIP nos batalhões com COP") +
-    theme_minimal()
-  
-# Comparação local dos MDIP dos batalhões com e sem COP antes e depois das câmeras EM SERVIÇO 
-
-base_ssp  |> 
-  filter (servico == "SIM" & coorporacao == "PM")|> 
-  filter (desc_tipolocal %in% c("Via pública", "Residência")) |> 
-  group_by(ano, desc_tipolocal, COP) |> 
-  count() |> 
-   ggplot( aes(x=ano, y=n, group=desc_tipolocal, color=desc_tipolocal)) +
-    geom_line() + 
-  scale_color_viridis(discrete = TRUE) +
-    ggtitle("Local das ocorrências  de MDIP nos batalhões com e sem COP") +
-    theme_minimal() +
-  facet_wrap(~ COP)
-  
-
-```
-
-
-```{r municipio e batalhao cop, echo=FALSE, fig.dim = c(9, 6)}  
-# Tabela de variação do MDIP em Serviço antes (2018 e 2019) e depois das COP (2021 e 2022) por municipio
-
-library(DT)
-
-base_ssp  |> 
-  filter (servico == "SIM") |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
-      mutate(periodo = case_when(ano > 2017 & ano < 2020 ~ "antes_cop",
-                                ano > 2020 & ano < 2023 ~ "depois_cop")) |> 
-    filter(!is.na(periodo)) |> 
-  group_by(municipio_limpo.x, periodo) |> 
-  summarise(cnt= n()) |> 
-  pivot_wider(names_from = periodo, values_from = cnt) |> 
-  mutate(across(where(anyNA), ~ replace_na(., 0))) |> 
-    mutate(variacao = round((depois_cop - antes_cop) / antes_cop * 100, 1)) |> 
-  select(municipio_limpo.x, antes_cop, depois_cop, variacao) |> 
-  datatable(rownames = FALSE, filter = "top", class = 'cell-border stripe', editable = TRUE, 
-            colnames = c("Município", "Antes das COP", "Após as COP", "Variação %"))
-
-  
-# Tabela de variação do MDIP em Serviço antes (2018 e 2019) e depois das COP (2021 e 2022) por batalhão
-
-base_ssp  |> 
-  filter (servico == "SIM", coorporacao == "PM") |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
-      mutate(periodo = case_when(ano > 2017 & ano < 2020 ~ "antes_cop",
-                                ano > 2020 & ano < 2023 ~ "depois_cop")) |> 
-    filter(!is.na(periodo)) |> 
-  group_by(batalhao, periodo, COP) |> 
-  summarise(cnt= n()) |> 
-  pivot_wider(names_from = periodo, values_from = cnt) |> 
-  mutate(across(where(anyNA), ~ replace_na(., 0))) |> 
-    mutate(variacao = round((depois_cop - antes_cop) / antes_cop * 100, 1)) |> 
-  select(batalhao, antes_cop, depois_cop, variacao, COP) |> 
-  datatable(rownames = FALSE, filter = "top", class = 'cell-border stripe', editable = TRUE, 
-            colnames = c("Batalhão", "Antes das COP", "Após as COP", "Variação %", "Tem COP"))
-
-```
-
