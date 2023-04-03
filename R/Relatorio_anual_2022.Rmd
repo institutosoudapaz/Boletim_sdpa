@@ -193,17 +193,17 @@ base_completa %>%
     group_by(crime) %>%
     arrange(crime) %>%
     mutate(variacao = 100 * (count - lag(count))/lag(count)) |> 
-    ggplot(aes(fill=factor(periodo, levels=c("2021","2022")), y= count, 
+    ggplot(aes(fill=factor(periodo, levels=c("2022","2021")), y= count, 
                x= factor(crime, levels = c(
                    "total", "roubo_outros", "roubo_veic","extor_seq","lat_ocorr", "tot_estupro", "hd_ocorr")))) + 
     geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
     geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
               position = position_dodge(0.94), 
-              vjust = 0.43, hjust = -0.2, check_overlap = FALSE, size=3.2) +
+              vjust = 0.43, hjust = -0.1, check_overlap = FALSE, size= 3.2) +
     geom_text(aes(y = 385000, 
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
-                  vjust = 0.1, hjust = 1, check_overlap = FALSE))+
+                  vjust = 0.1, hjust = 1, check_overlap = FALSE), size= 2.6) +
     scale_fill_manual(values = azul_2) +
     scale_color_identity() + 
     guides(color = "none")+
@@ -247,17 +247,17 @@ base_completa %>%
   group_by(crime) %>%
     arrange(crime) %>%
     mutate(variacao = 100 * (count - lag(count))/lag(count)) |> 
-  ggplot(aes(fill=factor(periodo, levels=c("2021", "2022")), y= count, 
+  ggplot(aes(fill=factor(periodo, levels=c("2022", "2021")), y= count, 
              x= factor(crime, levels = c(
                "total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol"))))+ 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
-    geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
+     geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
               position = position_dodge(0.94), 
-              vjust = 0.43, hjust = -0.2, check_overlap = FALSE, size=3.2) +
+              vjust = 0.43, hjust = -0.1, check_overlap = FALSE, size= 3.2) +
     geom_text(aes(y = 4450, 
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
-                  vjust = 0.1, hjust = 1, check_overlap = FALSE))+
+                  vjust = 0.1, hjust = 1, check_overlap = FALSE), size= 2.6) + 
     scale_fill_manual(values = azul_2) +
     scale_color_identity() + 
     guides(color = "none")+
@@ -301,6 +301,89 @@ No Interior, houve aumento de 5,6% e na Capital, queda de -0,5%.
 Com esta série é possível constatar que o período pandêmico sofrido entre os anos de 2020 e 2021 não afetou os índices de homicídio doloso no estado de São Paulo, visto que houve pouca variação se comparado aos anos que antecederam a pandemia.
 
 \newpage
+
+::: {custom-style="Estilo1"}
+Homicídios no Interior do estado
+:::
+
+```{r homicidios deinter, echo=FALSE, fig.width=8, fig.height=4.5}
+library(glue)
+library(ggrepel)
+
+# Trata base
+base_taxa <- base_completa %>% 
+  filter(periodo > (ano_referencia-2)) %>% 
+  filter(cod_reg != 99 & cod_reg > 30) %>% 
+  group_by(periodo, deinter) %>%
+  summarise(hd_taxa = (hd_ocorr/pop) * 100000) |> 
+    pivot_wider(names_from = periodo, values_from = hd_taxa) |> 
+  mutate(var = `2022` - `2021`) |> 
+  mutate(trend = ifelse(var < 0, "queda", "aumento")) |> 
+  pivot_longer(cols = c(`2021`, `2022`), names_to = "periodo", values_to = "hd_taxa") 
+  
+base_taxa |> 
+  ggplot(aes(factor(periodo), hd_taxa, group = deinter, color = trend)) +
+  geom_line(size = 1.5) +
+  geom_point(aes(color = trend), size = 4) + 
+  geom_text_repel(data = base_taxa, 
+        aes(x = ifelse(periodo == 2021, 1 - 0.35, 2 + 0.35),
+          label = glue::glue("{deinter} ({scales::number(hd_taxa, accuracy = 0.1)} por 100 mil)"),
+          hjust = ifelse(periodo == 2021, 1, 0)), 
+    size = 3.5, nudge_x = 0, direction = "y",
+    segment.size = 0)+
+  scale_x_discrete(position = "top") +
+  scale_size_identity() +
+  coord_cartesian(clip = "off") +
+  scale_color_manual(
+    values = c("queda" = "#092044", "aumento" = "#C33C2E")) +
+  guides(col = "none") +
+  labs(title = "Taxas de homicídios dolosos dos Deinters - 2021 e 2022",
+       subtitle = "Taxa de ocorreências de homicídios dolosos por 100 mil habitantes") +
+  theme_minimal(base_family = "Fira Sans", base_size = 8) + 
+  theme (
+    plot.background = element_rect(color = NA, fill = "white"),
+    panel.grid = element_blank(),
+    panel.grid.major.x = element_line(color = "#ECEEF2", size = 5),
+    text = element_text(color = "#555555"),
+    axis.title = element_blank(),
+    axis.text.x = element_text(size = 12, face = "bold", color = "grey38"),
+    axis.text.y = element_blank(),
+    plot.margin = margin(t = 6, l = 16, r = 16, b = 4),
+    plot.title = element_text(family = "Playfair Display", size = 14, color = "grey12"))
+    
+    
+    
+    plot.caption = element_markdown(
+      hjust = 0, margin = margin(t = 8))
+                  
+                  
+                  
+                  
+                  
+                  aes(label = paste0(deinter, " - ", hd_taxa, "%")), 
+                  hjust = "right", 
+                  fontface = "bold", 
+                  size = 4, 
+                  nudge_x = .5, 
+                  direction = "y")
+  
+  
+  
+  geom_text_repel(
+    aes(x = 2021),
+        label = paste0(deinter, " - ", hd_taxa, "por 100 mil"),
+        hjust = 0, size = 2.5, nudge_x = 0, direction = "y",
+    segment.size = 0) +
+  scale_x_discrete(position = "top") +
+  scale_size_identity() +
+  coord_cartesian(clip = "off") 
+
+```
+
+Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise Análise 
+
+\newpage
+
 
 ::: {custom-style="Estilo1"}
 Latrocínio
