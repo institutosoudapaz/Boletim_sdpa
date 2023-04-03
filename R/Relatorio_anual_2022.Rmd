@@ -424,13 +424,23 @@ Raça e idade das vitímas MDIP
  
  base_ssp <- base_ssp |>
   mutate(idade_pessoa_agregada = case_when(
-    idade_pessoa > 0 & idade_pessoa < 11 ~ "0-10",
-    idade_pessoa >= 11 & idade_pessoa <= 20 ~ "11-20",
-    idade_pessoa >= 21 & idade_pessoa <= 30 ~ "21-30",
-    idade_pessoa >= 31 & idade_pessoa <= 40 ~ "31-40",
-    idade_pessoa >= 41 & idade_pessoa <= 50 ~ "41-50",
-    idade_pessoa >= 51 & idade_pessoa <= 60 ~ "51-60",
-    idade_pessoa >= 61 ~ "61+")) |> 
+    idade_pessoa > 0 & idade_pessoa < 04 ~ "0-04",
+    idade_pessoa >= 05 & idade_pessoa <= 09 ~ "05-09",
+    idade_pessoa >= 10 & idade_pessoa <= 14 ~ "10-14",
+    idade_pessoa >= 15 & idade_pessoa <= 19 ~ "15-19",
+    idade_pessoa >= 20 & idade_pessoa <= 24 ~ "20-24",
+    idade_pessoa >= 25 & idade_pessoa <= 29 ~ "25-29",
+    idade_pessoa >= 30 & idade_pessoa <= 34 ~ "30-34",
+    idade_pessoa >= 35 & idade_pessoa <= 39 ~ "35-39",
+    idade_pessoa >= 40 & idade_pessoa <= 44 ~ "40-44",
+    idade_pessoa >= 45 & idade_pessoa <= 49 ~ "45-49",
+    idade_pessoa >= 50 & idade_pessoa <= 54 ~ "50-54",
+    idade_pessoa >= 55 & idade_pessoa <= 59 ~ "55-59",
+    idade_pessoa >= 60 & idade_pessoa <= 64 ~ "60-64",
+    idade_pessoa >= 65 & idade_pessoa <= 69 ~ "65-69",
+    idade_pessoa >= 70 & idade_pessoa <= 74 ~ "70-74",
+    idade_pessoa >= 75 & idade_pessoa <= 79 ~ "75-79",
+    idade_pessoa >= 80 ~ "80+")) |> 
     mutate(cor_pele_agregada = case_when(
       cor_pele %in% c("Parda","Preta") ~ "Negra",
       cor_pele %in% c("Outros", "NULL","Amarela",
@@ -460,7 +470,7 @@ E, ao se olhar para o conjunto global dos dados, que compreende todo o período 
 
 \newpage
 
-::: {custom-style="Estilo1"} Perfil racial das vitímas MDIP :::
+::: {custom-style="Estilo1"} Perfil racial das vitímas de MDIP :::
 
 ```{r raça, echo=FALSE, fig.dim = c(9, 6)}
 
