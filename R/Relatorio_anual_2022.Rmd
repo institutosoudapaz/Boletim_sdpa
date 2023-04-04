@@ -568,13 +568,11 @@ Letalidade e vitimização policial por macrorregião
 
    grafico_geral(let_pol)
 
-   
    grafico_geral(vit_pol)
-  
-  
+
   
   base_completa %>% 
-    #filtra sem os deinter individuais
+    #filtra sem os deinter 
   filter(cod_reg < 31) %>% 
   group_by(regiao, periodo) %>%
     #modela a base
