@@ -100,7 +100,9 @@ base_completa %>%
             roubo_veic = sum(roubo_veic),
             roubo_outros = sum(roubo_outros),
             ap_armas = sum(ap_armas),
-            prisoes = sum(prisoes)) %>% 
+            prisoes = sum(prisoes),
+            let_pol = sum(let_ser + let_fol),
+            vit_pol = sum (mort_ser + mort_fol)) %>% 
   pivot_longer(cols = regiao, values_to = "regiao") %>% 
   #gráfico
   ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
@@ -585,5 +587,52 @@ Dentre o total de 3405 vítimas de MDIP no período de 2018 a 2022, com a decomp
 \newpage
 
 ::: {custom-style="Estilo1"} 
-
+Letalidade e vitimização policial por macrorregião
 :::
+``````{r raça e idade, echo=FALSE, fig.width=8, fig.height=4.5}
+
+   view(base_completa)
+
+   grafico_geral(let_pol)
+
+   
+   grafico_geral(vit_pol)
+  
+  
+  
+  base_completa %>% 
+    #filtra sem os deinter individuais
+  filter(cod_reg < 31) %>% 
+  group_by(regiao, periodo) %>%
+    #modela a base
+  summarise(tot_estupro = sum(tot_estupro),
+            extor_seq = sum(extor_seq),
+            hd_ocorr = sum(hd_ocorr),
+            lat_ocorr = sum(lat_ocorr),
+            roubo_veic = sum(roubo_veic),
+            roubo_outros = sum(roubo_outros),
+            ap_armas = sum(ap_armas),
+            prisoes = sum(prisoes),
+            let_pol = sum(let_ser + let_fol),
+            vit_pol = sum (mort_ser + mort_fol)) %>% 
+  pivot_longer(cols = regiao, values_to = "regiao") %>% 
+  #gráfico
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
+             y= vit_pol, x= periodo)) + 
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(vit_pol, big.mark = ".", scientific = FALSE), 
+                colour =ifelse(regiao=="Capital", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.4) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = periodo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+  scale_fill_manual(values = teste_2) +
+  guides(color = "none")+
+  theme_sdpa_macroreg +
+  guides(fill = guide_legend(reverse = TRUE)) +
+    facet_wrap()
+
+
+```
+
