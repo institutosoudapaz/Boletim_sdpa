@@ -309,8 +309,6 @@ Homicídios no Interior do estado
 :::
 
 ```{r homicidios deinter, echo=FALSE, fig.width=8, fig.height=4.5}
-library(glue)
-library(ggrepel)
 
 # Trata base
 base_taxa <- base_completa %>% 
@@ -325,60 +323,35 @@ base_taxa <- base_completa %>%
   
 base_taxa |> 
   ggplot(aes(factor(periodo), hd_taxa, group = deinter, color = trend)) +
-  geom_line(size = 1.5) +
-  geom_point(aes(color = trend), size = 4) + 
+  # altera espessura da linha
+
+  geom_line(size = 0.4) +
+  geom_point(aes(color = trend), size = 3) + 
   geom_text_repel(data = base_taxa, 
         aes(x = ifelse(periodo == 2021, 1 - 0.35, 2 + 0.35),
-          label = glue::glue("{deinter} ({scales::number(hd_taxa, accuracy = 0.1)} por 100 mil)"),
-          hjust = ifelse(periodo == 2021, 1, 0)), 
-    size = 3.5, nudge_x = 0, direction = "y",
+          label = glue::glue("{deinter} ({scales::number(hd_taxa, accuracy = 0.1)} por 100 mil)")), 
+    size = 4, nudge_x = 0, direction = "y",
     segment.size = 0)+
   scale_x_discrete(position = "top") +
   scale_size_identity() +
   coord_cartesian(clip = "off") +
   scale_color_manual(
+    # altera cores das taxas que cairam e aumentaram 
     values = c("queda" = "#092044", "aumento" = "#C33C2E")) +
   guides(col = "none") +
-  labs(title = "Taxas de homicídios dolosos dos Deinters - 2021 e 2022",
-       subtitle = "Taxa de ocorreências de homicídios dolosos por 100 mil habitantes") +
-  theme_minimal(base_family = "Fira Sans", base_size = 8) + 
+  labs(subtitle = "Taxa de ocorrências de homicídios dolosos por 100 mil habitantes") +
+  theme_minimal(base_size = 10) + 
   theme (
     plot.background = element_rect(color = NA, fill = "white"),
     panel.grid = element_blank(),
     panel.grid.major.x = element_line(color = "#ECEEF2", size = 5),
     text = element_text(color = "#555555"),
     axis.title = element_blank(),
-    axis.text.x = element_text(size = 12, face = "bold", color = "grey38"),
+    axis.text.x = element_text(size = 14, face = "bold", color = "grey38"),
     axis.text.y = element_blank(),
     plot.margin = margin(t = 6, l = 16, r = 16, b = 4),
-    plot.title = element_text(family = "Playfair Display", size = 14, color = "grey12"))
+    plot.title = element_text(size = 14, color = "grey12"))
     
-    
-    
-    plot.caption = element_markdown(
-      hjust = 0, margin = margin(t = 8))
-                  
-                  
-                  
-                  
-                  
-                  aes(label = paste0(deinter, " - ", hd_taxa, "%")), 
-                  hjust = "right", 
-                  fontface = "bold", 
-                  size = 4, 
-                  nudge_x = .5, 
-                  direction = "y")
-  
-  
-  
-  geom_text_repel(
-    aes(x = 2021),
-        label = paste0(deinter, " - ", hd_taxa, "por 100 mil"),
-        hjust = 0, size = 2.5, nudge_x = 0, direction = "y",
-    segment.size = 0) +
-  scale_x_discrete(position = "top") +
-  scale_size_identity() +
-  coord_cartesian(clip = "off") 
 
 ```
 
