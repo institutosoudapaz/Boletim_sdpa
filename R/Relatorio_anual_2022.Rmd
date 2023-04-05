@@ -548,7 +548,7 @@ E, ao se olhar para o conjunto global dos dados, que compreende todo o período 
   group_by(cor_pele_todas) |> 
   summarise(total = n()) |> 
   mutate(freq = round(total / sum(total)*100, 2)) |> 
- kbl(col.names = c("Cor", "Total", "Frequência")) |>  
+  kbl(col.names = c("Cor", "Total", "Frequência")) |>  
   kable_paper("hover", full_width = F) |>  
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
 
@@ -604,6 +604,15 @@ Letalidade e vitimização policial por macrorregião
   guides(fill = guide_legend(reverse = TRUE)) +
     facet_wrap()
 
-
+  #Não consegui criar uma tabela pelo R sobre a vitimização policial, então realizei no excel e fiz a análise no Docs - necessito da ajuda dos universitários kkkkrying
+  
+  
 ```
+
+De 2018 a 2022, o estado de São Paulo contabilizou 3603 mortes, o que equivale a 60 mortes por mês a cada ano. O triênio de 18 a 20 apresenta o maior total bruto do período, com 2590 casos registrados de mortes decorrentes de intervenções policiais, o que representa 39,11% do conjunto global de dados e a capital paulista é a macrorregião que concentra o maior número de mortes em ambos os anos, com aproximadamente 50% a 52% dos registros.
+E, é partir de 2020 que se observa a queda no número de mortes ocasionadas pela polícia, saindo de 844 no início da segunda década para 588 em 2021, e, grande parte dessa queda se dá em razão de dois fatores, 1. a pandemia de Covid-19, que limitou a circulação da população em vias públicas e 2. o início do programa Olho Vivo de implementação de câmeras corporais na Polícia Militar, que gerou impactos positivos na redução de mortes decorrentes de intervenção policial no estado e principalmente na capital paulista.
+
+
+# texto vitimização
+Ao longo do período de 2018 a 2022 foram contabilizadas 268 mortes de policiais no estado de São Paulo, com 102 em serviço e 166 fora de serviço. Dentre as macrorregiões, o Interior do estado é a que apresenta o maior número de casos de mortes de agentes de segurança em atuação, com 62 mortes - representando 60,7% do total do período -, e, em ocorrências em situação de folga dos agentes, o acumulado é 74 - equivalente a 44,5% do total. A Capital paulista também apresenta números elevados em ambos os casos, porém há um maior registro no contexto de não atuação dos policiais, com 70 mortes no período, bem próximo aos números do Interior - equivale a 42,17% do total de mortes.
 
