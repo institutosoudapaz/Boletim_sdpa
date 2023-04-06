@@ -22,9 +22,9 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 base_completa <- readRDS("../data-raw/base_completa.rds")
 base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds")
-ano_referencia <- 2022
 base_ssp <- readRDS("../data-raw/mdip_total.rds")
-
+base_cor <- readRDS("../data-raw/base_corregedoria.rds")
+ano_referencia <- 2022
 ```
 
 ```{r graficos e temas, include=FALSE}
@@ -558,6 +558,21 @@ Dentre o total de 3405 vítimas de MDIP no período de 2018 a 2022, com a decomp
 
 
 \newpage
+::: {custom-style="Estilo1"} 
+Apresentação
+:::
+
+xxxxx texto xxxxx
+\newpage
+::: {custom-style="Estilo1"} 
+Metodologia
+:::
+
+As análises sobre letalidade policial que se seguem neste relatório foram elaboradas a partir de três fontes distintas de dados. A primeira delas, com dado fornecidos pela Corregedoria do Estado de São Paulo. A utilização desses dados dá continuidade ao histórico do presente relatório, e se justifica tendo em vista o grau de confiabilidade que estes apresenta. (fazer nota de rodapé falando da diferença dos números para o período) Em 2020, os dados disponibilizados pela SSP contabilizam 814 casos de MDIP. Os números da Corregedoria, para o mesmo período registram 893 casos.
+O segundo banco de dado utilizado foram os microdados de Morte em decorrência de intervenção policial fornecidos pela SSP/SP em sua plataforma de Estatísticas Criminais. Foi solicitado junto à secretaria, via Lei de Acesso à Informação, a complementação destes dados com informações que possibilitassem a desagregação da análise por batalhões e em quais deles havia sido implementado (e em qual período) o uso de cameras operacionais portáteis (COP), em concordância com o programa Olho Vivo. Sugeriu-se, assim, a inclusão da variável "batalhão" na base de dados. A disponibilização dos dados foi indeferida, sendo consideradas de caráter estratégico para as políticas de segurança pública. 
+Sendo informações essenciais para a realização do estudo e para uma análise mais aprofundada sobre o efeito do uso das câmeras corporais na atuação policial no estado, as seguintes informações foram incorporadas a partir da base de dados disponibilizada pelo Grupo de Atuação Especial da Segurança Pública e Controle Externo da Atividade Policial (GAESP) do Ministério Público de São Paulo. 
+
+
 
 ::: {custom-style="Estilo1"} 
 Letalidade e vitimização policial por macrorregião
@@ -615,4 +630,8 @@ E, é partir de 2020 que se observa a queda no número de mortes ocasionadas pel
 
 # texto vitimização
 Ao longo do período de 2018 a 2022 foram contabilizadas 268 mortes de policiais no estado de São Paulo, com 102 em serviço e 166 fora de serviço. Dentre as macrorregiões, o Interior do estado é a que apresenta o maior número de casos de mortes de agentes de segurança em atuação, com 62 mortes - representando 60,7% do total do período -, e, em ocorrências em situação de folga dos agentes, o acumulado é 74 - equivalente a 44,5% do total. A Capital paulista também apresenta números elevados em ambos os casos, porém há um maior registro no contexto de não atuação dos policiais, com 70 mortes no período, bem próximo aos números do Interior - equivale a 42,17% do total de mortes.
+
+```{r}
+
+```
 
