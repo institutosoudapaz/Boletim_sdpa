@@ -635,7 +635,7 @@ E, é partir de 2020 que se observa a queda no número de mortes ocasionadas pel
 # texto vitimização
 Ao longo do período de 2018 a 2022 foram contabilizadas 268 mortes de policiais no estado de São Paulo, com 102 em serviço e 166 fora de serviço. Dentre as macrorregiões, o Interior do estado é a que apresenta o maior número de casos de mortes de agentes de segurança em atuação, com 62 mortes - representando 60,7% do total do período -, e, em ocorrências em situação de folga dos agentes, o acumulado é 74 - equivalente a 44,5% do total. A Capital paulista também apresenta números elevados em ambos os casos, porém há um maior registro no contexto de não atuação dos policiais, com 70 mortes no período, bem próximo aos números do Interior - equivale a 42,17% do total de mortes.
 
-```{r}
-
+```{r vitimização policial, echo=FALSE, fig.width=8, fig.height=4.5 }
+tabela_vit_pol <- base_cor |> filter(cod_reg %in% c(10, 20, 30, 99), periodo ==2022) |> group_by(cod_reg, mort_ser, mort_fol) |>  summarise(n= sum(c(mort_ser, mort_fol)), morte_ser_perc = mort_ser/n*100, morte_fol_perc = mort_fol/n*100) 
 ```
 
