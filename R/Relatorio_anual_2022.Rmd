@@ -10,6 +10,7 @@ output:
 editor_options: 
   markdown: 
     wrap: sentence
+always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -17,6 +18,7 @@ editor_options:
 library(tidyverse)
 library(ggcharts)
 library(kableExtra)
+library(ggrepel)
 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
@@ -581,7 +583,7 @@ Assim, o banco final, utilizado nesta pesquisa, delimita as ocorrências para o 
 ::: {custom-style="Estilo1"} 
 Letalidade e vitimização policial por macrorregião
 :::
-``````{r raça e idade, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r letalidade e vitimização, echo=FALSE, fig.width=8, fig.height=4.5}
 
    view(base_completa)
 
@@ -620,11 +622,10 @@ Letalidade e vitimização policial por macrorregião
   scale_fill_manual(values = teste_2) +
   guides(color = "none")+
   theme_sdpa_macroreg +
-  guides(fill = guide_legend(reverse = TRUE)) +
-    facet_wrap()
+  guides(fill = guide_legend(reverse = TRUE)) 
+  # + facet_wrap()
 
   #Não consegui criar uma tabela pelo R sobre a vitimização policial, então realizei no excel e fiz a análise no Docs - necessito da ajuda dos universitários kkkkrying
-  
   
 ```
 
