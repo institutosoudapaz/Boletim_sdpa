@@ -282,6 +282,10 @@ base_corregedoria <- base_corregedoria %>%
             mort_fol =sum(mort_fol)
   )
 
+
+#Salva base corregedoria
+saveRDS(base_corregedoria, "./data-raw/base_corregedoria.rds")
+
 # Juntar as bases de crimes e da corregedoria
 
 base_crimes <- base_crimes %>% 
