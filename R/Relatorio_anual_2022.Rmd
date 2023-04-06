@@ -24,6 +24,8 @@ base_completa <- readRDS("../data-raw/base_completa.rds")
 base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds")
 base_ssp <- readRDS("../data-raw/mdip_total.rds")
 base_cor <- readRDS("../data-raw/base_corregedoria.rds")
+base_ssp_ <- readRDS("../data-raw/mdip_ssp.rds")
+
 ano_referencia <- 2022
 ```
 
@@ -568,14 +570,13 @@ xxxxx texto xxxxx
 Metodologia
 :::
 
-As análises sobre letalidade policial que se seguem neste relatório foram elaboradas a partir de três fontes distintas de dados. A primeira delas, com dado fornecidos pela Corregedoria do Estado de São Paulo. A utilização desses dados dá continuidade ao histórico do presente relatório, e se justifica tendo em vista o grau de confiabilidade que estes apresenta. (fazer nota de rodapé falando da diferença dos números para o período) A título de ilustração, em 2020 os dados disponibilizados pela SSP contabilizam 814 casos de MDIP. Os números da Corregedoria, para o mesmo período registram 893 casos.
+As análises sobre letalidade policial que se seguem neste relatório foram elaboradas a partir de três fontes distintas de dados. A primeira delas, com dado fornecidos pela Corregedoria do Estado de São Paulo. A utilização desses dados dá continuidade ao histórico do presente relatório, e se justifica tendo em vista o grau de confiabilidade que estes apresenta. (fazer nota de rodapé falando da diferença dos números para o período) A título de ilustração, para o período de análise, os dados disponibilizados pela SSP contabilizam 3521 casos de MDIP. Os números da Corregedoria, para o mesmo período, registram 3603.
 O segundo banco de dado utilizado foram os microdados de Morte em decorrência de intervenção policial fornecidos pela SSP/SP em sua plataforma de Estatísticas Criminais. Foi solicitado junto à secretaria, via Lei de Acesso à Informação, a complementação destes dados com informações que possibilitassem a desagregação da análise por batalhões e em quais deles havia sido implementado (e em qual período) o uso de cameras operacionais portáteis (COP), em concordância com o programa Olho Vivo. Sugeriu-se, assim, a inclusão da variável "batalhão" na base de dados. A disponibilização dos dados foi indeferida, sendo consideradas de caráter estratégico para as políticas de segurança pública. 
 Sendo informações essenciais para a realização do estudo e para uma análise mais aprofundada sobre o efeito do uso das câmeras corporais na atuação policial no estado, as seguintes informações foram incorporadas a partir da base de dados disponibilizada pelo Grupo de Atuação Especial da Segurança Pública e Controle Externo da Atividade Policial (GAESP) do Ministério Público de São Paulo. 
 O processo de adequação das bases se deu em duas etapas: inicialmente, foi utilizado o registro de dados de ocorrências (RDO) para a identificação das observações semelhantes. No entanto, após a identificação de casos em que o RDO contido na base do MP correspondia ao número do processo interno, não ao número do boletim de ocorrência, foi construída uma variável de identificação a partir da data, hora e do município. 
-A análise exploratória dos bancos revelou também a discrepância das ocorrências registradas neles. A base do MP apresenta 447 casos de MDIP em 2022, já  a base da SSP registrou 419 casos no mesmo ano.
+A análise exploratória dos bancos revelou também discrepância entre as ocorrências registradas neles. Em 2022, a base do MP apresenta 447 casos de MDIP, já  a base da SSP registrou 419 casos no mesmo ano.
 Em 2021 a base do MP registrou 555 casos, já a da SSP, 570. Em 2020, os números registradoss pelo MP contabilizam 732 casos, contra 814 presentes na base da SSP.
 Assim, o banco final, utilizado nesta pesquisa, delimita as ocorrências para o período analisado (2018- 2022), contendo 7570 casos de mortes em decorrência de intervenção policial. 
-
 
 ::: {custom-style="Estilo1"} 
 Letalidade e vitimização policial por macrorregião
