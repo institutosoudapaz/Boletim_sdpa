@@ -641,17 +641,16 @@ Ao longo do período de 2018 a 2022 foram contabilizadas 268 mortes de policiais
          periodo %in% c(2021, 2022) ~ "Depois_COPs")) |>
   group_by(cod_reg, cop) %>% 
   summarise(mort_ser= sum(mort_ser),
-            mort_fol= sum(mort_fol)) |> 
+            mort_fol= sum(mort_fol)) |>
+ mutate(cop_limpo = case_when(cop = "Antes_COPs" ~ "Antes das COPs",
+                             cop = "Depois_COPs" ~ "Depois das COPs")) |>
+  as.logical(base_cor$cod_reg) |> 
+ mutate(cod_reg = case_when(cod_reg = "10" ~ "Capital",
+                             cod_reg = "20" ~ "Região Metropolitana",
+                             cod_reg = "30" ~ "Interior", 
+                             cod_reg = "99" ~ "Estado")) |> 
   ungroup() |>
   group_by(cod_reg, cop) |> 
-  #mutate(cop_limpo = case_when(cop = "Antes_COPs" ~ "Antes das COPs",
-                              # cop = "Depois_COPs" ~ "Depois das COPs"),
-         #TRUE ~ as.character (cop)) |> 
-  #mutate(cod_reg_limpo = case_when(cod_reg = "10" ~ "Capital",
-                               #cod_reg = "20" ~ "Região Metropolitana",
-                               #cod_reg = "30" ~ "Interior", 
-                               #cod_reg = "99" ~ "Estado"), 
-        # TRUE ~ as.character (cod_reg)) |> 
   mutate(n= sum(c(mort_ser, mort_fol)), morte_ser_perc = mort_ser/n*100,   morte_fol_perc = mort_fol/n*100) |>
   kbl(col.names = c("Região", "COP", "Morte em serviço", "Morte em folga", "Total", "% Serviço", "% Folga"), digits = 2) |>
   kable_paper("hover", full_width = F) |>  
