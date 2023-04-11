@@ -27,7 +27,7 @@ base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds")
 base_ssp <- readRDS("../data-raw/mdip_total.rds")
 base_cor <- readRDS("../data-raw/base_corregedoria.rds")
 base_ssp_ <- readRDS("../data-raw/mdip_ssp.rds")
-
+base_ssp_ <- readRDS("../data-raw/mdip_ssp.rds")
 ano_referencia <- 2022
 ```
 
@@ -638,5 +638,9 @@ Ao longo do período de 2018 a 2022 foram contabilizadas 268 mortes de policiais
 
 ```{r vitimização policial, echo=FALSE, fig.width=8, fig.height=4.5 }
 tabela_vit_pol <- base_cor |> filter(cod_reg %in% c(10, 20, 30, 99), periodo ==2022) |> group_by(cod_reg, mort_ser, mort_fol) |>  summarise(n= sum(c(mort_ser, mort_fol)), morte_ser_perc = mort_ser/n*100, morte_fol_perc = mort_fol/n*100) 
+```
+
+```{r ocorrências com mais de uma vítima por ano}
+base_ssp |> filter(vitimas>1) |> group_by(ano) |> count() |> kbl(
 ```
 
