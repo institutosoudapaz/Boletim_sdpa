@@ -115,7 +115,10 @@ mdip_mp <- mdip_mp |>
 
 #Une os bancos
 mdip_rdo<- merge(mdip_ssp, mdip_mp, by = "rdo", all = TRUE)
+###### Análise do bando mdip_rdo
 
+erros_ssp <- mdip_rdo |> filter(is.na(departamento_circunscricao))
+erros_mp <- mdip_rdo |> filter(is.na(vitimas))
 mdip_ssp_total<- merge(mdip_ssp, estim_pop, by = "municipio_limpo", all = TRUE)
 mdip_mp_total<- merge(mdip_mp, estim_pop, by = "municipio_limpo", all = TRUE)
 
