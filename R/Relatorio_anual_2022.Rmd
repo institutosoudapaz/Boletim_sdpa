@@ -27,7 +27,7 @@ base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds")
 base_ssp <- readRDS("../data-raw/mdip_total.rds")
 base_cor <- readRDS("../data-raw/base_corregedoria.rds")
 base_ssp_ <- readRDS("../data-raw/mdip_ssp.rds")
-
+base_ssp_ <- readRDS("../data-raw/mdip_ssp.rds")
 ano_referencia <- 2022
 ```
 
@@ -662,8 +662,13 @@ Vitimização policial antes e depois das COPs
 tabela_vit_pol
 
 ```
-
 Os anos de 2018 e 2019, antes da implementação das Câmeras Corporais Operacionais (COPs), registraram um total de 95 mortes de agentes de segurança em todo o estado, com a capital paulista sendo a região com a maior quantidade, 52 casos - 54,7% de todos os casos. Porém, a partir de 2021, com a implantação das COPs, entre 21 e 2022, o estado teve um total de 58 mortes de policiais, uma redução de 39% no número de vitimizações.
 Ademais, é visível que, com a implementação das COPs se observa uma maior concentração das mortes de policiais, com maiores registros de casos de agentes que estão em contexto de folga, como por exemplo na Capital, com 3 mortes de oficiais em serviço e 21 de oficiais em folga no período de 2021 à 2022.
 
+
+=======
+```{r ocorrências com mais de uma vítima por ano}
+base_ssp |> filter(vitimas>1) |> group_by(ano) |> count() |> kbl()
+```
+>>>>>>> 9b75144a3d052fc0d6db269a272f80137a83de78
 
