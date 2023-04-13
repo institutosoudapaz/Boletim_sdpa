@@ -758,3 +758,88 @@ Ademais, é visível que, com a implementação das COPs se observa uma maior co
 base_ssp |> filter(vitimas>1) |> group_by(ano) |> count() |> kbl()
 
 ```
+
+```{r ocorrências com mais de uma vítima por ano, echo=FALSE, fig.width=8, fig.height=4.5 }
+
+base_ssp |> filter(vitimas>1) |> group_by(ano) |> count() |> kbl()
+
+```
+
+```{r batalhões com e sem câmera , warning = FALSE, echo=FALSE, fig.width=8, fig.height=4.5}
+#total de ocorrências
+
+base_ssp |> group_by(COP) |>filter(!is.na(batalhao)) |>  summarise(total = n()) |>arrange(desc(total)) 
+
+#Número de ocorrências em serviço e fora 
+base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |> 
+   filter(ano_bo >= 2018 & ano_bo <= 2022)|>
+  mutate(situacao = case_when(
+   situacao == "Serviço"~ "serviço", 
+ TRUE ~ as.character(situacao))) |>
+  summarise(total = n()) |>arrange(desc(total)) 
+
+#perfil etário das vitimas
+
+ base_ssp |>
+   filter(!is.na(idade_pessoa_agregada)) |>
+   filter(idade_pessoa_agregada >= "05-09", idade_pessoa_agregada <= "65+") |> 
+    filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
+   group_by(COP, idade_pessoa_agregada) |> 
+   summarise(cnt= n()) %>%
+   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = COP)
+
+ #tabela para escrever 
+  base_ssp |>
+   filter(!is.na(idade_pessoa_agregada)) |>
+   filter(idade_pessoa_agregada >= "05-09", idade_pessoa_agregada <= "65+") |> 
+    filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
+   group_by(COP, idade_pessoa_agregada) |> 
+   summarise(cnt= n())
+
+#perfil racial
+ base_ssp |>
+   filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
+    filter(ano_bo >= 2020 & ano_bo <= 2022) |> 
+   group_by(COP, cor_pele_agregada) |> 
+   summarise(total= n()) |> 
+  arrange(desc(total)) |> 
+  ggplot((aes(x = total, y = cor_pele_agregada, fill = COP, label = total))) +
+  geom_bar(position="dodge", stat="identity", size=.4)+
+  geom_label(fill = "white", position = )+
+  theme_ipsum() +
+   coord_flip()+
+  theme(
+    legend.position = "right",
+    axis.text.y = element_text(size = 8.5) 
+  ) +
+  labs(title = "Perfil Racial das Vítimas por uso de Câmeras Operacionais Portáteis",
+       subtitle = "2018 a 2022",
+       x = "Total",
+       y = "",
+       fill= "") 
+ 
+ # perfil do local
+  base_ssp |>
+    filter(ano_bo >= 2020 & ano_bo <= 2022, !is.na(cidade)) |> 
+   group_by( cidade) |> 
+   summarise(total= n()) |> 
+  arrange(desc(total)) |> 
+    filter(total >= 16) |> 
+    ggplot((aes(x = total, y = reorder(cidade,total), label = total ))) +
+  geom_bar(position="stack", stat="identity", size=.4)+
+  geom_col(show.legend = F, fill = "darkblue")+
+  geom_label(fill = "white")+
+  scale_fill_viridis(discrete = TRUE, option = "b") +
+  theme_ipsum() +
+  theme(
+    legend.position = "right",
+    axis.text.y = element_text(size = 8.5) 
+  ) +
+  labs(title = "Top 19 municípios com mais MDIPs",
+       subtitle = "2020 a 2022",
+       x = "Total",
+       y = "",
+       fill= "") 
+  
+  base_ssp |> group_by(cidade,COP, batalhao) |> 
+    filter(COP == "SIM") |> count() |> arrange(desc(n))
