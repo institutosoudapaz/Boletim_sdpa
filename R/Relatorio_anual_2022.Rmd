@@ -608,6 +608,10 @@ Enquanto a letalidade policial no estado tem se reduzido desde o ano de 2020, a 
 
 \newpage
 
+```{r letalidade por deinter , echo=FALSE, fig.width=8, fig.height=4.5}
+
+```
+
 ```{r letalidade e vit, echo=FALSE, fig.width=8, fig.height=4.5}
 # Criar NOVO gráfico DE TESTE PARA letalidade policial em serviço e fora por ano 
 
