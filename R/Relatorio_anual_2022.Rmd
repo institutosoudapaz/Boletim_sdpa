@@ -561,10 +561,7 @@ base_completa %>%
   
 ```
 
-De 2018 a 2022, o estado de São Paulo contabilizou 3.603 mortes, o que equivale a 60 mortes por mês a cada ano.
-A partir de 2020 é observada a queda no número de mortes ocasionadas pela polícia, saindo de 844 no início da segunda década, para 588 em 2021.
-
-Grande parte dessa queda se dá em razão de dois fatores: 1) a pandemia de Covid-19, que limitou a circulação da população em vias públicas; e 2) o início do programa Olho Vivo de implementação de câmeras corporais na Polícia Militar, que gerou impactos positivos na redução de mortes decorrentes de intervenção policial no estado e principalmente na capital paulista.
+A letalidade policial, ou seja, o número de pessoas mortas por policiais em serviço e de folga, no estado de São Paulo segue em intensa redução desde o ano de 2021. Em 2022, na comparação com o ano anterior, a letalidade policial no estado caiu -27,7%, com 163 pessoas mortas a menos do que em 2021. A redução mais intensa se deu na macrorregião da Grande São Paulo, com uma queda de -51,5% entre os anos de 2021 e 2022, seguida da Capital, com uma redução de -35,6% no mesmo período. Ao observar a série histórica dos últimos 5 anos, a letalidade policial do estado se reduziu pela metade, especificamente -50,7% no número de mortes. Todas as regiões registraram quedas substantivas entre 2018 e 2022, sendo as mais intensas nos municípios da Grande São Paulo (-64,5%) e a Capital (-54,2%).
 
 \newpage
 
@@ -607,7 +604,7 @@ base_completa %>%
   
 ```
 
-
+Enquanto a letalidade policial no estado tem se reduzido desde o ano de 2020, a vitimização de policiais, seja em serviço ou de folga, tem oscilado nos últimos cinco anos. De forma geral, o estado teve uma redução de -44% nas vitimização policial entre 2018 e 2022, com 26 policiais mortos a menos no último ano. Já na comparação entre os anos de 2021 e 2022, o estado de São Paulo registrou um aumento de 32% na vitimização policial, aumento que se deu de forma localizada na Capital, que saltou de 7 policiais vitimados em 2021 para 17 no ano de 2022.
 
 \newpage
 
