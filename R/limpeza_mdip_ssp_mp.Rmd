@@ -113,6 +113,9 @@ mdip_ssp <- mdip_ssp |>
 mdip_mp <- mdip_mp |>
   mutate(municipio_limpo = limpeza_municipio(cidade))
 
+# renomeia cidade/nome_do_municipio 
+estim_pop <- estim_pop |>  rename(municipio_limpo = nome_do_municipio)
+
 #Une os bancos
 mdip_rdo<- merge(mdip_ssp, mdip_mp, by = "rdo", all = TRUE)
 
@@ -134,11 +137,16 @@ mdip_mp17<- mdip_mp |> filter(ano > 2017 & ano < 2023) |> select(-idade)
 
 #junta bases
 
-mdip<- merge(mdip_mp, mdip_ssp17, by= "var_join", all=TRUE)
+mdip <- merge(mdip_mp17, mdip_ssp17, by= "var_join", all=TRUE)
+
+# Retira as linhas duplicadas
+
+mdip <- mdip |> 
+  distinct(data_nascimento_pessoa, var_join, .keep_all = TRUE)
 
 #cria coluna COP (se o batalhão usa COP)
 
-mdip_total <- mdip_total |> 
+mdip_total <- mdip |> 
   mutate(COP = case_when
   (batalhao %in% c("07º BPM/M", "7º BPM/M", "11º BPM/M", "13º BPM/M", "07º BAEP", "7º BAEP",
                    "03º BPM/M", "3º BPM/M", "12º BPM/M", "46º BPM/M", "05º BPM/M", "5º BPM/M",
@@ -157,6 +165,37 @@ mdip_total <- mdip_total |>
                    "1º BAEP",  "01º BAEP", "03º BAEP", "3º BAEP", "1º BPRv", "01º BPRv", 
                    "6º BPRv", "APMBB", "ESSgt", "ESSd", "EEF", "CAvPM") ~ "SIM",
     TRUE ~ "NÃO"))
+
+
+# Cria variável com as faixas etárias
+
+mdip_total <- mdip_total |> 
+  mutate(situacao = case_when(
+   situacao == "Serviço"~ "serviço", 
+ TRUE ~ as.character(situacao)))
+
+mdip_total <- mdip_total |>
+  mutate(idade_pessoa_agregada = case_when(
+    idade_pessoa > 0 & idade_pessoa < 04 ~ "0-04",
+    idade_pessoa >= 05 & idade_pessoa <= 09 ~ "05-09",
+    idade_pessoa >= 10 & idade_pessoa <= 14 ~ "10-14",
+    idade_pessoa >= 15 & idade_pessoa <= 19 ~ "15-19",
+    idade_pessoa >= 20 & idade_pessoa <= 24 ~ "20-24",
+    idade_pessoa >= 25 & idade_pessoa <= 29 ~ "25-29",
+    idade_pessoa >= 30 & idade_pessoa <= 34 ~ "30-34",
+    idade_pessoa >= 35 & idade_pessoa <= 39 ~ "35-39",
+    idade_pessoa >= 40 & idade_pessoa <= 44 ~ "40-44",
+    idade_pessoa >= 45 & idade_pessoa <= 49 ~ "45-49",
+    idade_pessoa >= 50 & idade_pessoa <= 54 ~ "50-54",
+    idade_pessoa >= 55 & idade_pessoa <= 59 ~ "55-59",
+    idade_pessoa >= 60 & idade_pessoa <= 64 ~ "60-64",
+    idade_pessoa >= 65 ~ "65+")) |> 
+    mutate(cor_pele_agregada = case_when(
+      cor_pele %in% c("Parda","Preta") ~ "Negra",
+      cor_pele %in% c("Outros", "NULL","Amarela",
+"Ignorada","REGISTRADO NA PF","Policia Federal") ~ "NA",
+      TRUE ~ as.character (cor_pele)))
+
 
 ```
 
