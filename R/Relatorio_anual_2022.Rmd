@@ -608,6 +608,61 @@ Enquanto a letalidade policial no estado tem se reduzido desde o ano de 2020, a 
 
 \newpage
 
+::: {custom-style="Estilo1"}
+Letalidade Policial no Interior
+:::
+
+
+```{r letalidade por deinter , echo=FALSE, fig.width=8, fig.height=4.5}
+
+# Trata base
+base_taxa <- base_completa %>% 
+  filter(periodo > (ano_referencia-2)) %>% 
+  filter(cod_reg != 99 & cod_reg > 30) %>% 
+  group_by(periodo, deinter) %>%
+   summarise(let_pol = sum(let_ser + let_fol)) |> 
+    pivot_wider(names_from = periodo, values_from = let_pol) |> 
+  mutate(var = `2022` - `2021`) |> 
+  mutate(trend = ifelse(var <= 0, "queda", "aumento")) |> 
+  pivot_longer(cols = c(`2021`, `2022`), names_to = "periodo", values_to = "let_pol") 
+  
+base_taxa |> 
+  ggplot(aes(factor(periodo), let_pol, group = deinter, color = trend)) +
+  # altera espessura da linha
+  geom_line(size = 0.4) +
+  geom_point(aes(color = trend), size = 3) + 
+  geom_text_repel(data = base_taxa, 
+        aes(x = ifelse(periodo == 2021, 1 - 0.3, 2 + 0.3),
+          label = glue::glue("{deinter} ({scales::number(let_pol)} mortes)")), 
+    size = 4, nudge_x = 0, direction = "y",
+    segment.size = 0)+
+  scale_x_discrete(position = "top") +
+  scale_size_identity() +
+  coord_cartesian(clip = "off") +
+  scale_color_manual(
+    # altera cores das taxas que cairam e aumentaram 
+    values = c("queda" = "#092044", "aumento" = "#C33C2E")) +
+  guides(col = "none") +
+  labs(subtitle = "Número de mortes cometidas pelas polícias em serviço e de folga") +
+  theme_minimal(base_size = 10) + 
+  theme (
+    plot.background = element_rect(color = NA, fill = "white"),
+    panel.grid = element_blank(),
+    panel.grid.major.x = element_line(color = "#ECEEF2", size = 5),
+    text = element_text(color = "#555555"),
+    axis.title = element_blank(),
+    axis.text.x = element_text(size = 14, face = "bold", color = "grey38"),
+    axis.text.y = element_blank(),
+    plot.margin = margin(t = 6, l = 16, r = 16, b = 4),
+    plot.title = element_text(size = 14, color = "grey12"))
+    
+```
+
+FAZER ANALISE
+
+\newpage
+
+
 ```{r letalidade e vit, echo=FALSE, fig.width=8, fig.height=4.5}
 # Criar NOVO gráfico DE TESTE PARA letalidade policial em serviço e fora por ano 
 
@@ -756,13 +811,7 @@ base_ssp |> filter(vitimas>1) |> group_by(ano) |> count() |> kbl()
 
 ```
 
-```{r ocorrências com mais de uma vítima por ano, echo=FALSE, fig.width=8, fig.height=4.5 }
-
-base_ssp |> filter(vitimas>1) |> group_by(ano) |> count() |> kbl()
-
-```
-
-```{r batalhões com e sem câmera , warning = FALSE, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r batalhões com e sem câmera, eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
 #total de ocorrências
 
 base_ssp |> group_by(COP) |>filter(!is.na(batalhao)) |>  summarise(total = n()) |>arrange(desc(total)) 
