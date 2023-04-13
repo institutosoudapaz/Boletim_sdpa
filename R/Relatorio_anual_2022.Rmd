@@ -451,10 +451,7 @@ Ainda que estas recomendações não esgotem todas as preocupações sobre as di
 -   Os **homicídios dolosos** tiveram uma significativa alta de 7,2% na comparação com o ano anterior, concentrado nas regiões da Grande São Paulo e Interior.
     É essencial que a SSP/SP tenha um olhar atento para as dinâmicas de homicídios na região metropolitana e no interior do estado, sobretudo nas regiões dos Deinter 01 - Araçatuba e Deinter 10 - São José dos Campos, que registraram os maiores aumentos nas taxas de homicídios no interior.
 
--   Neste sentido, é importante que o estado de São Paulo intensifique os esforços para elucidação destes assassinatos.
-    O relatório [Onde Mora a Impunidade](https://soudapaz.org/wp-content/uploads/2022/08/OndeMoraAImpunidade.pdf), publicado anualmente pelo Instituto Sou da Paz aponta uma redução do esclarecimento de homicídios no estado: apenas 34% dos assassinatos cometidos em 2019 foram elucidados, uma redução significativa em comparação ao ano anterior, no qual 46% dos homicídios cometidos em 2018 no estado foram elucidados.
-    É preciso que estes crimes sejam solucionados, de forma tanto a levar seus autores à justiça, mas também possibilitar uma real compreensão das dinâmicas criminais causadoras destes homicídios, e assim tomar medidas eficazes de prevenção.
-    E isso só será possível por meio do investimento na Polícia Civil e na estrutura de investigação de homicídios do estado.
+-   Neste sentido, é importante que o estado de São Paulo intensifique os esforços para elucidação destes assassinatos.O relatório [Onde Mora a Impunidade](https://soudapaz.org/wp-content/uploads/2022/08/OndeMoraAImpunidade.pdf), publicado anualmente pelo Instituto Sou da Paz aponta uma redução do esclarecimento de homicídios no estado: apenas 34% dos assassinatos cometidos em 2019 foram elucidados, uma redução significativa em comparação ao ano anterior, no qual 46% dos homicídios cometidos em 2018 no estado foram elucidados.É preciso que estes crimes sejam solucionados, de forma tanto a levar seus autores à justiça, mas tam bém possibilitar uma real compreensão das dinâmicas criminais causadoras destes homicídios, e assim tomar medidas eficazes de prevenção.E isso só será possível por meio do investimento na Polícia Civil e na estrutura de investigação de homicídios do estado.
 
 -   O número de registros de ocorrências de **estupros** aumentou pelo segundo ano consecutivo em 2022, após uma queda nas notificações em 2020 devido à pandemia de Covid-19.
     Novamente, este aumento das ocorrências de estupros no ano de 2022 se concentrou nas macrorregiões da Grande São Paulo e Interior, esta última responsável por 6 a cada 10 dos estupros registrados no estado.
@@ -510,6 +507,7 @@ Assim, o banco final, utilizado nesta pesquisa, delimita as ocorrências para o 
 \newpage
 
 ::: {custom-style="Estilo1"}
+
 Letalidade policial em serviço e em folga
 :::
 
