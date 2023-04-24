@@ -196,6 +196,14 @@ mdip_total <- mdip_total |>
 "Ignorada","REGISTRADO NA PF","Policia Federal") ~ "NA",
       TRUE ~ as.character (cor_pele)))
 
+ mdip_total <- mdip_total |>
+    mutate (local_limpo = case_when(
+      desc_tipolocal %in% c( "Residência", "Condominio Residencial" ) ~ "Residência",
+     desc_tipolocal == NA ~ "NA",
+     desc_tipolocal == "Policia Federal" ~"Polícia Federal",
+     desc_tipolocal == "CRIME MILITAR"~"CRIME MILITAR",
+     desc_tipolocal == "REGISTRADO NA PF" ~"REGISTRADO NA PF",
+       TRUE ~ "Via Pública"))
 
 ```
 
