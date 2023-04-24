@@ -3,12 +3,12 @@ title: "Boletim Sou da Paz Analisa 2022 - Panorama"
 author: "Instituto Sou da Paz"
 date: "`r Sys.Date()`"
 output:
-  #powerpoint_presentation:
-    #reference_doc: "../template_doc.pptx"
-  word_document: 
-     reference_docx: "../template_doc.docx"
   html_document:
     df_print: paged
+  word_document: 
+     reference_docx: "../template_doc.docx"
+  #powerpoint_presentation:
+    #reference_doc: "../template_doc.pptx"
 editor_options: 
   markdown: 
     wrap: sentence
@@ -163,6 +163,19 @@ base_viol_mul %>%
 
 ::: {custom-style="Estilo2"}
 APRESENTAÇÃO
+:::
+A presente análise busca compreender qual foi o perfil da letalidade policial no estado de São Paulo entre os anos de 2018 e 2022. O intervalo que abarca tanto o período de maior letalidade das polícias na história recente do estado, como aquele de redução mais abrupta das mortes cometidas por policiais a partir da implementação de uma série de medidas de controle do uso da força letal pela Polícia Militar de São Paulo. Observa-se também a existência de marcadores políticos como, a nível estadual, a transição da gestão de Márcio França (PSB) para João Dória(PSDB) e Rodrigo Garcia (PSDB). 
+Outro marco relevante é a pandemia de Covid-19, iniciada no ano de 2020 impactando fortemente a capacidade de circulação da população e os esforços da gestão pública no seu enfrentamento.
+
+Ao mesmo tempo, uma série de políticas de mitigação do uso da força policial foram implementadas no estado de São Paulo, dentre elas, o projeto Olho Vivo, em que Cameras Operacionais Portáteis passaram a ser utilizada pela força policial. 
+Como diferentes estudos tem demonstrado ao longo dos anos, a letalidade policial tem uma participação relevante nos crimes violentos e nos altos índices de homicídios registrados no país.
+A letalidade policial tem sido justificada frente à organização de grupos paralegais e o controle territorial exercido por facções como Primeiro Comando Capital (PCC) e Comando Vermelho (CV), controle dos mercados ilegais e pelos altos índices de roubo. Essa violência vêm sendo contestada juridica e socialmente por diversos atores da sociedade civil, especialmente pelos movimento negro, tendo em vista o perfil racial das vítimas e a localização geográfica de operações policiais com alta mortalidade, impactando populações periféricas e de baixa renda com desigual proporcionalidade. 
+Do ponto de vista da Segurança Pública, o debate sobre a letalidade da forças policiais destaca ainda como o uso excessivo da força e a própria forma de atuação não só falhou em apresentado resultados efetivos no combate ao narcotráfico, como também foi determinante no aumento das ocorrências de confrontos letais entre policiais e criminosos, que por vezes vitimam também a população que reside em áreas de conflito. 
+
+Esse estudo busca analisar o impacto dos esforços de controlar o uso da força policial no Estado de São Paulo a partir de quatro eixos principais: 1) o uso de câmeras corporais, 2) a participação dos batalhões, 3) o perfil das vítimas, 4) outras ações de mitigação do uso da força policial. Objetiva-se examinar o efeito concreto e eficaz de medidas de controle do uso da força pelas polícias, não somente no número de pessoas mortas, que certamente é a principal justificativa para a implementação destas ações, mas também na queda da vitimização policial e na mudança substantiva do perfil das demais vítimas.
+
+::: {custom-style="Estilo2"}
+METODOLOGIA
 :::
 
 O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela Secretaria da Segurança Pública de São Paulo (SSP/SP) desde 2012, a fim de contribuir para a melhor compreensão das dinâmicas criminais e atividades policiais no estado de São Paulo e em suas grandes regiões - Capital, Grande São Paulo e Interior.
@@ -696,14 +709,14 @@ Raça e idade das vitímas MDIP
 
 ```{r raça e idade, echo=FALSE, fig.width=8, fig.height=4.5}
   base_ssp |>
-   filter(cor_pele_agregada %in% c("Negra", "Branca")) %>%
-   filter(!is.na(idade_pessoa_agregada)) %>%
+   filter(cor_pele %in% c("Negra", "Branca")) %>%
+   filter(!is.na(idade_pessoa)) %>%
     filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
-   group_by(cor_pele_agregada, idade_pessoa_agregada) %>%
+   group_by(cor_pele, idade_pessoa) %>%
    summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = cor_pele_agregada)
+   ggcharts::pyramid_chart(x = idade_pessoa, y= cnt, group = cor_pele)
   # ggcharts::ggcharts_set_theme("theme_ng")
-    ggsave("../imgs/piramide_etaria.png", width = 40, height = 20, units = "cm")
+    #ggsave("../imgs/piramide_etaria.png", width = 40, height = 20, units = "cm")
 
 ```
 
@@ -775,10 +788,6 @@ Os anos de 2018 e 2019, antes da implementação das Câmeras Corporais Operacio
 Porém, a partir de 2021, com a implantação das COPs, entre 21 e 2022, o estado teve um total de 58 mortes de policiais, uma redução de 39% no número de vitimizações.
 Ademais, é visível que, com a implementação das COPs se observa uma maior concentração das mortes de policiais, com maiores registros de casos de agentes que estão em contexto de folga, como por exemplo na Capital, com 3 mortes de oficiais em serviço e 21 de oficiais em folga no período de 2021 à 2022.
 
-```{r ocorrências com mais de uma vítima por ano, eval=FALSE, include=FALSE}
-base_ssp |> filter(vitimas>1) |> group_by(ano) |> count() |> kbl()
-
-```
 
 ```{r ocorrências com mais de uma vítima por ano, echo=FALSE, fig.width=8, fig.height=4.5 }
 
@@ -799,36 +808,36 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
 
 #perfil etário das vitimas
 
-  base_ssp |>
-   filter(!is.na(idade_pessoa_agregada)) |>
-   filter(idade_pessoa_agregada >= "05-09", idade_pessoa_agregada <= "65+",
-          situacao == "serviço",
-          coorporacao =="PM") |> 
-    filter(ano_bo >= 2020 & ano_bo <= 2022) |> 
-   group_by(COP, idade_pessoa_agregada) |> 
-   summarise(cnt= n()) |> 
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = COP) 
+  #base_ssp |>
+   #filter(!is.na(idade_pessoa_agregada)) |>
+   #filter(idade_pessoa_agregada >= "05-09", idade_pessoa_agregada <= "65+",
+    #      situacao == "serviço",
+     #     coorporacao =="PM") |> 
+    #filter(ano_bo >= 2020 & ano_bo <= 2022) |> 
+   #group_by(COP, idade_pessoa_agregada) |> 
+   #summarise(cnt= n()) |> 
+   #ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = COP) 
  #AJEITAR grafico_piramide + geom_text(aes(label = paste0(base$cnt)), vjust = 1.5)
 
 #Comparar antes e depois (2018 e 2019 x 2021 e 2022)
  #tabela para escrever 
   base_ssp |>
-   filter(!is.na(idade_pessoa_agregada)) |>
-   filter(idade_pessoa_agregada >= "05-09", idade_pessoa_agregada <= "65+",
+   filter(!is.na(idade_pessoa)) |>
+   filter(idade_pessoa >= "05-09", idade_pessoa <= "65+",
           situacao == "serviço",
           coorporacao =="PM") |> 
     filter(ano_bo >= 2020 & ano_bo <= 2022) |> 
-   group_by(COP, idade_pessoa_agregada) |> 
+   group_by(COP, idade_pessoa) |> 
    summarise(cnt= n())
 
 #perfil racial
  base_ssp |>
-   filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
+   filter(cor_pele %in% c( "Branca", "Negra")) |>
     filter(ano_bo >= 2020 & ano_bo <= 2022) |> 
-   group_by(COP, cor_pele_agregada) |> 
+   group_by(COP, cor_pele) |> 
    summarise(total= n()) |> 
   arrange(desc(total)) |> 
-  ggplot((aes(x = total, y = COP , fill = cor_pele_agregada, label = total))) +
+  ggplot((aes(x = total, y = COP , fill = cor_pele, label = total))) +
   geom_bar(position="dodge", stat="identity", size=.4)+
   geom_label(fill = "white", nudge_y = 0 )+
    scale_fill_manual(values= cores_sdp)+
@@ -868,29 +877,20 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
   
   base_ssp |> group_by(cidade,COP, batalhao) |> count() |> arrange(desc(n))
   
-  base_ssp <- base_ssp |>
-    mutate (local_limpo = case_when(
-      desc_tipolocal %in% c( "Residência", "Condominio Residencial" ) ~ "Residência",
-     desc_tipolocal == NA ~ "NA",
-     desc_tipolocal == "Policia Federal" ~"Polícia Federal",
-     desc_tipolocal == "CRIME MILITAR"~"CRIME MILITAR",
-     desc_tipolocal == "REGISTRADO NA PF" ~"REGISTRADO NA PF",
-       TRUE ~ "Via Pública"))
- 
   #Raça por Local 
   base_ssp |> 
     filter( local_limpo %in% c("Via Pública","Residência"),
-            cor_pele_agregada %in% c("Negra", "Branca")) |>
-    group_by(local_limpo, cor_pele_agregada)|>
+            cor_pele %in% c("Negra", "Branca")) |>
+    group_by(local_limpo, cor_pele)|>
     summarise(total= n()) |>
     mutate(freq = paste0(round(total/sum(total)*100,2))) |>     arrange(desc(total)) |> view()
   
    #Raça por Bairro em SP 
   base_ssp |> 
     filter( local_limpo %in% c("Via Pública","Residência"),
-            cor_pele_agregada %in% c("Negra", "Branca"), 
+            cor_pele %in% c("Negra", "Branca"), 
             municipio_limpo.x == "São Paulo") |>
-    group_by(bairro, cor_pele_agregada)|>
+    group_by(bairro, cor_pele)|>
     summarise(total= n()) |>
     mutate(freq = paste0(round(total/sum(total)*100,2))) |>     arrange(desc(total)) |> view()
   
