@@ -24,6 +24,8 @@ library(ggrepel)
 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
+source("../R/limpeza_dp.R")
+
 base_completa <- readRDS("../data-raw/base_completa.rds")
 base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds")
 base_cor <- readRDS("../data-raw/base_corregedoria.rds")
@@ -280,7 +282,19 @@ tab_dp <- base_mensal_dp %>%
   right_join(shp_capital, by = c("nom_del" = "DpGeoDes")) %>% 
   mutate(legenda = stringr::str_extract(nom_del,"^.{3}"))
 
-# Mapa
+# Limpar entradas de DP na base_ssp
+
+base_ssp_sp <- base_ssp |> 
+  filter(municipio_limpo.y == "São Paulo") |> 
+  mutate(dp_circunscricao_limpo = limpeza_dp(dp_circunscricao))   
+
+# Mesclar base_ssp_sp e o shape pela coluna de nome dos DPs
+
+tab_ssp <- base_ssp_sp %>% 
+  right_join(shp_capital, by = c("dp_circunscricao_limpo" = "DpGeoDes")) %>% 
+  mutate(legenda = stringr::str_extract(dp_circunscricao_limpo,"^.{3}"))
+
+# Mapa para crimes da base mensal
 
 mapa_dp <- function(crime) { #selecionar o tipo de crime e titulo do gráfico
   
