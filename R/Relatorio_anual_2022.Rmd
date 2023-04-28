@@ -272,7 +272,7 @@ shp_capital$DpGeoDes <- c("010 DP - Penha de França",
                                   "014 DP - Pinheiros",                                    
                                   "001 DP - Sé")
 
-# Mesclar base_completa e o shape pela coluna de nome dos DPs
+# Mesclar base_mensal e o shape pela coluna de nome dos DPs
 
 tab_dp <- base_mensal_dp %>% 
   filter(periodo == ano_referencia) %>% 
