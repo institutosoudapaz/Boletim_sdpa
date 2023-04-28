@@ -28,6 +28,7 @@ base_completa <- readRDS("../data-raw/base_completa.rds")
 base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds")
 base_cor <- readRDS("../data-raw/base_corregedoria.rds")
 base_ssp <- readRDS("../data-raw/mdip_total.rds")
+base_mensal_dp <- readRDS("../data-raw/base_mensal_dp.rds")
 
 ano_referencia <- 2022
 ```
