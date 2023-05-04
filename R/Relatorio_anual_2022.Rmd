@@ -3,10 +3,10 @@ title: "Boletim Sou da Paz Analisa 2022 - Panorama"
 author: "Instituto Sou da Paz"
 date: "`r Sys.Date()`"
 output:
-  html_document:
-    df_print: paged
-  word_document: 
+    word_document: 
      reference_docx: "../template_doc.docx"
+    html_document:
+      df_print: paged
   #powerpoint_presentation:
     #reference_doc: "../template_doc.pptx"
 editor_options: 
@@ -317,14 +317,12 @@ tab_dp %>%
 
 
 ::: {custom-style="Estilo2"}
-APRESENTAÇÃO
+SUMÁRIO
 :::
-
 
 ::: {custom-style="Estilo2"}
-METODOLOGIA
+APRESENTAÇÃO
 :::
-
 O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela Secretaria da Segurança Pública de São Paulo (SSP/SP) desde 2012, a fim de contribuir para a melhor compreensão das dinâmicas criminais e atividades policiais no estado de São Paulo e em suas grandes regiões - Capital, Grande São Paulo e Interior.
 Além dos dados mensalmente divulgados pela SSP/SP, são consideradas informações produzidas pelas Corregedorias das Polícias Civil e Militar do Estado de São Paulo publicadas no Diário Oficial e dados obtidos via Lei de Acesso à Informação (LAI), fornecidos pela Coordenadoria de Análise e Planejamento (CAP) da SSP/SP e pela Polícia Civil.
 
@@ -332,6 +330,7 @@ Desde 2022 o Boletim Sou da Paz Analisa tem uma periodicidade semestral e, nesta
 
 Essa edição do Boletim traz uma análise especial sobre o perfil da letalidade policial no estado de São Paulo entre os anos de 2018 e 2022, ou seja, intervalo que abarca tanto o período de maior letalidade das polícias na história recente do estado, como aquele de redução mais abrupta das mortes cometidas por policiais a partir da implementação de uma série de medidas de controle do uso da força letal pela Polícia Militar de São Paulo.
 Exploramos nesta análise especial dados das corregedorias das polícias paulistas, da SSP/SP e do Ministério Público de São Paulo para traçar o perfil etário e racial das vítimas de letalidade policial, assim como comparações entre as dinâmicas de letalidade policial e perfis das vítimas em uma perspectiva comparada entre batalhões da polícia militar que utilizam as Câmeras Operacionais Portáteis (COP) e aqueles que ainda não adotaram esta ferramenta de controle das atividades dos policiais.
+
 O objetivo é demonstrar o efeito concreto e eficaz de medidas de controle do uso da força pelas polícias, não somente no número de pessoas mortas, que certamente é a principal justificativa para a implementação destas ações, mas também na queda da vitimização policial e na mudança substantiva do perfil das demais vítimas.
 
 \pagebreak
@@ -454,14 +453,11 @@ grafico_geral(hd_ocorr)
 
 ```
 
-O ano de 2022 registrou 2.909 ocorrências de homicídio doloso, um número muito próximo daquele registrado quatro anos antes em 2018.
-No entanto, na comparação com o ano anterior, em 2022, o estado de São Paulo registrou um aumento de 7,2% nas ocorrências de homicídios.
-Este crescimento se.
+O ano de 2022 registrou 2.909 ocorrências de homicídio doloso, um número muito próximo daquele registrado quatro anos antes em 2018.No entanto, na comparação com o ano anterior, em 2022, o estado de São Paulo registrou um aumento de 7,2% nas ocorrências de homicídios.
 Os municípios da Grande São Paulo registraram um aumento de 21,2% nas ocorrências de homicídios dolosos entre 2022 e 2021, enquanto o Interior do estado apresentou um crescimento de 5,6% nas ocorrências desses crimes.
 É importante destacar que o Interior do estado de São Paulo registrou no último ano um total de 1.742 ocorrências de homicídios dolosos, isso significa que o Interior de São Paulo concentrou 59,8% das 2.909 ocorrências de homicídios dolosos no estado neste ano, ainda que estes municípios concentrem aproximadamente 12,1 milhões de habitantes, ou seja, cerca de um quarto da população do estado de São Paulo.
 
 \newpage
-
 ::: {custom-style="Estilo1"}
 Homicídios no Interior do estado
 :::
@@ -510,7 +506,6 @@ base_taxa |>
     plot.margin = margin(t = 6, l = 16, r = 16, b = 4),
     plot.title = element_text(size = 14, color = "grey12"))
     
-
 ```
 
 A macrorregião do Interior registrou um aumento de 5,6% nas ocorrências de homicídios dolosos em 2022 na comparação com o ano de 2021, mas este aumento não foi verificado de forma uniforme em todos os Departamentos de Polícia Judiciária de São Paulo Interior (Deinter).
@@ -585,7 +580,7 @@ Os estupros de vulneráveis compõem 73% do total das ocorrências de estupros r
 \newpage
 
 ::: {custom-style="Estilo1"}
-Total de Roubos (Outros)
+Roubos (Total)
 :::
 
 ```{r roubo, echo=FALSE, fig.width=8, fig.height=4.5}
@@ -593,11 +588,26 @@ grafico_geral(c(roubo_outros + roubo_veic))
                
 ```
 
-O ano de 2022 terminou com um total de 286.573 ocorrências de roubos (outros), ou seja, exceto os roubos de veículos, em todo o estado de São Paulo, um volume de ocorrências 10,7% maior que o total de 258.747 ocorrências de roubo registrados em 2021.
-Isso significa que, em média, foram registrados no estado cerca de 785 ocorrências de roubos (outros) por dia durante o último ano.
-Ainda que o montante de roubos registrados no estado em 2022 ainda seja menor do que de anos anteriores à pandemia de Covid-19, desde 2020 os roubos têm aumentado em todas as macrorregiões do estado.
-Especificamente na comparação entre 2022 e 2021, o maior aumento foi na Capital paulista, com mais 12,4% de ocorrências de roubos (outros) registradas em 2022.
-A Grande São Paulo teve um aumento no último ano de 7,3% nas ocorrências registradas deste crime, e o Interior, um crescimento de 10,4% nas ocorrências de roubos (outros).
+O ano de 2022 terminou com um total de 286.573 ocorrências total de roubos, ou seja, a soma dos chamados roubos (outros) e os roubos de veículos, em todo o estado de São Paulo, um volume de ocorrências 10,7% maior que o total de 258.747 ocorrências de roubo registrados em 2021. Isso significa que, em média, foram registrados no estado cerca de 785 ocorrências totais de roubos por dia durante o último ano. Ainda que o montante de roubos registrados no estado em 2022 ainda seja menor do que de anos anteriores à pandemia de Covid-19, desde 2020 os roubos têm aumentado em todas as macrorregiões do estado.
+Especificamente na comparação entre 2022 e 2021, o maior aumento foi na Capital paulista, com mais 12,4% de ocorrências de roubos registradas em 2022.
+A Grande São Paulo teve um aumento no último ano de 7,3% nas ocorrências registradas deste crime, e o Interior, um crescimento de 10,4% nas ocorrências de roubos.
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Roubos (Total) na capital
+:::
+
+
+```{r mapa roubo SP, echo=FALSE, fig.width=8, fig.height=4.5}
+
+tab_dp <- tab_dp |> 
+  mutate(total_roubos = roubo_outros + roubo_veic)
+
+mapa_dp(total_roubos)
+               
+```
+Os dez distritos policiais com maior número de registros de ocorrências de roubos (total) em 2022 foram responsáveis por 25.6% de todas as ocorrências deste crime na capital do estado. Dentre os 103 distritos policiais da cidade de São Paulo, o 03 DP - Campos Elísios foi aquele que registrou o maior número de roubos, um total de 7.245 ocorrências. A região do centro também teve entre os dez distritos policiais com maior número de registros de ocorrências de roubos (total) o 01 DP - Sé, que ficou na terceira posição com 4.815 roubos registrados e o 12 DP - Pari. A região sul, por sua vez, teve, respectivamente, no 47 DP - Capão Redondo, 37 DP - Campo Limpo, 92 DP - Parque Santo Antônio seus distritos policiais com mais roubos, enquanto a zona oeste teve no 14 DP - Pinheiros, 23 DP - Perdizes e 78 DP - Jardins seus distritos com mais ocorrências de roubos. Finalmente, o 49 DP - São Mateus é o único dos dez distritos policiais com mais registros de roubos da zona leste.
 
 \newpage
 
@@ -636,7 +646,7 @@ Ainda que estas recomendações não esgotem todas as preocupações sobre as di
 \newpage
 
 ::: {custom-style="Estilo1"}
-Análise Especial - Perfil da letalidade policial em São Paulo
+Análise Especial - Perfil da letalidade policial no estado de São Paulo
 :::
 
 \newpage
@@ -866,7 +876,7 @@ Enquanto a letalidade policial no estado tem se reduzido desde o ano de 2020, a 
 Raça e idade das vitímas MDIP
 :::
 
-```{r raça e idade, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r raça e idade, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
   base_ssp |>
    filter(cor_pele %in% c("Negra", "Branca")) %>%
    filter(!is.na(idade_pessoa)) %>%
@@ -946,7 +956,7 @@ tabela_vit_pol
 Os anos de 2018 e 2019, antes da implementação das Câmeras Corporais Operacionais (COPs), registraram um total de 95 mortes de agentes de segurança em todo o estado, com a capital paulista sendo a região com a maior quantidade, 52 casos - 54,7% de todos os casos.
 Porém, a partir de 2021, com a implantação das COPs, entre 21 e 2022, o estado teve um total de 58 mortes de policiais, uma redução de 39% no número de vitimizações.
 Ademais, é visível que, com a implementação das COPs se observa uma maior concentração das mortes de policiais, com maiores registros de casos de agentes que estão em contexto de folga, como por exemplo na Capital, com 3 mortes de oficiais em serviço e 21 de oficiais em folga no período de 2021 à 2022.
-```{r proporção letalidade policial dentro dos homicídios no estado}
+```{r proporção letalidade policial dentro dos homicídios no estado, eval=FALSE, include=FALSE}
 base_completa %>% 
     filter(ano %in% 2021:2022) |> 
     filter(cod_reg == 99) |> 
@@ -982,7 +992,7 @@ base_ssp |> filter(vitimas>1) |> group_by(vitimas, ano) |> count()
 
 ```
 
-```{r batalhões com e sem câmera , warning = FALSE, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r batalhões com e sem câmera, eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
 #total de ocorrências
 
 base_ssp |> group_by(COP) |>filter(!is.na(batalhao),
