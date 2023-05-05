@@ -649,6 +649,7 @@ Ainda que estas recomendações não esgotem todas as preocupações sobre as di
 Análise Especial - Perfil da letalidade policial no estado de São Paulo
 :::
 
+
 \newpage
 
 ::: {custom-style="Estilo1"}
