@@ -796,6 +796,35 @@ base_taxa |>
 FAZER ANALISE
 
 \newpage
+
+::: {custom-style="Estilo1"}
+Proporção da Letalidade policial em serviço e em folga
+:::
+
+```{r percentual de letalidade, echo=FALSE, fig.width=8, fig.height=4.5}
+
+ base_completa |>  
+  filter(cod_reg == 99) |>  
+   pivot_longer(cols = let_ser:let_fol, values_to = "count", names_to = "letalidade") |> 
+  group_by(periodo) |> 
+  mutate(total_let_ano = sum(count)) |> 
+  mutate(participacao = 100 * (count/total_let_ano)) |> 
+  ggplot(aes(fill=letalidade, y= count, x= ano)) +
+    geom_bar(position = position_stack(), stat="identity", size=.4, colour="light grey") +
+   geom_text(aes(label = scales::percent(round((participacao/100),3)), nsmall=0, big.mark="."),
+             colour ="white",
+                position=position_stack(vjust=0.5), size=3.4) +
+  stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = periodo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+    scale_fill_manual(values = cores_sdp) +
+  theme_sdpa_macroreg
+
+```
+
+ANALISE
+
+\newpage
 ::: {custom-style="Estilo1"}
 Vitimização policial por macrorregião
 :::
@@ -839,47 +868,49 @@ Enquanto a letalidade policial no estado tem se reduzido desde o ano de 2020, a 
 
 \newpage
 
+::: {custom-style="Estilo1"}
+Proporção da Vitimização Policial em serviço e em folga
+:::
 
-```{r letalidade e vit, echo=FALSE, fig.width=8, fig.height=4.5}
-# Criar NOVO gráfico DE TESTE PARA letalidade policial em serviço e fora por ano 
 
- base_completa %>% 
-  filter(cod_reg == 99) %>% 
-   pivot_longer(cols = let_ser:let_fol, values_to = "count", names_to = "letalidade") %>%
-    ggplot(aes(x=ano, y=count, fill=letalidade)) +
-    geom_bar(stat="identity", position="dodge", size= .4)+
-    viridis::scale_color_viridis(discrete = TRUE) +
-    theme(legend.position="periodo") +
-    ggtitle("Letalidade policial em serviço e em folga, por ano") +
-    coord_flip()+
-   theme_classic()
- 
- base_completa %>% 
-  filter(cod_reg == 99) %>% 
-   pivot_longer(cols = mort_ser:mort_fol, values_to = "count", names_to = "vit_pol") %>%
-    ggplot(aes(x=ano, y=count, fill=vit_pol)) +
-    geom_bar(stat="identity", position="dodge")+
-    viridis::scale_color_viridis(discrete = TRUE) +
-    theme(legend.position="periodo") +
-    ggtitle("Vitimização policial em serviço e em folga, por ano") +
-    coord_flip()+
-   theme_classic()
+```{r percentual de vitimização, echo=FALSE, fig.width=8, fig.height=4.5}
+
+ base_completa |>  
+  filter(cod_reg == 99) |>  
+   pivot_longer(cols = mort_ser:mort_fol, values_to = "count", names_to = "vitimizacao") |> 
+  group_by(periodo) |> 
+  mutate(total_vit_ano = sum(count)) |> 
+  mutate(participacao = 100 * (count/total_vit_ano)) |> 
+  ggplot(aes(fill=vitimizacao, y= count, x= ano)) +
+    geom_bar(position = position_stack(), stat="identity", size=.4, colour="light grey") +
+   geom_text(aes(label = scales::percent(round((participacao/100),3)), nsmall=0, big.mark="."),
+             colour ="white",
+                position=position_stack(vjust=0.5), size=3.4) +
+  stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = periodo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+    scale_fill_manual(values = cores_sdp) +
+  theme_sdpa_macroreg
+
 ```
+
+ANALISE (AVALIAR SE VALE A PENA MANTER)
 
 \newpage
 
+
 ::: {custom-style="Estilo1"}
-Raça e idade das vitímas MDIP
+Perfil racial e etário das vítimas de letalidade policial em São Paulo
 :::
 
-```{r raça e idade, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
+```{r raça e idade, echo=FALSE, fig.height=4.5, fig.width=8}
   base_ssp |>
-   filter(cor_pele %in% c("Negra", "Branca")) %>%
+   filter(cor_pele_agregada %in% c("Negra", "Branca")) %>%
    filter(!is.na(idade_pessoa)) %>%
     filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
-   group_by(cor_pele, idade_pessoa) %>%
+   group_by(cor_pele_agregada, idade_pessoa) %>%
    summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa, y= cnt, group = cor_pele)
+   ggcharts::pyramid_chart(x = idade_pessoa, y= cnt, group = cor_pele_agregada)
   # ggcharts::ggcharts_set_theme("theme_ng")
     #ggsave("../imgs/piramide_etaria.png", width = 40, height = 20, units = "cm")
 
