@@ -829,7 +829,7 @@ ANALISE
 Vitimização policial por macrorregião
 :::
 
-```{r vitimização, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r evolução da vitimização policial por macroreg, echo=FALSE, fig.width=8, fig.height=4.5}
 base_completa %>% 
     #filtra sem os deinter 
   filter(cod_reg < 31) %>% 
@@ -873,7 +873,7 @@ Proporção da Vitimização Policial em serviço e em folga
 :::
 
 
-```{r percentual de vitimização, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r percentual de vitimização serviço/folga, echo=FALSE, fig.width=8, fig.height=4.5}
 
  base_completa |>  
   filter(cod_reg == 99) |>  
@@ -904,7 +904,11 @@ Perfil racial e etário das vítimas de letalidade policial em São Paulo
 :::
 
 
+<<<<<<< HEAD
 ```{r raça e idade, echo=FALSE, fig.height=4.5, fig.width=8}
+=======
+```{r piramide raça e idade, eval=FALSE, fig.height=4.5, fig.width=8}
+>>>>>>> 282e9e363d6fc5deab771ab61fbc3135ada57109
   base_ssp |>
    filter(cor_pele_agregada %in% c("Negra", "Branca")) %>%
    filter(!is.na(idade_pessoa_agregada)) %>%
@@ -924,7 +928,7 @@ Num conjunto global dos dados, é possível observar que o período de 2018 a 20
 Perfil racial das vitímas de MDIP
 :::
 
-```{r raça, echo=FALSE, fig.dim = c(9, 6)}
+```{r proporção de raça, echo=FALSE, fig.dim = c(9, 6)}
 
 base_ssp |> 
   filter(between(ano_bo, 2018, 2022)) |> 
@@ -963,6 +967,7 @@ tabela_vit_pol <- base_cor |>
             mort_fol= sum(mort_fol)) |>
   mutate(cop_limpo = case_when(cop == "Antes_COPs" ~ "Antes das COPs",
                             cop == "Depois_COPs" ~ "Depois das COPs")) |>
+<<<<<<< HEAD
   mutate(cod_reg = case_when(cod_reg == 10 ~ "Capital",
                              cod_reg == 20 ~ "Região Metropolitana",
                              cod_reg == 30 ~ "Interior",
@@ -977,6 +982,18 @@ tabela_vit_pol <- base_cor |>
   kbl(col.names = c("Região", "COP", "Morte em serviço", "Morte em folga", 
                     "Total", "% Serviço", "% Folga"), 
     digits = 2) |>
+=======
+  mutate(cod_reg = case_when(cod_reg == "10" ~ "Capital",
+                             cod_reg == "20" ~ "Região Metropolitana",
+                             cod_reg == "30" ~ "Interior",
+                             cod_reg == "99" ~ "Estado")) |> 
+  ungroup() |>
+  group_by(cod_reg, cop_limpo) |> 
+  summarise(n= sum(c(mort_ser, mort_fol)), 
+         morte_ser_perc = round(mort_ser/n*100,2),
+         morte_fol_perc = round(mort_fol/n*100,2))|>
+  kbl(col.names = c("Região", "COP", "Total", "Morte em Serviço","Morte em Folga")) |>
+>>>>>>> 282e9e363d6fc5deab771ab61fbc3135ada57109
   kable_paper("hover", full_width = F) |>  
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
 
@@ -1053,7 +1070,7 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
    summarise(cnt= n())
 
 #perfil racial
-  ##2018 a 2019
+  ##2018 a 2019 a variável COP não faz sentido aqui já que ninguém tinha câmera, mas ajuda a olhar como no agregado estava a letalidade policial nas unidades que receberam camera posteriormente
    base_ssp |>
    filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
     filter(ano_bo >= 2018 & ano_bo <= 2019) |> 
@@ -1101,7 +1118,7 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
   
    # perfil do local pré COP
   base_ssp |>
-    filter(ano_bo >= 2018 & ano_bo <= 2020,
+    filter(ano_bo >= 2018 & ano_bo <= 2019,
            !is.na(cidade),
            cidade != c ("São Paulo", "Piracicaba"))|>  
     group_by( cidade) |> 
@@ -1119,7 +1136,7 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
     axis.text.y = element_text(size = 8.5) 
   ) +
   labs(title = "Top 10 municípios com mais MDIPs",
-       subtitle = "2018 a 2020",
+       subtitle = "2018 a 2019",
        x = "Total",
        y = "",
        fill= "")
@@ -1144,7 +1161,7 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
     axis.text.y = element_text(size = 8.5) 
   ) +
   labs(title = "Top 10 municípios com mais MDIPs",
-       subtitle = "2020 a 2022",
+       subtitle = "2021 a 2022",
        x = "Total",
        y = "",
        fill= "") 
