@@ -805,13 +805,14 @@ Proporção da Letalidade policial em serviço e em folga
 
  base_completa |>  
   filter(cod_reg == 99) |>  
-   pivot_longer(cols = let_ser:let_fol, values_to = "count", names_to = "letalidade") |> 
+  pivot_longer(cols = let_ser:let_fol, values_to = "count", names_to = "letalidade") |> 
   group_by(periodo) |> 
   mutate(total_let_ano = sum(count)) |> 
-  mutate(participacao = 100 * (count/total_let_ano)) |> 
+  mutate(participacao = count/total_let_ano) |> 
   ggplot(aes(fill=letalidade, y= count, x= ano)) +
     geom_bar(position = position_stack(), stat="identity", size=.4, colour="light grey") +
-   geom_text(aes(label = scales::percent(round((participacao/100),3)), nsmall=0, big.mark="."),
+  #insere label de porcentagem
+   geom_text(aes(label = scales::percent(round((participacao),3)), nsmall=0, big.mark="."),
              colour ="white",
                 position=position_stack(vjust=0.5), size=3.4) +
   stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
@@ -829,7 +830,7 @@ ANALISE
 Vitimização policial por macrorregião
 :::
 
-```{r vitimização, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r evolução da vitimização policial por macroreg, echo=FALSE, fig.width=8, fig.height=4.5}
 base_completa %>% 
     #filtra sem os deinter 
   filter(cod_reg < 31) %>% 
@@ -873,7 +874,7 @@ Proporção da Vitimização Policial em serviço e em folga
 :::
 
 
-```{r percentual de vitimização, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r percentual de vitimização serviço/folga, echo=FALSE, fig.width=8, fig.height=4.5}
 
  base_completa |>  
   filter(cod_reg == 99) |>  
@@ -904,7 +905,8 @@ Perfil racial e etário das vítimas de letalidade policial em São Paulo
 :::
 
 
-```{r raça e idade, echo=FALSE, fig.height=4.5, fig.width=8}
+
+```{r piramide raça e idade, eval=FALSE, fig.height=4.5, fig.width=8}
   base_ssp |>
    filter(cor_pele_agregada %in% c("Negra", "Branca")) %>%
    filter(!is.na(idade_pessoa_agregada)) %>%
@@ -924,7 +926,7 @@ Num conjunto global dos dados, é possível observar que o período de 2018 a 20
 Perfil racial das vitímas de MDIP
 :::
 
-```{r raça, echo=FALSE, fig.dim = c(9, 6)}
+```{r proporção de raça, echo=FALSE, fig.dim = c(9, 6)}
 
 base_ssp |> 
   filter(between(ano_bo, 2018, 2022)) |> 
@@ -963,20 +965,16 @@ tabela_vit_pol <- base_cor |>
             mort_fol= sum(mort_fol)) |>
   mutate(cop_limpo = case_when(cop == "Antes_COPs" ~ "Antes das COPs",
                             cop == "Depois_COPs" ~ "Depois das COPs")) |>
-  mutate(cod_reg = case_when(cod_reg == 10 ~ "Capital",
-                             cod_reg == 20 ~ "Região Metropolitana",
-                             cod_reg == 30 ~ "Interior",
-                             cod_reg == 99 ~ "Estado")) |> 
+  mutate(cod_reg = case_when(cod_reg == "10" ~ "Capital",
+                             cod_reg == "20" ~ "Região Metropolitana",
+                             cod_reg == "30" ~ "Interior",
+                             cod_reg == "99" ~ "Estado")) |> 
   ungroup() |>
-  group_by(cod_reg, cop) |> 
-  mutate(n= sum(c(mort_ser, mort_fol)), 
-         morte_ser_perc = mort_ser/n*100,
-         morte_fol_perc = mort_fol/n*100) |>
-  ungroup() |>
-  select(cod_reg, cop_limpo, mort_ser, mort_fol, n, morte_ser_perc, morte_fol_perc) |> 
-  kbl(col.names = c("Região", "COP", "Morte em serviço", "Morte em folga", 
-                    "Total", "% Serviço", "% Folga"), 
-    digits = 2) |>
+  group_by(cod_reg, cop_limpo) |> 
+  summarise(n= sum(c(mort_ser, mort_fol)), 
+         morte_ser_perc = round(mort_ser/n*100,2),
+         morte_fol_perc = round(mort_fol/n*100,2))|>
+  kbl(col.names = c("Região", "COP", "Total", "Morte em Serviço","Morte em Folga")) |>
   kable_paper("hover", full_width = F) |>  
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
 
@@ -996,11 +994,12 @@ base_completa %>%
               total_let = sum(let_ser + let_fol)) %>%
     pivot_longer(cols = c(total, total_let), names_to = "crime", values_to = "count") %>%
     group_by(periodo) %>%
-    mutate(freq = paste0(round(count/sum(count)*100), "%")) %>%
+    mutate(freq = (count/sum(count))) %>%
     ggplot(aes(x = factor(periodo), y = count, fill = crime)) +
     geom_bar(position = "stack", stat = "identity", size = 0.4, colour = "light grey") +
-    geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)),
-              position = position_dodge(0.2), vjust = 1, hjust = 0.3, size = 3.2, check_overlap = TRUE) +
+    geom_text(aes(label = scales::percent(round((freq),3)), nsmall=0, big.mark="."),
+             colour ="white",
+                position=position_stack(vjust=0.5), size=3.4)+
     scale_fill_manual(values = azul_2, name = "Tipo de Crime",
                       labels = c("Total de ocorrências", "Total de Letalidade")) +
     scale_x_discrete(labels = c("2021", "2022"),
@@ -1053,7 +1052,7 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
    summarise(cnt= n())
 
 #perfil racial
-  ##2018 a 2019
+  ##2018 a 2019 a variável COP não faz sentido aqui já que ninguém tinha câmera, mas ajuda a olhar como no agregado estava a letalidade policial nas unidades que receberam camera posteriormente
    base_ssp |>
    filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
     filter(ano_bo >= 2018 & ano_bo <= 2019) |> 
@@ -1101,7 +1100,7 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
   
    # perfil do local pré COP
   base_ssp |>
-    filter(ano_bo >= 2018 & ano_bo <= 2020,
+    filter(ano_bo >= 2018 & ano_bo <= 2019,
            !is.na(cidade),
            cidade != c ("São Paulo", "Piracicaba"))|>  
     group_by( cidade) |> 
@@ -1119,7 +1118,7 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
     axis.text.y = element_text(size = 8.5) 
   ) +
   labs(title = "Top 10 municípios com mais MDIPs",
-       subtitle = "2018 a 2020",
+       subtitle = "2018 a 2019",
        x = "Total",
        y = "",
        fill= "")
@@ -1144,7 +1143,7 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
     axis.text.y = element_text(size = 8.5) 
   ) +
   labs(title = "Top 10 municípios com mais MDIPs",
-       subtitle = "2020 a 2022",
+       subtitle = "2021 a 2022",
        x = "Total",
        y = "",
        fill= "") 
