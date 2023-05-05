@@ -872,14 +872,14 @@ Enquanto a letalidade policial no estado tem se reduzido desde o ano de 2020, a 
 Raça e idade das vitímas MDIP
 :::
 
-```{r raça e idade, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
+```{r raça e idade, eval=FALSE, fig.height=4.5, fig.width=8}
   base_ssp |>
-   filter(cor_pele %in% c("Negra", "Branca")) %>%
-   filter(!is.na(idade_pessoa)) %>%
+   filter(cor_pele_agregada %in% c("Negra", "Branca")) %>%
+   filter(!is.na(idade_pessoa_agregada)) %>%
     filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
-   group_by(cor_pele, idade_pessoa) %>%
+   group_by(cor_pele_agregada, idade_pessoa_agregada) %>%
    summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa, y= cnt, group = cor_pele)
+   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = cor_pele_agregada)
   # ggcharts::ggcharts_set_theme("theme_ng")
     #ggsave("../imgs/piramide_etaria.png", width = 40, height = 20, units = "cm")
 
