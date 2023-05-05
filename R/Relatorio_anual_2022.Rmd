@@ -903,10 +903,8 @@ ANALISE (AVALIAR SE VALE A PENA MANTER)
 ::: {custom-style="Estilo1"}
 Perfil racial e etário das vítimas de letalidade policial em São Paulo
 :::
-
-
-
 ```{r piramide raça e idade, eval=FALSE, fig.height=4.5, fig.width=8}
+
   base_ssp |>
    filter(cor_pele_agregada %in% c("Negra", "Branca")) %>%
    filter(!is.na(idade_pessoa_agregada)) %>%
