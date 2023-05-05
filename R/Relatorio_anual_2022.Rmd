@@ -649,11 +649,6 @@ Ainda que estas recomendações não esgotem todas as preocupações sobre as di
 Análise Especial - Perfil da letalidade policial no estado de São Paulo
 :::
 
-\newpage
-
-::: {custom-style="Estilo1"}
-Apresentação
-:::
 A presente análise busca compreender qual foi o perfil da letalidade policial no estado de São Paulo entre os anos de 2018 e 2022. O intervalo que abarca tanto o período de maior letalidade das polícias na história recente do estado, como aquele de redução mais abrupta das mortes cometidas por policiais a partir da implementação de uma série de medidas de controle do uso da força letal pela Polícia Militar de São Paulo. Observa-se também a existência de marcadores políticos como, a nível estadual, a transição da gestão de Márcio França (PSB) para João Dória(PSDB) e Rodrigo Garcia (PSDB). 
 Outro marco relevante é a pandemia de Covid-19, iniciada no ano de 2020 impactando fortemente a capacidade de circulação da população e os esforços da gestão pública no seu enfrentamento.
 
@@ -664,6 +659,7 @@ Do ponto de vista da Segurança Pública, o debate sobre a letalidade da forças
 
 Esse estudo busca analisar o impacto dos esforços de controlar o uso da força policial no Estado de São Paulo a partir de quatro eixos principais: 1) o uso de câmeras corporais, 2) a atuação  dos batalhões nas mortes decorrentes de intervenção policial, 3) o perfil das vítimas da letalidade policial, 4) outras ações de mitigação do uso da força policial. Objetiva-se examinar o efeito concreto e eficaz de medidas de controle do uso da força pelas polícias, não somente no número de pessoas mortas, que certamente é a principal justificativa para a implementação destas ações, mas também na queda da vitimização policial e verificar qual o perfil das vítimas.
 
+\newpage
 ::: {custom-style="Estilo1"}
 Metodologia
 :::
