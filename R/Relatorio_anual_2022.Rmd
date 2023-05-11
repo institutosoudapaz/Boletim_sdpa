@@ -601,11 +601,27 @@ Roubos (Total) na capital
 
 ```{r mapa roubo SP, echo=FALSE, fig.width=8, fig.height=4.5}
 
-tab_dp <- tab_dp |> 
-  mutate(total_roubos = roubo_outros + roubo_veic)
+colors_map <- c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", "#0066A5", "#00366C")
 
-mapa_dp(total_roubos)
-               
+tab_dp |> 
+  mutate(total_roubos = roubo_outros + roubo_veic) |> 
+  mutate(total_roubos_agregado = case_when(
+    total_roubos < 1000 ~ "Menos de 1000 roubos",
+    total_roubos > 1000 & total_roubos <= 2000 ~ "Entre 1000 e 2000 roubos",
+    total_roubos > 2000 & total_roubos <= 3000 ~ "Entre 2001 e 3000 roubos",
+    total_roubos > 3000 & total_roubos <= 4000 ~ "Entre 3001 e 4000 roubos",
+    total_roubos > 4000 & total_roubos <= 5000 ~ "Entre 4001 e 5000 roubos",
+    total_roubos > 5000 ~ "Mais de 5000 roubos")) |> 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = total_roubos_agregado))+
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+  scale_fill_manual(values = colors_map, name = NULL, 
+                    breaks=c("Menos de 1000 roubos", "Entre 1000 e 2000 roubos", 
+                             "Entre 2001 e 3000 roubos", "Entre 3001 e 4000 roubos",
+                             "Entre 4001 e 5000 roubos", "Mais de 5000 roubos"))+
+  theme_sdpa_maps
+
+             
 ```
 Os dez distritos policiais com maior número de registros de ocorrências de roubos (total) em 2022 foram responsáveis por 25.6% de todas as ocorrências deste crime na capital do estado. Dentre os 103 distritos policiais da cidade de São Paulo, o 03 DP - Campos Elísios foi aquele que registrou o maior número de roubos, um total de 7.245 ocorrências. A região do centro também teve entre os dez distritos policiais com maior número de registros de ocorrências de roubos (total) o 01 DP - Sé, que ficou na terceira posição com 4.815 roubos registrados e o 12 DP - Pari. A região sul, por sua vez, teve, respectivamente, no 47 DP - Capão Redondo, 37 DP - Campo Limpo, 92 DP - Parque Santo Antônio seus distritos policiais com mais roubos, enquanto a zona oeste teve no 14 DP - Pinheiros, 23 DP - Perdizes e 78 DP - Jardins seus distritos com mais ocorrências de roubos. Finalmente, o 49 DP - São Mateus é o único dos dez distritos policiais com mais registros de roubos da zona leste.
 
@@ -1244,4 +1260,80 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
   
 ```
 
+```{r mapa MDIP, echo=FALSE, fig.width=8, fig.height=4.5}
 
+# Letalidade policial por ano
+tab_ssp |> 
+  filter(!is.na(ano_bo)) %>%
+  filter(ano_bo < 2023) %>%
+  group_by(dp_circunscricao_limpo, ano) |> 
+  mutate(total_vit = n())  |>
+   mutate(total_vit_agregado = case_when(
+     NA ~ "Nenhuma vítima",
+     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
+     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
+     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
+     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
+     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
+                                   "#0066A5", "#00366C"),  
+                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
+                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
+                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
+  theme_sdpa_maps + 
+  facet_wrap(~ano_bo)
+
+
+# Letalidade policial por serviço e folga
+tab_ssp |> 
+  filter(!is.na(ano_bo)) %>%
+  filter(servico %in% c("SIM", "NÃO")) |> 
+  filter(ano_bo < 2023) %>%
+  group_by(dp_circunscricao_limpo, ano) |> 
+  mutate(total_vit = n())  |>
+   mutate(total_vit_agregado = case_when(
+     NA ~ "Nenhuma vítima",
+     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
+     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
+     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
+     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
+     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
+                                   "#0066A5", "#00366C"),  
+                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
+                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
+                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
+  theme_sdpa_maps + 
+  facet_wrap(~servico)
+
+# Vitimização policial por ano
+tab_ssp |> 
+  filter(!is.na(ano_bo)) %>%
+  filter(ano_bo < 2023) %>%
+  group_by(dp_circunscricao_limpo, ano) |> 
+  mutate(total_vit = n())  |>
+   mutate(total_vit_agregado = case_when(
+     NA ~ "Nenhuma vítima",
+     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
+     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
+     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
+     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
+     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
+                                   "#0066A5", "#00366C"),  
+                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
+                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
+                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
+  theme_sdpa_maps + 
+  facet_wrap(~ano_bo)
+
+      
