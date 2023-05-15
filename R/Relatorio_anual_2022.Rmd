@@ -1016,6 +1016,142 @@ base_ssp |> filter(vitimas>1) |> group_by(vitimas, ano) |> count()
 
 ```
 
+```{r perfil racial,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
+
+##tabela proporção de raça (pegar a análise do Pedro)
+#criar imagem e colocar na lateral da folha
+
+# perfil racial total
+base_ssp |>
+   filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
+    filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
+   group_by (ano_bo) |>
+   mutate(total= n()) |> 
+  ungroup() |> 
+ group_by(cor_pele_agregada, ano_bo, total) |>
+  summarise(count = n()) |> 
+    mutate(freq = round(count/sum(total)*100,2)) |>
+    arrange(desc(ano_bo)) |>
+  ggplot((aes(x = ano_bo, y = freq , fill = cor_pele_agregada, label = freq))) +
+  geom_bar(position="stack", stat="identity", size=.4)+
+  geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
+   scale_fill_manual(values= cores_sdp)+
+  hrbrthemes::theme_ipsum() +
+  theme(
+    legend.position = "right",
+    axis.text.y = element_text(size = 8.5) 
+  ) +
+  labs(title = "Perfil Racial das Vítimas de Letalidade Policial",
+       subtitle = "2018 a 2022",
+       x = "Total",
+       y = "",
+       fill= "")
+
+#facet cor/raça por ano com/ sem COP
+  base_ssp |>
+   filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
+    filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
+   group_by(ano_bo, COP) |> 
+   mutate(total= n()) |> 
+  ungroup() |> 
+    group_by(COP, cor_pele_agregada, ano_bo, total) |> 
+    summarise(count = n()) |> 
+     mutate(freq = round(count/sum(total)*100,2)) |> 
+  ggplot((aes(x = ano_bo, y =freq  , fill = cor_pele_agregada, label = freq))) +
+  geom_bar(position="stack", stat="identity", size=.4)+
+  geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
+   scale_fill_manual(values= cores_sdp)+
+  hrbrthemes::theme_ipsum() +
+  theme(
+    legend.position = "right",
+    axis.text.y = element_text(size = 8.5) 
+  ) +
+  labs(title = "Perfil Racial das Vítimas por uso de Câmeras Operacionais Portáteis",
+       subtitle = "2018 a 2022",
+       x = "Total",
+       y = "",
+       fill= "") +
+  facet_wrap(~COP)+
+    coord_flip()
+
+
+  #Raça por Local 
+  base_ssp |> 
+    filter( local_limpo %in% c("Via Pública","Residência"),
+            cor_pele_agregada %in% c("Negra", "Branca"),
+            between(ano_bo, 2018, 2022)) |>
+     group_by(ano_bo) |> 
+   mutate(total= n()) |> 
+  ungroup() |> 
+    group_by(local_limpo, cor_pele_agregada,ano_bo, total)|>
+    summarise(count= n()) |>
+    mutate(freq = paste0(round(count/sum(total)*100,2))) |>     arrange(desc(total)) |> 
+    ggplot(aes(x= ano_bo, y= count, colour = cor_pele_agregada, label = total)) +
+  geom_line(size=1.8)+
+     geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
+    scale_fill_manual(values= cores_2)+
+  hrbrthemes::theme_ipsum() +
+  theme(
+    legend.position = "right",
+    axis.text.y = element_text(size = 8.5) 
+  ) +
+  labs(title = "Perfil Racial das Vítimas Por Local do Homicídio",
+       subtitle = "2018 a 2022",
+       x = "Total",
+       y = "",
+         fill= "",
+       legend= "Raça/ Cor"
+       )+
+    facet_wrap(~local_limpo)
+  
+#raça por macrorregião
+  
+ base_ssp |>
+   mutate(macrorreg = case_when(
+     departamento_circunscricao %in% c( "DEINTER 6 - SANTOS", "DEINTER 9 - PIRACICABA","DEINTER 7 - SOROCABA",             "DEINTER 3 - RIBEIRAO PRETO", "DEINTER 2 - CAMPINAS",             
+"DEINTER 5 - SAO JOSE DO RIO PRETO", "DEINTER 1 - SAO JOSE DOS CAMPOS","DEINTER 4 - BAURU", "DEINTER 10 - ARAÇATUBA",          
+"DEINTER 8 - PRESIDENTE PRUDENTE")~"Interior", 
+departamento_circunscricao == "DECAP" ~ "Capital",
+departamento_circunscricao == "DEMACRO" ~"Grande São Paulo",
+TRUE ~ as.character (departamento_circunscricao))) |> 
+   filter(cor_pele_agregada %in% c("Negra", "Branca"),
+          ano_bo >= 2018 & ano_bo <= 2022,
+          macrorreg %in% c("Capital", "Interior", "Grande São Paulo")) |> 
+   group_by(ano_bo, macrorreg) |> 
+   mutate(total= n()) |> 
+    ungroup() |> 
+   group_by(cor_pele_agregada, ano_bo, macrorreg,total) |>
+   summarise(count = n()) |> 
+   mutate(freq = paste0(round(count/sum(total)*100,2))) |>
+   arrange(desc(total)) |>
+  ggplot(aes(fill=factor(cor_pele_agregada, levels=c("Negra", "Branca")),
+             y= factor (freq,levels= c("Negra", "Branca")), x= factor(ano_bo, levels=c("2018", "2019","2020", "2021", "2022")))) + 
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(as.numeric(freq), big.mark = ".", scientific = FALSE), 
+                colour =ifelse(macrorreg=="Capital", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.4) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = ano_bo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+  scale_fill_manual(values = teste_2) +
+  guides(color = "none")+
+  theme_sdpa_macroreg +
+  guides(fill = guide_legend(reverse = TRUE))+
+   facet_wrap(~macrorreg)
+  
+```
+Diversos estudos tem observado ao longos dos anos como o perfil mais vitimado no Brasil têm sido também, aquele que mais sofre com a letalidade policial, que afeta desproporcionalmente a homens, negros e jovens. 
+A análise da raça das vítimas pelas macrorregiões revel que a Capital é a região com a maior proporção de pessoas negras vitimadas pela polícia, sendo 71,27% do total de casos. Seguida pela Grande São Paulo em que 68,77% dos casos são de pessoas negras . O Interior do estado é a região menos desproporcional na vitimização de negros por policiais, com 55,56% de vítimas negras.
+Treze mulheres foram vítimas da letalidade policial entre 2018-2022. As ocorrências concentram-se entre 2018 a 2020, em que ocorreram 12 desses casos, dos quais quatro deles com mais de uma vítima na mesma ocorrência. 
+O local da vitimização foi majoritariamente em via pública, com onze casos. Dentre as vítimas sete foram declaradas brancas e seis pardas ou pretas. 
+Quanto a faixa etária das vítimas, prevalece também o perfil jovem. Sete delas possuíam entre 15 e 24 anos.
+ No período analisado, a proporção de negros se manteve estável, representando em média 64,81% das mortes decorrente de intervenção policial. 
+ Destaca-se o ano de 2021 em que 68,37% das MDIPs foram de pessoas negras.
+Entre os batalhões que receberam as COPs, houve uma pequena redução da proporção de negros vitimados, sendo 2021 o ano com a maior proporção e 2020 e 2021 com a menor, 66.74%. 
+Já entre os batalhões que não receberam as câmeras corporais esse número 
+
+
 ```{r batalhões com e sem câmera, eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
 #total de ocorrências
 
