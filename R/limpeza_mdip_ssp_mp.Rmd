@@ -207,7 +207,7 @@ mdip_total <- mdip_total |>
      desc_tipolocal == "REGISTRADO NA PF" ~"REGISTRADO NA PF",
        TRUE ~ "Via Pública"))
  
- teste<- base_ssp |>  mutate(batalhao_limpo = case_when(batalhao %in%  c("1º BPChoque (Rota)","1º BPCh (Rota)", "1º BPCh (ROTA)", "1º BPCh-ROTA", "1º BPChoque (ROTA)", "1º BPCh (ROTA)","1º BPChoque (ROTA)", "1º BPCh - ROTA", "1º BPCh - ROTA") ~ "1º BPChoque(Rota)",   TRUE ~ as.character(batalhao)))
+ mdip_total<- mdip_total |>  mutate(batalhao_limpo = case_when(batalhao %in%  c("1º BPChoque (Rota)","1º BPCh (Rota)", "1º BPCh (ROTA)", "1º BPCh-ROTA", "1º BPChoque (ROTA)", "1º BPCh (ROTA)","1º BPChoque (ROTA)", "1º BPCh - ROTA", "1º BPCh - ROTA") ~ "1º BPChoque(Rota)",   TRUE ~ as.character(batalhao)))
 
 ```
 
