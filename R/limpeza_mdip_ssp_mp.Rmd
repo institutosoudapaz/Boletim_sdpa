@@ -73,6 +73,8 @@ mdip_mp <- mdip_mp |> mutate(ano = str_sub(data, end = 4))
 #limpa hora mp
 mdip_mp <- mdip_mp |> mutate(hora = str_sub(hora,  start = 12))
 
+#salva mp 
+saveRDS(mdip_mp, "../data-raw/mdip_mp_vitimas.rds") 
 #limpa hora ssp
 mdip_ssp <- mdip_ssp |> mutate(hora_fato = str_sub(hora_fato,  start = 12))
 
@@ -204,6 +206,8 @@ mdip_total <- mdip_total |>
      desc_tipolocal == "CRIME MILITAR"~"CRIME MILITAR",
      desc_tipolocal == "REGISTRADO NA PF" ~"REGISTRADO NA PF",
        TRUE ~ "Via Pública"))
+ 
+ teste<- base_ssp |>  mutate(batalhao_limpo = case_when(batalhao %in%  c("1º BPChoque (Rota)","1º BPCh (Rota)", "1º BPCh (ROTA)", "1º BPCh-ROTA", "1º BPChoque (ROTA)", "1º BPCh (ROTA)","1º BPChoque (ROTA)", "1º BPCh - ROTA", "1º BPCh - ROTA") ~ "1º BPChoque(Rota)",   TRUE ~ as.character(batalhao)))
 
 ```
 
