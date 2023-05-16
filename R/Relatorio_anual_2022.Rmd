@@ -997,8 +997,11 @@ Ocorrências de letalidade policial com 2 ou mais vítimas
 
 ```{r ocorrências com mais de uma vítima por ano, echo=FALSE, fig.width=8, fig.height=4.5 }
 
-base_ssp |> filter(vitimas>1) |> group_by(ano) |> count() 
-base_ssp |> filter(vitimas>1) |> group_by(vitimas, ano) |> count() 
+base_mp_vitimas|> filter( between(ano, 2018,2022), vitimas >2) |> group_by(ano) |>  count() |> kbl(col.names = c("Ano", "Casos")) |>  
+  kable_paper("hover", full_width = F) |>  
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
+
+base_mp_vitimas |> filter( vitimas >2) |> group_by(vitimas, ano) |> count() |> kbl(col.names = c("No de Vitimas", "Ano", "Casos")) |>    kable_paper("hover", full_width = F) |>  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
 
 ```
 
@@ -1385,6 +1388,16 @@ Quanto a faixa etária das vítimas, prevalece também o perfil jovem. Sete dela
  Destaca-se o ano de 2021 em que 68,37% das MDIPs foram de pessoas negras.
 Entre os batalhões que receberam as COPs, houve uma pequena redução da proporção de negros vitimados, sendo 2021 o ano com a maior proporção e 2020 e 2021 com a menor, 66.74%. 
 Já entre os batalhões que não receberam as câmeras corporais esse número 
+
+
+```{r batalhões macro,eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
+base_ssp |>filter(!is.na(batalhao_limpo)) |>  group_by(ano) |>  mutate(total= n()) |> 
+    ungroup() |> 
+   group_by(ano, batalhao_limpo, total) |>
+   summarise(count = n()) |> 
+mutate(freq = paste0(round(count/sum(total)*100,2))) |>
+   arrange(desc(total)) |> view()
+```
 
 
 ```{r batalhões com e sem câmera, eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
