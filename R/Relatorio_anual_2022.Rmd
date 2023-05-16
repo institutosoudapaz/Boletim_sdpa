@@ -31,6 +31,7 @@ base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds")
 base_cor <- readRDS("../data-raw/base_corregedoria.rds")
 base_ssp <- readRDS("../data-raw/mdip_total.rds")
 base_mensal_dp <- readRDS("../data-raw/base_mensal_dp.rds")
+base_mp_total <- readRDS("../data-raw/mdip_mp_vitimas.rds")
 
 ano_referencia <- 2022
 ```
@@ -997,11 +998,15 @@ Ocorrências de letalidade policial com 2 ou mais vítimas
 
 ```{r ocorrências com mais de uma vítima por ano, echo=FALSE, fig.width=8, fig.height=4.5 }
 
-base_mp_vitimas|> filter( between(ano, 2018,2022), vitimas >2) |> group_by(ano) |>  count() |> kbl(col.names = c("Ano", "Casos")) |>  
+base_mp_total|> filter( between(ano, 2018,2022), vitimas >2) |> group_by(ano) |>  count() |> kbl(col.names = c("Ano", "Casos")) |>  
   kable_paper("hover", full_width = F) |>  
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
 
-base_mp_vitimas |> filter( vitimas >2) |> group_by(vitimas, ano) |> count() |> kbl(col.names = c("No de Vitimas", "Ano", "Casos")) |>    kable_paper("hover", full_width = F) |>  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
+base_mp_total |> filter( vitimas >2) |> group_by(vitimas, ano) |> summarise(mean = mean(vitimas),
+                                                                            median = median(vitimas),
+                                                                            total = sum(vitimas))|> kbl(col.names = c("No de Vitimas", "Média","Mediana", "Ano", "Número de Vítimas")) |>    kable_paper("hover", full_width = F) |>  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
+
+base_mp_total |> filter( vitimas >2, ano ==2019) |>count(cidade)  |> view() 
 
 ```
 
@@ -1391,12 +1396,39 @@ Já entre os batalhões que não receberam as câmeras corporais esse número
 
 
 ```{r batalhões macro,eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
-base_ssp |>filter(!is.na(batalhao_limpo)) |>  group_by(ano) |>  mutate(total= n()) |> 
+batalhoes<- base_ssp |>
+  filter(!is.na(batalhao_limpo)) |> 
+  group_by(ano) |>mutate(total= n()) |> 
     ungroup() |> 
-   group_by(ano, batalhao_limpo, total) |>
-   summarise(count = n()) |> 
-mutate(freq = paste0(round(count/sum(total)*100,2))) |>
+   group_by(batalhao_limpo, total, ano) |>
+      summarise(count = n()) |> 
+mutate(freq = paste0(round(count/sum(total)*100,2))) |> 
+       #var = paste0(round())) |>
+  filter (count>10) |> 
    arrange(desc(total)) |> view()
+kable(batalhoes)
+
+
+batalhoes<- base_ssp |>
+  filter(!is.na(batalhao_limpo), 
+         batalhao_limpo != "PC") |> 
+   group_by(batalhao_limpo, ano, COP) |>
+  summarise(count = n()) |>
+  pivot_wider(names_from = ano, values_from = count) 
+batalhoes<- batalhoes |>  select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022")  |> 
+  mutate_all(funs(ifelse(is.na(.), 0, .))) |>
+  mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
+                      variacao = (`2022` - `2018`) / `2018` * 100) |> 
+  filter(total >= 20) |> 
+  arrange(desc(total)) |>  view()
+kable(batalhoes)
+
+
+
+mutate(freq = paste0(round(count/sum(count)*100,2))) |> 
+   arrange(desc(count)) |> view()
+kable(batalhoes)
+
 ```
 
 
