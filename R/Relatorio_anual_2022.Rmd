@@ -699,6 +699,10 @@ Em 2021 a base do MP registrou 555 casos, já a da SSP, 570.
 Em 2020, os números registradoss pelo MP contabilizam 732 casos, contra 814 presentes na base da SSP.
 Assim, o banco final, utilizado nesta pesquisa, delimita as ocorrências para o período analisado (2018- 2022), contendo 7570 casos de mortes em decorrência de intervenção policial.
 
+#1 Dizer das medidas de controle da força implementadas pela PMESP de forma ampla
+#2 Dizer dos Deinter que não tem COP
+
+
 \newpage
 
 ::: {custom-style="Estilo1"}
@@ -810,6 +814,8 @@ base_taxa |>
 ```
 
 FAZER ANALISE
+
+# Mudar análise para 2018 a 2022
 
 \newpage
 
@@ -996,7 +1002,7 @@ NÃO ENTENDI BEM ESTA VISUALIZAÇÃO POR DOIS MOTIVOS. PRIMEIRO POR TERMOS FILTR
 Ocorrências de letalidade policial com 2 ou mais vítimas
 :::
 
-```{r ocorrências com mais de uma vítima por ano, echo=FALSE, fig.width=8, fig.height=4.5 }
+```{r ocorrências com mais de uma vítima por ano, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
 
 base_mp_total|> filter( between(ano, 2018,2022), vitimas >2) |> group_by(ano) |>  count() |> kbl(col.names = c("Ano", "Casos")) |>  
   kable_paper("hover", full_width = F) |>  
@@ -1010,7 +1016,7 @@ base_mp_total |> filter( vitimas >2, ano ==2019) |>count(cidade)  |> view()
 
 ```
 
-PODEMOS APRESENTAR COMO UMA TABELA MESMO (OS ANOS COMO COLUNAS), OU AINDA, UM GRÁFICO SIMPLES. TAMBÉM ME PARECE INTERESSANTE APONTARMOS NO TESTO A MÉDIA DE VÍTIMAS POR ANO EM CADA OCORRÊNCIA.
+PODEMOS APRESENTAR COMO UMA TABELA MESMO (OS ANOS COMO COLUNAS), OU AINDA, UM GRÁFICO SIMPLES. 
 
 TALVEZ POSSA SER INTERESSANTE (PRINCIPALMENTE NO CASO DE TABELA) MOSTRARMOS ONDE ESTAS OCORRÊNCIAS ACONTECERAM (MACROREGIÃO)
 
@@ -1021,13 +1027,6 @@ Mapas das ocorrências de letalidade policial em São Paulo 2018 a 2022
 :::
 
 (base SSP): Ocorrências de letalidade na capital facet por ano.
-\newpage
-
-::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial por ano
-:::
-
-(base SSP) Comparativo de ocorrências de letalidade em serviço e fora de serviço na capital facet por ano.
 \newpage
 
 
@@ -1056,36 +1055,55 @@ APONTAR Destaques de variações muito intensas de batalhões
 \newpage
 
 ::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial por ano (base SSP):
+Mapas das ocorrências de letalidade policial na cidade de São Paulo antes e depois do Programa Olho Vivo
 :::
 
 
-```{r mapa MDIP, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r mapa MDIP antes e depois COP, echo=FALSE, fig.width=8, fig.height=4.5}
 
 # Letalidade policial por ano
+
 tab_ssp |> 
-  filter(!is.na(ano_bo)) %>%
-  filter(ano_bo < 2023) %>%
-  group_by(dp_circunscricao_limpo, ano) |> 
+  filter(!is.na(ano_bo)) |> 
+  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
+  mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
+         ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
+  group_by(dp_circunscricao_limpo, cop ) |> 
   mutate(total_vit = n())  |>
    mutate(total_vit_agregado = case_when(
      NA ~ "Nenhuma vítima",
-     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
-     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
+     total_vit = 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
+     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
+     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
      total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
-     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
+     total_vit > 10 ~ "10 ou mais vítimas")) |> 
   ggplot() +
   geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
   geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
     scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
                                    "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
-                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
-                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
+                    breaks=c("Nenhuma vítima", "Entre 1 e 2 vítimas", 
+                             "Entre 3 e 4 vítimas", "Entre 5 e 6 vítimas",
+                             "Entre 7 e 9 vítimas", "Mais de 10 vítimas"))+
   theme_sdpa_maps + 
-  facet_wrap(~ano_bo)
+  facet_wrap(~cop)
 
+```
+
+ANÁLISE E PREENCHER ÁREAS EM BRANCO
+
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Mapas das ocorrências de letalidade policial por ano em serviço e fora de serviço na cidade de São Paulo - 2018 a 2022
+:::
+
+
+```{r mapa mdip em serviço e folga, echo=FALSE, fig.width=8, fig.height=4.5}
+
+servico_names <- as_labeller(
+     c(`SIM` = "Em Serviço", `NÃO` = "Folga"))
 
 # Letalidade policial por serviço e folga
 tab_ssp |> 
@@ -1110,7 +1128,8 @@ tab_ssp |>
                              "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
                              "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
   theme_sdpa_maps + 
-  facet_wrap(~servico)
+  theme(legend.title= element_blank()) + 
+  facet_wrap(~servico, labeller = servico_names)
 
 # Vitimização policial por ano
 tab_ssp |> 
@@ -1137,6 +1156,121 @@ tab_ssp |>
   facet_wrap(~ano_bo)
 ```
       
+ANALISE
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Mapas das ocorrências de letalidade policial por ano em serviço antes e depois do Programa Olho Vivo
+:::
+
+```{r mapa mdip em serviço, echo=FALSE, fig.width=8, fig.height=4.5}
+
+# Letalidade policial por serviço antes e depois das COPS
+tab_ssp |> 
+  filter(!is.na(ano_bo)) |> 
+  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
+  filter(servico == "SIM") |> 
+  mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
+         ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
+  group_by(dp_circunscricao_limpo, cop ) |> 
+  mutate(total_vit = n())  |>
+   mutate(total_vit_agregado = case_when(
+     NA ~ "Nenhuma vítima",
+     total_vit = 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
+     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
+     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
+     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
+     total_vit > 10 ~ "10 ou mais vítimas")) |> 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
+                                   "#0066A5", "#00366C"),  
+                    breaks=c("Nenhuma vítima", "Entre 1 e 2 vítimas", 
+                             "Entre 3 e 4 vítimas", "Entre 5 e 6 vítimas",
+                             "Entre 7 e 9 vítimas", "Mais de 10 vítimas"))+
+  theme_sdpa_maps + 
+  facet_wrap(~cop)
+```
+
+ANALISE
+\newpage
+
+::: {custom-style="Estilo1"}
+Mapas das ocorrências de letalidade policial em serviço antes e depois do Programa Olho Vivo
+:::
+
+```{r mapa mdip em serviço, echo=FALSE, fig.width=8, fig.height=4.5}
+
+# Letalidade policial por serviço antes e depois das COPS
+tab_ssp |> 
+  filter(!is.na(ano_bo)) |> 
+  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
+  filter(servico == "SIM") |> 
+  mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
+         ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
+  group_by(dp_circunscricao_limpo, cop ) |> 
+  mutate(total_vit = n())  |>
+   mutate(total_vit_agregado = case_when(
+     NA ~ "Nenhuma vítima",
+     total_vit = 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
+     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
+     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
+     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
+     total_vit > 10 ~ "10 ou mais vítimas")) |> 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
+                                   "#0066A5", "#00366C"),  
+                    breaks=c("Nenhuma vítima", "Entre 1 e 2 vítimas", 
+                             "Entre 3 e 4 vítimas", "Entre 5 e 6 vítimas",
+                             "Entre 7 e 9 vítimas", "Mais de 10 vítimas"))+
+  theme_sdpa_maps + 
+  facet_wrap(~cop)
+```
+
+ANALISE
+\newpage
+
+::: {custom-style="Estilo1"}
+Mapas das ocorrências de letalidade policial de folga antes e depois do Programa Olho Vivo
+:::
+
+```{r mapa mdip em serviço, echo=FALSE, fig.width=8, fig.height=4.5}
+
+# Letalidade policial por serviço antes e depois das COPS
+tab_ssp |> 
+  filter(!is.na(ano_bo)) |> 
+  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
+  filter(servico == "SIM") |> 
+  mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
+         ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
+  group_by(dp_circunscricao_limpo, cop ) |> 
+  mutate(total_vit = n())  |>
+   mutate(total_vit_agregado = case_when(
+     NA ~ "Nenhuma vítima",
+     total_vit = 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
+     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
+     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
+     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
+     total_vit > 10 ~ "10 ou mais vítimas")) |> 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
+                                   "#0066A5", "#00366C"),  
+                    breaks=c("Nenhuma vítima", "Entre 1 e 2 vítimas", 
+                             "Entre 3 e 4 vítimas", "Entre 5 e 6 vítimas",
+                             "Entre 7 e 9 vítimas", "Mais de 10 vítimas"))+
+  theme_sdpa_maps + 
+  facet_wrap(~cop)
+```
+
+ANALISE
+
+\newpage
 
 ::: {custom-style="Estilo1"}
 Perfil racial e etário das vítimas de letalidade policial em São Paulo
