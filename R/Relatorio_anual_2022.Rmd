@@ -662,7 +662,7 @@ Ainda que estas recomendações não esgotem todas as preocupações sobre as di
 \newpage
 
 ::: {custom-style="Estilo1"}
-Análise Especial - Perfil da letalidade policial no estado de São Paulo
+Análise Especial - Perfil da letalidade policial no estado de São Paulo 2018 - 2022
 :::
 
 A presente análise busca compreender qual foi o perfil da letalidade policial no estado de São Paulo entre os anos de 2018 e 2022. O intervalo que abarca tanto o período de maior letalidade das polícias na história recente do estado, como aquele de redução mais abrupta das mortes cometidas por policiais a partir da implementação de uma série de medidas de controle do uso da força letal pela Polícia Militar de São Paulo. Observa-se também a existência de marcadores políticos como, a nível estadual, a transição da gestão de Márcio França (PSB) para João Dória(PSDB) e Rodrigo Garcia (PSDB). 
@@ -701,8 +701,7 @@ Assim, o banco final, utilizado nesta pesquisa, delimita as ocorrências para o 
 \newpage
 
 ::: {custom-style="Estilo1"}
-
-Letalidade policial em serviço e em folga
+Panorama da letalidade policia no estado de São Paulo
 :::
 
 As mortes cometidas por policiais em serviço reduziram substancialmente após as políticas e novas práticas adotadas pelas polícias (como as câmeras corporais, em 2020).
@@ -916,6 +915,222 @@ ANALISE (AVALIAR SE VALE A PENA MANTER)
 \newpage
 
 ::: {custom-style="Estilo1"}
+Proporção entre Vitimização e Letalidade policial no interior
+:::
+
+FAZER COMPARAÇÃO POR DEINTER DE LETALIDADE E VITIMIZAÇÃO USANDO DADOS CORREGEDORIA.
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Vitimização policial antes e depois das COPs
+:::
+
+```{r vitimização policial, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
+
+tabela_vit_pol <- base_cor |> 
+   filter(cod_reg %in% c(10, 20, 30, 99), periodo %in% c(2018, 2019, 2021, 2022)) |>  
+  mutate(cop = case_when(periodo %in% c(2018, 2019) ~ "Antes_COPs",
+         periodo %in% c(2021, 2022) ~ "Depois_COPs")) |>
+  group_by(cod_reg, cop) %>% 
+  summarise(mort_ser= sum(mort_ser),
+            mort_fol= sum(mort_fol)) |>
+  mutate(cop_limpo = case_when(cop == "Antes_COPs" ~ "Antes das COPs",
+                            cop == "Depois_COPs" ~ "Depois das COPs")) |>
+  mutate(cod_reg = case_when(cod_reg == "10" ~ "Capital",
+                             cod_reg == "20" ~ "Região Metropolitana",
+                             cod_reg == "30" ~ "Interior",
+                             cod_reg == "99" ~ "Estado")) |> 
+  ungroup() |>
+  group_by(cod_reg, cop_limpo) |> 
+  summarise(n= sum(c(mort_ser, mort_fol)), 
+         morte_ser_perc = round(mort_ser/n*100,2),
+         morte_fol_perc = round(mort_fol/n*100,2))|>
+  kbl(col.names = c("Região", "COP", "Total", "Morte em Serviço","Morte em Folga")) |>
+  kable_paper("hover", full_width = F) |>  
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
+
+tabela_vit_pol
+
+```
+
+Os anos de 2018 e 2019, antes da implementação das Câmeras Corporais Operacionais (COPs), registraram um total de 95 mortes de agentes de segurança em todo o estado, com a capital paulista sendo a região com a maior quantidade, 52 casos - 54,7% de todos os casos.
+Porém, a partir de 2021, com a implantação das COPs, entre 21 e 2022, o estado teve um total de 58 mortes de policiais, uma redução de 39% no número de vitimizações.
+Ademais, é visível que, com a implementação das COPs se observa uma maior concentração das mortes de policiais, com maiores registros de casos de agentes que estão em contexto de folga, como por exemplo na Capital, com 3 mortes de oficiais em serviço e 21 de oficiais em folga no período de 2021 à 2022.
+
+\newpage
+::: {custom-style="Estilo1"}
+Participação da letalidade policial na letalidade violenta por macrorregião
+:::
+
+```{r proporção letalidade policial dentro dos homicídios no estado, echo=FALSE, fig.width=8, fig.height=4.5 }
+base_completa %>%
+    filter(ano %in% c(2021, 2022), cod_reg == 99) %>%
+    group_by(periodo) %>%
+    summarise(total = sum(hd_ocorr + lat_ocorr + lesao_morte),
+              total_let = sum(let_ser + let_fol)) %>%
+    pivot_longer(cols = c(total, total_let), names_to = "crime", values_to = "count") %>%
+    group_by(periodo) %>%
+    mutate(freq = (count/sum(count))) %>%
+    ggplot(aes(x = factor(periodo), y = count, fill = crime)) +
+    geom_bar(position = "stack", stat = "identity", size = 0.4, colour = "light grey") +
+    geom_text(aes(label = scales::percent(round((freq),3)), nsmall=0, big.mark="."),
+             colour ="white",
+                position=position_stack(vjust=0.5), size=3.4)+
+    scale_fill_manual(values = azul_2, name = "Tipo de Crime",
+                      labels = c("Total de ocorrências", "Total de Letalidade")) +
+    scale_x_discrete(labels = c("2021", "2022"),
+                     name = "Ano") +
+    scale_y_continuous(limits = c(0, 4300), name = "Número de crimes") +
+    theme_sdpa_let +
+    coord_flip() 
+
+```
+
+NÃO ENTENDI BEM ESTA VISUALIZAÇÃO POR DOIS MOTIVOS. PRIMEIRO POR TERMOS FILTRADO 2021 E 2022 APENAS (E NÃO O PERIODO DE CINCO ANOS), E PRINCIPALMENTE PQ PODERÍAMOS TER FEITO COM MACROREGIÕES POR ANO (GRÁFICOS EMPILHADOS OU LADO A LADO?). DE QUALQUER FORMA ACHO QUE DEVERÍAMOS MANTER ESTE RECORTE, SÓ MELHORAR A VISUALIZAÇÃO
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Ocorrências de letalidade policial com 2 ou mais vítimas
+:::
+
+```{r ocorrências com mais de uma vítima por ano, echo=FALSE, fig.width=8, fig.height=4.5 }
+
+base_ssp |> filter(vitimas>1) |> group_by(ano) |> count() 
+base_ssp |> filter(vitimas>1) |> group_by(vitimas, ano) |> count() 
+
+```
+
+PODEMOS APRESENTAR COMO UMA TABELA MESMO (OS ANOS COMO COLUNAS), OU AINDA, UM GRÁFICO SIMPLES. TAMBÉM ME PARECE INTERESSANTE APONTARMOS NO TESTO A MÉDIA DE VÍTIMAS POR ANO EM CADA OCORRÊNCIA.
+
+TALVEZ POSSA SER INTERESSANTE (PRINCIPALMENTE NO CASO DE TABELA) MOSTRARMOS ONDE ESTAS OCORRÊNCIAS ACONTECERAM (MACROREGIÃO)
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Mapas das ocorrências de letalidade policial em São Paulo 2018 a 2022
+:::
+
+(base SSP): Ocorrências de letalidade na capital facet por ano.
+\newpage
+
+::: {custom-style="Estilo1"}
+Mapas das ocorrências de letalidade policial por ano
+:::
+
+(base SSP) Comparativo de ocorrências de letalidade em serviço e fora de serviço na capital facet por ano.
+\newpage
+
+
+::: {custom-style="Estilo1"}
+Ranking dos municípios em relação a letalidade 2018 a 2022 
+:::
+
+AQUI PODEMOS FAZER POR FACETS, UMA LISTA DE TOP 20 (POR NUMERO ABSOLUTO E POR TAXA PRA GENTE VER COMO FICA). A IDEIA É VER SE OS MUNICIPIOS QUE "SOBEM" NO RANKING DE LETALIDADE SÃO AQUELES SEM CAMERAS NOS BATALHOES.
+
+Caso hajam destaques de variações muito intensas de municípios, tentar cruzar com apreensão de drogas, e armas da base completa
+
+
+\newpage
+
+
+::: {custom-style="Estilo1"}
+Comparar entre batalhões com e sem câmera
+:::
+
+FAZER DUAS ANÁLISES, APONTANDO QUE A TENDENCIA DE QUEDA MAIOR NOS BATALHOES COM COP E REDUÇÃO MAIS CONTIDA NOS DEMAIS.
+
+TAMBÉM FAZER ANÁLISE DO Número de ocorrências em serviço e fora
+
+APONTAR Destaques de variações muito intensas de batalhões
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Mapas das ocorrências de letalidade policial por ano (base SSP):
+:::
+
+
+```{r mapa MDIP, echo=FALSE, fig.width=8, fig.height=4.5}
+
+# Letalidade policial por ano
+tab_ssp |> 
+  filter(!is.na(ano_bo)) %>%
+  filter(ano_bo < 2023) %>%
+  group_by(dp_circunscricao_limpo, ano) |> 
+  mutate(total_vit = n())  |>
+   mutate(total_vit_agregado = case_when(
+     NA ~ "Nenhuma vítima",
+     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
+     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
+     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
+     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
+     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
+                                   "#0066A5", "#00366C"),  
+                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
+                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
+                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
+  theme_sdpa_maps + 
+  facet_wrap(~ano_bo)
+
+
+# Letalidade policial por serviço e folga
+tab_ssp |> 
+  filter(!is.na(ano_bo)) %>%
+  filter(servico %in% c("SIM", "NÃO")) |> 
+  filter(ano_bo < 2023) %>%
+  group_by(dp_circunscricao_limpo, ano) |> 
+  mutate(total_vit = n())  |>
+   mutate(total_vit_agregado = case_when(
+     NA ~ "Nenhuma vítima",
+     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
+     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
+     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
+     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
+     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
+                                   "#0066A5", "#00366C"),  
+                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
+                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
+                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
+  theme_sdpa_maps + 
+  facet_wrap(~servico)
+
+# Vitimização policial por ano
+tab_ssp |> 
+  filter(!is.na(ano_bo)) %>%
+  filter(ano_bo < 2023) %>%
+  group_by(dp_circunscricao_limpo, ano) |> 
+  mutate(total_vit = n())  |>
+   mutate(total_vit_agregado = case_when(
+     NA ~ "Nenhuma vítima",
+     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
+     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
+     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
+     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
+     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
+                                   "#0066A5", "#00366C"),  
+                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
+                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
+                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
+  theme_sdpa_maps + 
+  facet_wrap(~ano_bo)
+```
+      
+
+::: {custom-style="Estilo1"}
 Perfil racial e etário das vítimas de letalidade policial em São Paulo
 :::
 
@@ -1035,73 +1250,6 @@ tabela_etaria_servico
 
 ```
 
-::: {custom-style="Estilo1"}
-Vitimização policial antes e depois das COPs
-:::
-
-```{r vitimização policial, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
-
-tabela_vit_pol <- base_cor |> 
-   filter(cod_reg %in% c(10, 20, 30, 99), periodo %in% c(2018, 2019, 2021, 2022)) |>  
-  mutate(cop = case_when(periodo %in% c(2018, 2019) ~ "Antes_COPs",
-         periodo %in% c(2021, 2022) ~ "Depois_COPs")) |>
-  group_by(cod_reg, cop) %>% 
-  summarise(mort_ser= sum(mort_ser),
-            mort_fol= sum(mort_fol)) |>
-  mutate(cop_limpo = case_when(cop == "Antes_COPs" ~ "Antes das COPs",
-                            cop == "Depois_COPs" ~ "Depois das COPs")) |>
-  mutate(cod_reg = case_when(cod_reg == "10" ~ "Capital",
-                             cod_reg == "20" ~ "Região Metropolitana",
-                             cod_reg == "30" ~ "Interior",
-                             cod_reg == "99" ~ "Estado")) |> 
-  ungroup() |>
-  group_by(cod_reg, cop_limpo) |> 
-  summarise(n= sum(c(mort_ser, mort_fol)), 
-         morte_ser_perc = round(mort_ser/n*100,2),
-         morte_fol_perc = round(mort_fol/n*100,2))|>
-  kbl(col.names = c("Região", "COP", "Total", "Morte em Serviço","Morte em Folga")) |>
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-tabela_vit_pol
-
-```
-
-Os anos de 2018 e 2019, antes da implementação das Câmeras Corporais Operacionais (COPs), registraram um total de 95 mortes de agentes de segurança em todo o estado, com a capital paulista sendo a região com a maior quantidade, 52 casos - 54,7% de todos os casos.
-Porém, a partir de 2021, com a implantação das COPs, entre 21 e 2022, o estado teve um total de 58 mortes de policiais, uma redução de 39% no número de vitimizações.
-Ademais, é visível que, com a implementação das COPs se observa uma maior concentração das mortes de policiais, com maiores registros de casos de agentes que estão em contexto de folga, como por exemplo na Capital, com 3 mortes de oficiais em serviço e 21 de oficiais em folga no período de 2021 à 2022.
-
-```{r proporção letalidade policial dentro dos homicídios no estado, echo=FALSE, fig.width=8, fig.height=4.5 }
-base_completa %>%
-    filter(ano %in% c(2021, 2022), cod_reg == 99) %>%
-    group_by(periodo) %>%
-    summarise(total = sum(hd_ocorr + lat_ocorr + lesao_morte),
-              total_let = sum(let_ser + let_fol)) %>%
-    pivot_longer(cols = c(total, total_let), names_to = "crime", values_to = "count") %>%
-    group_by(periodo) %>%
-    mutate(freq = (count/sum(count))) %>%
-    ggplot(aes(x = factor(periodo), y = count, fill = crime)) +
-    geom_bar(position = "stack", stat = "identity", size = 0.4, colour = "light grey") +
-    geom_text(aes(label = scales::percent(round((freq),3)), nsmall=0, big.mark="."),
-             colour ="white",
-                position=position_stack(vjust=0.5), size=3.4)+
-    scale_fill_manual(values = azul_2, name = "Tipo de Crime",
-                      labels = c("Total de ocorrências", "Total de Letalidade")) +
-    scale_x_discrete(labels = c("2021", "2022"),
-                     name = "Ano") +
-    scale_y_continuous(limits = c(0, 4300), name = "Número de crimes") +
-    theme_sdpa_let +
-    coord_flip() 
-
-```
-
-
-```{r ocorrências com mais de uma vítima por ano, echo=FALSE, fig.width=8, fig.height=4.5 }
-
-base_ssp |> filter(vitimas>1) |> group_by(ano) |> count() 
-base_ssp |> filter(vitimas>1) |> group_by(vitimas, ano) |> count() 
-
-```
 
 ```{r perfil racial,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
 
@@ -1395,81 +1543,3 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
   car::leveneTest(cod_COP~batalhao , anova, center=mean)
   
 ```
-
-```{r mapa MDIP, echo=FALSE, fig.width=8, fig.height=4.5}
-
-# Letalidade policial por ano
-tab_ssp |> 
-  filter(!is.na(ano_bo)) %>%
-  filter(ano_bo < 2023) %>%
-  group_by(dp_circunscricao_limpo, ano) |> 
-  mutate(total_vit = n())  |>
-   mutate(total_vit_agregado = case_when(
-     NA ~ "Nenhuma vítima",
-     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
-     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
-     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
-  ggplot() +
-  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
-  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
-    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
-                                   "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
-                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
-                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
-  theme_sdpa_maps + 
-  facet_wrap(~ano_bo)
-
-
-# Letalidade policial por serviço e folga
-tab_ssp |> 
-  filter(!is.na(ano_bo)) %>%
-  filter(servico %in% c("SIM", "NÃO")) |> 
-  filter(ano_bo < 2023) %>%
-  group_by(dp_circunscricao_limpo, ano) |> 
-  mutate(total_vit = n())  |>
-   mutate(total_vit_agregado = case_when(
-     NA ~ "Nenhuma vítima",
-     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
-     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
-     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
-  ggplot() +
-  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
-  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
-    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
-                                   "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
-                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
-                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
-  theme_sdpa_maps + 
-  facet_wrap(~servico)
-
-# Vitimização policial por ano
-tab_ssp |> 
-  filter(!is.na(ano_bo)) %>%
-  filter(ano_bo < 2023) %>%
-  group_by(dp_circunscricao_limpo, ano) |> 
-  mutate(total_vit = n())  |>
-   mutate(total_vit_agregado = case_when(
-     NA ~ "Nenhuma vítima",
-     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
-     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
-     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
-  ggplot() +
-  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
-  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
-    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
-                                   "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
-                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
-                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
-  theme_sdpa_maps + 
-  facet_wrap(~ano_bo)
-
-      
