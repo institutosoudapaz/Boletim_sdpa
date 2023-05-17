@@ -972,7 +972,7 @@ Participação da letalidade policial na letalidade violenta por macrorregião
 
 ```{r proporção letalidade policial dentro dos homicídios no estado, echo=FALSE, fig.width=8, fig.height=4.5 }
 base_completa %>%
-    filter(ano %in% c(2021, 2022), cod_reg == 99) %>%
+    filter(ano %in% c(2018, 2019, 2020, 2021, 2022), cod_reg == 99) %>%
     group_by(periodo) %>%
     summarise(total = sum(hd_ocorr + lat_ocorr + lesao_morte),
               total_let = sum(let_ser + let_fol)) %>%
@@ -984,13 +984,12 @@ base_completa %>%
     geom_text(aes(label = scales::percent(round((freq),3)), nsmall=0, big.mark="."),
              colour ="white",
                 position=position_stack(vjust=0.5), size=3.4)+
-    scale_fill_manual(values = azul_2, name = "Tipo de Crime",
+    scale_fill_manual(values = cores_sdp, name = "Tipo de Crime",
                       labels = c("Total de ocorrências", "Total de Letalidade")) +
-    scale_x_discrete(labels = c("2021", "2022"),
+    scale_x_discrete(labels = c("2018", "2019", "2020", "2021", "2022"),
                      name = "Ano") +
     scale_y_continuous(limits = c(0, 4300), name = "Número de crimes") +
-    theme_sdpa_let +
-    coord_flip() 
+    theme_sdpa_let 
 
 ```
 
@@ -998,6 +997,34 @@ NÃO ENTENDI BEM ESTA VISUALIZAÇÃO POR DOIS MOTIVOS. PRIMEIRO POR TERMOS FILTR
 
 \newpage
 
+::: {custom-style="Estilo1"}
+Proporção entre vitimização e letalidade policial por macrorregião
+:::
+
+```{r proporção vitimização e letalidade macrorregião, echo=FALSE, fig.width=8, fig.height=4.5 }
+base_completa %>%
+  filter(cod_reg < 31 | cod_reg == 99)|> 
+  filter(ano == 2018 |ano == 2022) |> 
+    group_by(ano, regiao) %>%
+    summarise(letalidade = sum(let_ser + let_fol),
+              vitimizacao = sum(mort_ser + mort_fol),
+              proporcao =  paste0(round(letalidade/vitimizacao, 1)," / 1")) %>%
+    kbl(col.names = c("Ano", "Macroregião", "Letalidade Policial", 
+                      "Vitimização Policial", "Proporção")) |>  
+  kable_paper("hover", full_width = F) |>  
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
+
+
+```
+No intervalo entre 2018 e 2022, o número de vítimas de letalidade policial no estado teve uma redução de -50,7%, enquanto a vitimização de policiais em serviço e de folga, caiu -44%: 59 policiais foram mortos nop estado em 2018, contra 33 policiais vitimados em 2022. 
+
+Especialistas em violência policial, como Paul Chevigny, partindo do pressuposto que
+as polícias devem empregar força adequada e proporcional ao perigo que correm em
+situações de risco, o número de pessoas mortas para cada policial morto se torna um indicador importante para avaliação sobre o uso da força policial. Segundo Chevigny, quando essa proporção supera 15:1, é possível que a força letal esteja sendo utilizada para fins outros que não a preservação da vida. 
+
+No ano de 2018, tanto o estado como suas macroregiões tiveram, somadas as mortes cometidas e sofridas por policiais em serviço e fora de serviço, proporções muito próximas de 15 pessoas mortas pelas polícias para cada policial vitimado. Já no ano de 2022 se viu uma redução nesta proporção no estado, na Capital e nos municípios da Grande São Paulo, mas com um aumento no Interior, que registrou uma proporção de 17.6 pessoas mortas pelas polícias para 1 policial morto. Esta mudança aponta para a peculiaridade do Interior do estado, onde a vitimização policial (-44,4% no período) se reduziu de maneira mais intensa que a letalidade policial (-36,9%) nos últimos cinco anos. 
+
+\newpage
 ::: {custom-style="Estilo1"}
 Ocorrências de letalidade policial com 2 ou mais vítimas
 :::
@@ -1164,7 +1191,7 @@ ANALISE
 Mapas das ocorrências de letalidade policial por ano em serviço antes e depois do Programa Olho Vivo
 :::
 
-```{r mapa mdip em serviço, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r mapa mdip em serviço antes e depois cops, echo=FALSE, fig.width=8, fig.height=4.5}
 
 # Letalidade policial por serviço antes e depois das COPS
 tab_ssp |> 
@@ -1238,7 +1265,7 @@ ANALISE
 Mapas das ocorrências de letalidade policial de folga antes e depois do Programa Olho Vivo
 :::
 
-```{r mapa mdip em serviço, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r mapa mdip em serviço2, echo=FALSE, fig.width=8, fig.height=4.5}
 
 # Letalidade policial por serviço antes e depois das COPS
 tab_ssp |> 
@@ -1391,6 +1418,12 @@ tabela_etaria_servico <- base_ssp |>
 tabela_etaria_servico
 
 ```
+
+ANÁLISE E PREENCHER ÁREAS EM BRANCO
+
+
+\newpage
+
 
 
 ```{r perfil racial,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
