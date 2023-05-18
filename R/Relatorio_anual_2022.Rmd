@@ -1545,17 +1545,27 @@ kable(batalhoes)
 
 batalhoes<- base_ssp |>
   filter(!is.na(batalhao_limpo), 
-         batalhao_limpo != "PC") |> 
-   group_by(batalhao_limpo, ano, COP) |>
+         batalhao_limpo != c("PC", "PM")) |> 
+   group_by(batalhao_limpo, ano, COP, cidade, servico) |>
   summarise(count = n()) |>
   pivot_wider(names_from = ano, values_from = count) 
-batalhoes<- batalhoes |>  select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022")  |> 
+batalhoes<- batalhoes |>  select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", cidade, servico)  |> 
   mutate_all(funs(ifelse(is.na(.), 0, .))) |>
   mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
-                      variacao = (`2022` - `2018`) / `2018` * 100) |> 
-  filter(total >= 20) |> 
+         variacao = (`2022` - `2018`) / `2018` * 100,
+         media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
+         desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)))  |>
   arrange(desc(total)) |>  view()
-kable(batalhoes)
+
+
+
+batalhoes |>  filter(servico == "SIM") |>  arrange(desc(variacao)) |>  kbl(col.names = c("Batalhões", "COP","2018", "2019", "2020", "2021", "2022", "Cidade", "Serviço", "Total", "Variação", "Média")) |>
+  kable_paper("hover", full_width = F) |>  
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
+
+batalhoes |>  filter(servico == "NÃO") |>  arrange(desc(variacao)) |> kbl(col.names = c("Batalhões", "COP","2018", "2019", "2020", "2021", "2022", "Cidade", "Serviço", "Total", "Variação")) |>
+  kable_paper("hover", full_width = F) |>  
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
 
 
 
@@ -1673,18 +1683,22 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
   
   # perfil do local pós COP
   base_ssp |>
-    filter(ano_bo >= 2021 & ano_bo <= 2022,
-           !is.na(cidade),
-           cidade != c("São Paulo", "Mauá", "Diadema")) |>  
-    group_by( cidade) |> 
+    filter(!is.na(cidade),
+           cidade != c("São Paulo", "Mauá", "Diadema")) |> 
+    group_by( ano_bo, cidade) |> 
    summarise(total= n()) |> 
   arrange(desc(total)) |> 
-    filter(total >= 10) |> 
+    filter( between(total, 10,200)) |> 
+    ungroup()
+     mutate(periodo_cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes das COPs",
+         ano_bo%in% c(2021, 2022) ~ "Depois das COPs")) |>
+    filter(periodo_cop %in% c("Antes das COPs", "Depois das COPs")) |> 
+       group_by(cidade, periodo_cop) |> 
     ggplot((aes(x = total, y = reorder(cidade,total), label = total ))) +
   geom_bar(position="stack", stat="identity", size=.4)+
   geom_col(show.legend = F, fill = "darkblue")+
   geom_label(fill = "white", nudge_y = .0)+
-    scale_fill_manual(values = cores_sdp) +
+    scale_fill_manual(values = "darkblue") +
   hrbrthemes::theme_ipsum() +
   theme(
     legend.position = "right",
@@ -1694,7 +1708,8 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
        subtitle = "2021 a 2022",
        x = "Total",
        y = "",
-       fill= "") 
+       fill= "") +
+    facet_wrap(~ periodo_cop, scales = "free")
   
   base_ssp |> group_by(cidade,COP, batalhao) |> count() |> arrange(desc(n))
   
