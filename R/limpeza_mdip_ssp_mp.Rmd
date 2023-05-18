@@ -214,6 +214,17 @@ mdip_total <- mdip_total |>
  mdip_total<- mdip_total |>  mutate(servico = case_when(servico %in% c( "SIM", "Sim")~"SIM",
                                                         servico == "NÃO" ~"NÃO"
                                                       ))
+ 
+ 
+ #Cria Macrorregião 
+ mdip_total <- mdip_total |> 
+   mutate(macrorreg = case_when(
+     departamento_circunscricao %in% c( "DEINTER 6 - SANTOS", "DEINTER 9 - PIRACICABA","DEINTER 7 - SOROCABA",             "DEINTER 3 - RIBEIRAO PRETO", "DEINTER 2 - CAMPINAS",             
+"DEINTER 5 - SAO JOSE DO RIO PRETO", "DEINTER 1 - SAO JOSE DOS CAMPOS","DEINTER 4 - BAURU", "DEINTER 10 - ARAÇATUBA",          
+"DEINTER 8 - PRESIDENTE PRUDENTE")~"Interior", 
+departamento_circunscricao == "DECAP" ~ "Capital",
+departamento_circunscricao == "DEMACRO" ~"Grande São Paulo",
+TRUE ~ as.character (departamento_circunscricao))) 
 
 ```
 
