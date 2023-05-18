@@ -206,8 +206,14 @@ mdip_total <- mdip_total |>
      desc_tipolocal == "CRIME MILITAR"~"CRIME MILITAR",
      desc_tipolocal == "REGISTRADO NA PF" ~"REGISTRADO NA PF",
        TRUE ~ "Via Pública"))
- 
+ #Limpeza Batalhões
  mdip_total<- mdip_total |>  mutate(batalhao_limpo = case_when(batalhao %in%  c("1º BPChoque (Rota)","1º BPCh (Rota)", "1º BPCh (ROTA)", "1º BPCh-ROTA", "1º BPChoque (ROTA)", "1º BPCh (ROTA)","1º BPChoque (ROTA)", "1º BPCh - ROTA", "1º BPCh - ROTA") ~ "1º BPChoque(Rota)",   TRUE ~ as.character(batalhao)))
+ 
+ #Limpeza Serviço
+ 
+ mdip_total<- mdip_total |>  mutate(servico = case_when(servico %in% c( "SIM", "Sim")~"SIM",
+                                                        servico == "NÃO" ~"NÃO"
+                                                      ))
 
 ```
 
