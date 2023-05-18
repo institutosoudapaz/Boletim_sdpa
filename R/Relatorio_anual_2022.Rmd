@@ -1535,13 +1535,6 @@ base_ssp |>
 #raça por macrorregião
   
  base_ssp |>
-   mutate(macrorreg = case_when(
-     departamento_circunscricao %in% c( "DEINTER 6 - SANTOS", "DEINTER 9 - PIRACICABA","DEINTER 7 - SOROCABA",             "DEINTER 3 - RIBEIRAO PRETO", "DEINTER 2 - CAMPINAS",             
-"DEINTER 5 - SAO JOSE DO RIO PRETO", "DEINTER 1 - SAO JOSE DOS CAMPOS","DEINTER 4 - BAURU", "DEINTER 10 - ARAÇATUBA",          
-"DEINTER 8 - PRESIDENTE PRUDENTE")~"Interior", 
-departamento_circunscricao == "DECAP" ~ "Capital",
-departamento_circunscricao == "DEMACRO" ~"Grande São Paulo",
-TRUE ~ as.character (departamento_circunscricao))) |> 
    filter(cor_pele_agregada %in% c("Negra", "Branca"),
           ano_bo >= 2018 & ano_bo <= 2022,
           macrorreg %in% c("Capital", "Interior", "Grande São Paulo")) |> 
@@ -1582,25 +1575,11 @@ Já entre os batalhões que não receberam as câmeras corporais esse número
 
 ```{r batalhões macro,eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
 batalhoes<- base_ssp |>
-  filter(!is.na(batalhao_limpo)) |> 
-  group_by(ano) |>mutate(total= n()) |> 
-    ungroup() |> 
-   group_by(batalhao_limpo, total, ano) |>
-      summarise(count = n()) |> 
-mutate(freq = paste0(round(count/sum(total)*100,2))) |> 
-       #var = paste0(round())) |>
-  filter (count>10) |> 
-   arrange(desc(total)) |> view()
-kable(batalhoes)
-
-
-batalhoes<- base_ssp |>
   filter(!is.na(batalhao_limpo), 
          batalhao_limpo != c("PC", "PM")) |> 
-   group_by(batalhao_limpo, ano, COP, cidade, servico) |>
+   group_by(batalhao_limpo, ano, COP, macrorreg, servico) |>
   summarise(count = n()) |>
-  pivot_wider(names_from = ano, values_from = count) 
-batalhoes<- batalhoes |>  select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", cidade, servico)  |> 
+  pivot_wider(names_from = ano, values_from = count) |>  select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", macrorreg, servico)  |> 
   mutate_all(funs(ifelse(is.na(.), 0, .))) |>
   mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
          variacao = (`2022` - `2018`) / `2018` * 100,
@@ -1609,20 +1588,19 @@ batalhoes<- batalhoes |>  select(batalhao_limpo, COP, "2018", "2019", "2020", "2
   arrange(desc(total)) |>  view()
 
 
-
-batalhoes |>  filter(servico == "SIM") |>  arrange(desc(variacao)) |>  kbl(col.names = c("Batalhões", "COP","2018", "2019", "2020", "2021", "2022", "Cidade", "Serviço", "Total", "Variação", "Média")) |>
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-batalhoes |>  filter(servico == "NÃO") |>  arrange(desc(variacao)) |> kbl(col.names = c("Batalhões", "COP","2018", "2019", "2020", "2021", "2022", "Cidade", "Serviço", "Total", "Variação")) |>
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-
-
-mutate(freq = paste0(round(count/sum(count)*100,2))) |> 
-   arrange(desc(count)) |> view()
-kable(batalhoes)
+batalhoes |> 
+  filter(total >20) |>
+   #summarize_at(.vars = c("total", "media", "servico", "variacao", "desviop"), .funs = ~ mean (., na.rm = T)|> 
+                 gt(rowname_col = "batalhao_limpo", groupname_col = "macrorreg") |> cols_label(variacao= md("Variação"),
+             COP= md("Cop"),
+             macrorreg= md("Região"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
+             total = md("Total"),
+             servico = md("Serviço"))
+                                                                                               
+                                                                      
+                                                              
 
 ```
 
