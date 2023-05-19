@@ -215,7 +215,7 @@ mdip_total <- mdip_total |>
        batalhao == "16º BPM/M-1º BCh-ROTA" ~"1° BPChoque(Rota) e 16º BPM/M",
        batalhao == "1º BPCh ROTA-Aposentado"~ "1° BPChoque(Rota) - Aposentado",
        batalhao %in% c("1º BAEP","1º  BAEP")~ "1°BAEP",
-       batalhao ==  "2º BAEP"  ~"2° BAEP",
+       batalhao %in% c("2º BAEP", "02º BAEP")  ~"2° BAEP",
        batalhao %in%  c("3º BAEP",  "03º BAEP") ~ "3° BAEP" ,
        batalhao %in% c("04º BAEP","4º BAEP") ~"4° BAEP",
        batalhao %in%  c( "05º BAEP","5º BAEP") ~"5° BAEP",
