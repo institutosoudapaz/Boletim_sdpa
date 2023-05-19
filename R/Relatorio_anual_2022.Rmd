@@ -21,6 +21,7 @@ library(tidyverse)
 library(ggcharts)
 library(kableExtra)
 library(ggrepel)
+library(gt)
 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
@@ -1555,7 +1556,7 @@ Entre os batalhões que receberam as COPs, houve uma pequena redução da propor
 Já entre os batalhões que não receberam as câmeras corporais esse número 
 
 
-```{r batalhões macro,eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
+```{r batalhões macro,eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
 batalhoes<- base_ssp |>
   filter(!is.na(batalhao_limpo), 
          batalhao_limpo != c("PC", "PM")) |> 
@@ -1567,23 +1568,12 @@ batalhoes<- base_ssp |>
   mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
          variacao = (`2022` - `2018`) / `2018` * 100,
          media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
-         desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)))  |>
+         desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)),
+         servico = case_when(servico == "SIM" ~"Sim",
+                             servico == "NÃO" ~ "Não"),
+         COP = case_when(COP == "SIM" ~"Sim",
+                         COP =="NÃO" ~"Não"))  |>
   arrange(desc(total)) 
-
-
-batalhoes |> 
-  filter(total >20) |>
-   #summarize_at(.vars = c("total", "media", "servico", "variacao", "desviop"), .funs = ~ mean (., na.rm = T)|> 
-                 gt(rowname_col = "batalhao_limpo",
-                    groupname_col = "macrorreg") |> 
-             cols_label(variacao= md("Variação"), 
-             COP= md("Cop"),
-             macrorreg= md("Região"),
-             desviop= md("Desvio Padrão"),
-             media = md("Média"),
-             total = md("Total"),
-             servico = md("Serviço"))
-
 
 #ROTA             
  ocorrencias_rota <- str_detect(batalhoes$batalhao_limpo, "Rota")
@@ -1592,19 +1582,6 @@ if (any(ocorrencias_rota)) {
 } else {
     print("Nenhuma ocorrência de 'rota' encontrada.")
 }
-resultado_rota |>
-  filter (total > 2,
-          macrorreg != "NA") |>
-  gt(rowname_col = "batalhao_limpo", 
-                     groupname_col = "macrorreg") |>
-            cols_label(variacao= md("Variação"),
-             COP= md("Cop"),
-             macrorreg= md("Região"),
-             desviop= md("Desvio Padrão"),
-             media = md("Média"),
-             total = md("Total"),
-             servico = md("Serviço"))
-                                                                                  
 
 #BAEP
  ocorrencias_baep <- str_detect(batalhoes$batalhao_limpo, "BAEP")
@@ -1636,19 +1613,66 @@ resultado_baep<- resultado_baep |>
        TRUE~ (as.character(batalhao_limpo))))
 
 
-resultado_baep |>  view()
-resultado_baep <- if (resultado_baep$ano_criacao > 2018) {
-  resultado_baep <- mutate(resultado_baep, variacao = (2022 - ano_criacao) / ano_criacao * 100)
-} else {
-  resultado_baep <- mutate(resultado_baep, variacao = variacao)
-}
 
-resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2018, (`2022` - `2019`) / `2019` * 100, variacao))
-
+#variação
+resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao> 2018, (`2022` - `2019`) / `2019` * 100, variacao))
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2019, (`X2022` - `X2020`) / `X2020` * 100, variacao))
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2020, (`X2022` - `X2021`) / `X2021` * 100, variacao))
 
-resultado_baep |>  
+#média
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2018, (`X2022`+ `X2021`+`X2020`+ `X2019` + `X2018` ) / 5 * 100, media))
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2019, (`X2022`+ `X2021`+`X2020`+`X2019` ) / 4 * 100, media))
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2020, (`X2022`+ `X2021`+`X2020` ) / 3 * 100, media))
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2021, (`X2022`+ `X2021` ) / 2 * 100, media))
+#sd
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2018 , sd(c(`X2018`, `X2019`,`X2020`,`X2021`,`X2022`)), desviop))
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2019 , sd(c(`X2019`,`X2020`,`X2021`,`X2022`)), desviop))
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2020, sd(c(`X2020`,`X2021`,`X2022`)), desviop))
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2021 , sd(c(`X2021`,`X2022`)), desviop))
+
+############## TABELAS
+
+
+#total 
+batalhoes |> 
+  filter(total >20) |>
+                 gt(rowname_col = "batalhao_limpo",
+                    groupname_col = "macrorreg") |> 
+             cols_label(variacao= md("Variação"), 
+             COP= md("Cop"),
+             macrorreg= md("Região"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
+             total = md("Total"),
+             servico = md("Serviço"))|> 
+   tab_header(
+    title = md("Batalhões com maior número de MDIPs por Região"),
+    subtitle = md("Variação, Média e Desvio Padrão entre 2018-2020")) |>
+  opt_align_table_header(align = "left") 
+
+#rota
+
+resultado_rota |>
+  filter (total > 2,
+          macrorreg != "NA") |>
+  gt(rowname_col = "batalhao_limpo", 
+                     groupname_col = "macrorreg") |>
+            cols_label(variacao= md("Variação"),
+             COP= md("Cop"),
+             macrorreg= md("Região"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
+             total = md("Total"),
+             servico = md("Serviço")) |> 
+   tab_header(
+    title = md("MDIPs nos batalhões da Rota por Região"),
+    subtitle = md("Variação, Média e Desvio Padrão entre 2018-2020")) |>
+  opt_align_table_header(align = "left")  
+
+#baep
+
+resultado_baep |> 
+  select(-ano_criacao) |> 
   filter (total > 2,
           macrorreg != "NA") |> 
   gt(rowname_col = "batalhao_limpo", 
@@ -1664,7 +1688,18 @@ resultado_baep |>
              desviop= md("Desvio Padrão"),
              media = md("Média"),
              total = md("Total"),
-             servico = md("Serviço"))
+             servico = md("Serviço")) |> 
+  tab_header(
+    title = md("MDIPs nos BAEPs por Região"),
+    subtitle = md("Variação, Média e Desvio Padrão entre 2018-2020")) |>
+  opt_align_table_header(align = "left") |> 
+  tab_footnote(
+    footnote = "Para os Baep's implementados após 2018 os valores foram recalculados a partir do seu respectivo ano de criação.",
+    locations = cells_stub(rows = c("6° BAEP", "7° BAEP" ,"8° BAEP",
+                                    "9° BAEP","10° BAEP","11° BAEP",
+                                    "12° BAEP","13° BAEP","14° BAEP"))) |> 
+    opt_footnote_marks(marks = "standard")
+
 ```
 
 
