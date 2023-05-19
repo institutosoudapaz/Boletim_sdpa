@@ -1418,6 +1418,33 @@ tabela_etaria_servico <- base_ssp |>
 
 tabela_etaria_servico
 
+<<<<<<< HEAD
+# Participação percecntual por Faixa etaria agrupada
+
+# Colocar o laber da participação percentual de cada faixa
+# arrumar o tema
+
+base_ssp |> 
+  filter(ano_bo == c(2018, 2022)) |> 
+  filter(!is.na(ano_bo)) |> 
+   filter(!is.na(idade_pessoa_agregada)) |> 
+  group_by(ano_bo, idade_pessoa_agregada) |> 
+  summarise(count=n()) |> 
+  mutate(percent = round(count / sum(count), 3)) |> 
+  ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
+    geom_bar(position="dodge", stat="identity")+
+  geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
+              position = position_dodge(3.5), 
+              vjust = -0.6, hjust = 0.5,
+            check_overlap = TRUE, size= 2.8) +
+   
+  viridis::scale_fill_viridis(discrete=TRUE, option="cividis")+
+  theme_sdpa_let
+
+
+
+=======
+>>>>>>> 5d08a6e79255b08b59e35b41164f39a16519a730
 ```
 
 ANÁLISE E PREENCHER ÁREAS EM BRANCO
