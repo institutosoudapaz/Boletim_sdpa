@@ -21,6 +21,7 @@ library(tidyverse)
 library(ggcharts)
 library(kableExtra)
 library(ggrepel)
+library(gt)
 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
@@ -935,7 +936,7 @@ Vitimização policial antes e depois das COPs
 
 ```{r vitimização policial, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
 
-base_cor |> 
+tabela_vit_pol <- base_cor |> 
    filter(cod_reg %in% c(10, 20, 30, 99), periodo %in% c(2018, 2019, 2021, 2022)) |>  
   mutate(cop = case_when(periodo %in% c(2018, 2019) ~ "Antes_COPs",
          periodo %in% c(2021, 2022) ~ "Depois_COPs")) |>
@@ -951,12 +952,13 @@ base_cor |>
   ungroup() |>
   group_by(cod_reg, cop_limpo) |> 
   summarise(n= sum(c(mort_ser, mort_fol)), 
-         morte_ser_perc = paste0(round(mort_ser/n*100,1),"%"),
-         morte_fol_perc = paste0(round(mort_fol/n*100,1),"%"))|>
+         morte_ser_perc = round(mort_ser/n*100,2),
+         morte_fol_perc = round(mort_fol/n*100,2))|>
   kbl(col.names = c("Região", "COP", "Total", "Morte em Serviço","Morte em Folga")) |>
   kable_paper("hover", full_width = F) |>  
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
 
+tabela_vit_pol
 
 ```
 
@@ -1439,7 +1441,6 @@ base_ssp |>
   theme_sdpa_let
 
 
-
 ```
 
 ANÁLISE E PREENCHER ÁREAS EM BRANCO
@@ -1578,35 +1579,116 @@ Entre os batalhões que receberam as COPs, houve uma pequena redução da propor
 Já entre os batalhões que não receberam as câmeras corporais esse número 
 
 
-```{r batalhões macro,eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
+```{r batalhões macro, echo=FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
 batalhoes<- base_ssp |>
   filter(!is.na(batalhao_limpo), 
          batalhao_limpo != c("PC", "PM")) |> 
    group_by(batalhao_limpo, ano, COP, macrorreg, servico) |>
   summarise(count = n()) |>
-  pivot_wider(names_from = ano, values_from = count) |>  select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", macrorreg, servico)  |> 
+  pivot_wider(names_from = ano, values_from = count) |> 
+  select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", macrorreg, servico)|> 
   mutate_all(funs(ifelse(is.na(.), 0, .))) |>
   mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
          variacao = (`2022` - `2018`) / `2018` * 100,
          media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
          desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)))  |>
-  arrange(desc(total)) |>  view()
+  arrange(desc(total)) 
 
 
 batalhoes |> 
   filter(total >20) |>
    #summarize_at(.vars = c("total", "media", "servico", "variacao", "desviop"), .funs = ~ mean (., na.rm = T)|> 
-                 gt(rowname_col = "batalhao_limpo", groupname_col = "macrorreg") |> cols_label(variacao= md("Variação"),
+                 gt(rowname_col = "batalhao_limpo",
+                    groupname_col = "macrorreg") |> 
+             cols_label(variacao= md("Variação"), 
              COP= md("Cop"),
              macrorreg= md("Região"),
              desviop= md("Desvio Padrão"),
              media = md("Média"),
              total = md("Total"),
              servico = md("Serviço"))
-                                                                                               
-                                                                      
-                                                              
 
+
+#ROTA             
+ ocorrencias_rota <- str_detect(batalhoes$batalhao_limpo, "Rota")
+if (any(ocorrencias_rota)) {
+    resultado_rota <- batalhoes[ocorrencias_rota, ]
+} else {
+    print("Nenhuma ocorrência de 'rota' encontrada.")
+}
+resultado_rota |>
+  filter (total > 2,
+          macrorreg != "NA") |>
+  gt(rowname_col = "batalhao_limpo", 
+                     groupname_col = "macrorreg") |>
+            cols_label(variacao= md("Variação"),
+             COP= md("Cop"),
+             macrorreg= md("Região"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
+             total = md("Total"),
+             servico = md("Serviço"))
+                                                                                  
+
+#BAEP
+ ocorrencias_baep <- str_detect(batalhoes$batalhao_limpo, "BAEP")
+
+# Filtrar a base de dados apenas se houver ocorrências de "Baep"
+if (any(ocorrencias_baep)) {
+    resultado_baep <- batalhoes[ocorrencias_baep, ]
+    
+} else {
+    print("Nenhuma ocorrência de 'rota' encontrada.")
+}
+ 
+resultado_baep<- resultado_baep |> 
+  mutate(ano_criacao = case_when(
+       batalhao_limpo == "1°BAEP"~"2013",
+       batalhao_limpo ==  "2° BAEP" ~ "2014",
+       batalhao_limpo ==  "3° BAEP" ~ "2014",
+       batalhao_limpo ==  "4° BAEP" ~ "2016",
+       batalhao_limpo ==  "5° BAEP" ~ "2017",
+       batalhao_limpo ==  "6° BAEP" ~ "2019",
+       batalhao_limpo ==  "7° BAEP" ~ "2019",
+       batalhao_limpo ==  "8° BAEP" ~ "2019",
+       batalhao_limpo ==  "9° BAEP" ~ "2019",
+       batalhao_limpo ==  "10° BAEP" ~ "2019",
+       batalhao_limpo ==  "11° BAEP" ~ "2019",
+       batalhao_limpo ==  "12° BAEP" ~ "2020",
+       batalhao_limpo ==  "13° BAEP" ~ "2020",
+       batalhao_limpo ==  "14° BAEP" ~ "2021",
+       TRUE~ (as.character(batalhao_limpo))))
+
+
+resultado_baep |>  view()
+resultado_baep <- if (resultado_baep$ano_criacao > 2018) {
+  resultado_baep <- mutate(resultado_baep, variacao = (2022 - ano_criacao) / ano_criacao * 100)
+} else {
+  resultado_baep <- mutate(resultado_baep, variacao = variacao)
+}
+
+resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2018, (`2022` - `2019`) / `2019` * 100, variacao))
+
+resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2019, (`X2022` - `X2020`) / `X2020` * 100, variacao))
+resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2020, (`X2022` - `X2021`) / `X2021` * 100, variacao))
+
+resultado_baep |>  
+  filter (total > 2,
+          macrorreg != "NA") |> 
+  gt(rowname_col = "batalhao_limpo", 
+                     groupname_col = "macrorreg") |>
+            cols_label( X2018 = md("2018"),
+                        X2019 = md("2019"),
+                        X2020 = md("2020"),
+                        X2021 = md("2021"),
+                        X2022 = md("2022"),
+              variacao= md("Variação"),
+             COP= md("Cop"),
+             macrorreg= md("Região"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
+             total = md("Total"),
+             servico = md("Serviço"))
 ```
 
 
