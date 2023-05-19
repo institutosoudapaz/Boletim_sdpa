@@ -935,7 +935,7 @@ Vitimização policial antes e depois das COPs
 
 ```{r vitimização policial, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
 
-base_cor |> 
+tabela_vit_pol <- base_cor |> 
    filter(cod_reg %in% c(10, 20, 30, 99), periodo %in% c(2018, 2019, 2021, 2022)) |>  
   mutate(cop = case_when(periodo %in% c(2018, 2019) ~ "Antes_COPs",
          periodo %in% c(2021, 2022) ~ "Depois_COPs")) |>
@@ -951,12 +951,13 @@ base_cor |>
   ungroup() |>
   group_by(cod_reg, cop_limpo) |> 
   summarise(n= sum(c(mort_ser, mort_fol)), 
-         morte_ser_perc = paste0(round(mort_ser/n*100,1),"%"),
-         morte_fol_perc = paste0(round(mort_fol/n*100,1),"%"))|>
+         morte_ser_perc = round(mort_ser/n*100,2),
+         morte_fol_perc = round(mort_fol/n*100,2))|>
   kbl(col.names = c("Região", "COP", "Total", "Morte em Serviço","Morte em Folga")) |>
   kable_paper("hover", full_width = F) |>  
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
 
+tabela_vit_pol
 
 ```
 
@@ -1416,25 +1417,6 @@ tabela_etaria_servico <- base_ssp |>
 
 tabela_etaria_servico
 
-# Participação percecntual por Faixa etaria agrupada
-
-# Colocar o laber da participação percentual de cada faixa
-# arrumar o tema
-
-base_ssp |> 
-  filter(ano_bo == c(2018, 2022)) |> 
-  filter(!is.na(ano_bo)) |> 
-   filter(!is.na(idade_pessoa_agregada)) |> 
-  group_by(ano_bo, idade_pessoa_agregada) |> 
-  summarise(count=n()) |> 
-  mutate(freq = round(count / sum(count)*100, 2)) |> 
-  ggplot(aes(fill=idade_pessoa_agregada, y=freq, x=ano_bo)) + 
-    geom_bar(position="dodge", stat="identity")+
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis")+
-  theme_sdpa_let
-
-
-
 ```
 
 ANÁLISE E PREENCHER ÁREAS EM BRANCO
@@ -1598,9 +1580,53 @@ batalhoes |>
              media = md("Média"),
              total = md("Total"),
              servico = md("Serviço"))
-                                                                                               
-                                                                      
-                                                              
+
+batalhoes |> 
+  filter(total >20) |>  
+         str_detect(batalhoes$batalhao_limpo, "Rota") |>
+   #summarize_at(.vars = c("total", "media", "servico", "variacao", "desviop"), .funs = ~ mean (., na.rm = T)|> 
+                 gt(rowname_col = "batalhao_limpo", groupname_col = "macrorreg") |> cols_label(variacao= md("Variação"),
+             COP= md("Cop"),
+             macrorreg= md("Região"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
+             total = md("Total"),
+             servico = md("Serviço"))
+                                                                                  #ROTA             
+ ocorrencias_rota <- str_detect(batalhoes$batalhao_limpo, "Rota")
+if (any(ocorrencias_rota)) {
+    resultado_rota <- batalhoes[ocorrencias_rota, ]
+    print(resultado)
+} else {
+    print("Nenhuma ocorrência de 'rota' encontrada.")
+}
+
+#BAEP
+ ocorrencias_baep <- str_detect(batalhoes$batalhao_limpo, "BAEP")
+
+# Filtrar a base de dados apenas se houver ocorrências de "Rota"
+if (any(ocorrencias_baep)) {
+    resultado_baep <- batalhoes[ocorrencias_baep, ]
+    print(resultado)
+} else {
+    print("Nenhuma ocorrência de 'rota' encontrada.")
+}
+ 
+resultado_baep<- resultado_baep |> 
+  mutate(ano_criacao = batalhao_limpo == "1º BAEP"~"2013",
+       batalhao_limpo ==  "2° BAEP" ~ "2014",
+       batalhao_limpo ==  "3° BAEP" ~ "2014",
+       batalhao_limpo ==  "4° BAEP" ~ "2016",
+       batalhao_limpo ==  "5° BAEP" ~ "2017",
+       batalhao_limpo ==  "6° BAEP" ~ "2019",
+       batalhao_limpo ==  "7° BAEP" ~ "2019",
+       batalhao_limpo ==  "8° BAEP" ~ "2019",
+       batalhao_limpo ==  "9° BAEP" ~ "2019",
+       batalhao_limpo ==  "10° BAEP" ~ "2019",
+       batalhao_limpo ==  "11° BAEP" ~ "2019",
+       batalhao_limpo ==  "12° BAEP" ~ "2020",
+       batalhao_limpo ==  "13° BAEP" ~ "2020",
+       batalhao_limpo ==  "14° BAEP" ~ "2021", TRUE (as.character(batalhao_limpo)))
 
 ```
 
