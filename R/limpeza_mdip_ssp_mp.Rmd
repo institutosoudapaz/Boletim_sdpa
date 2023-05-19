@@ -206,8 +206,30 @@ mdip_total <- mdip_total |>
      desc_tipolocal == "CRIME MILITAR"~"CRIME MILITAR",
      desc_tipolocal == "REGISTRADO NA PF" ~"REGISTRADO NA PF",
        TRUE ~ "Via Pública"))
+ 
  #Limpeza Batalhões
- mdip_total<- mdip_total |>  mutate(batalhao_limpo = case_when(batalhao %in%  c("1º BPChoque (Rota)","1º BPCh (Rota)", "1º BPCh (ROTA)", "1º BPCh-ROTA", "1º BPChoque (ROTA)", "1º BPCh (ROTA)","1º BPChoque (ROTA)", "1º BPCh - ROTA", "1º BPCh - ROTA") ~ "1º BPChoque(Rota)",   TRUE ~ as.character(batalhao)))
+ mdip_total<- mdip_total |>  
+   mutate(batalhao_limpo = case_when(batalhao %in%  c("1º BPChoque (Rota)",
+                                                      "1º BPCh (Rota)", "1º BPCh (ROTA)", "1º BPCh-ROTA", "1º BPChoque (ROTA)", "1º BPCh (ROTA)","1º BPChoque (ROTA)", "1º BPCh - ROTA", "1º BPCh - ROTA") ~ "1° BPChoque(Rota)",
+       batalhao == "(ROTA-01) e 2º BPM/M-02"~ "1° BPChoque(Rota) e 2º BPM/M-02",
+       batalhao == "16º BPM/M-1º BCh-ROTA" ~"1° BPChoque(Rota) e 16º BPM/M",
+       batalhao == "1º BPCh ROTA-Aposentado"~ "1° BPChoque(Rota) - Aposentado",
+       batalhao %in% c("1º BAEP","1º  BAEP")~ "1°BAEP",
+       batalhao ==  "2º BAEP"  ~"2° BAEP",
+       batalhao %in%  c("3º BAEP",  "03º BAEP") ~ "3° BAEP" ,
+       batalhao %in% c("04º BAEP","4º BAEP") ~"4° BAEP",
+       batalhao %in%  c( "05º BAEP","5º BAEP") ~"5° BAEP",
+       batalhao %in%  c("06º BAEP","6º BAEP") ~"6° BAEP",
+       batalhao %in% c("07º BAEP","7º BAEP") ~"7° BAEP",
+       batalhao ==  "8º BAEP" ~"8° BAEP",
+       batalhao ==  "9º BAEP"~"9° BAEP",
+       batalhao %in% c("10º BAEP", "10º  BAEP") ~"10° BAEP",
+       batalhao == "11º BAEP"~ "11° BAEP",
+       batalhao ==  "12º BAEP" ~ "12° BAEP",
+       batalhao ==  "13º BAEP" ~ "13° BAEP",
+       batalhao ==  "14º BAEP" ~ "14° BAEP",
+       batalhao ==  "11º BAEP - 13º e 20º BPM/I" ~ "11° BAEP - 13° e 20° BPM/I", 
+       TRUE ~as.character(batalhao)))
  
  #Limpeza Serviço
  
@@ -225,6 +247,9 @@ mdip_total <- mdip_total |>
 departamento_circunscricao == "DECAP" ~ "Capital",
 departamento_circunscricao == "DEMACRO" ~"Grande São Paulo",
 TRUE ~ as.character (departamento_circunscricao))) 
+ 
+ 
+ 
 
 ```
 
