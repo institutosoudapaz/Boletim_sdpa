@@ -1786,6 +1786,7 @@ resultado_baep |>
 
 
 ```{r batalhões com e sem câmera, eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
+#VER O QUE VAI SER JOGADO FORA AQUI E APAGAR ESSA BAGUNCINHA!!!
 #total de ocorrências
 
 base_ssp |> group_by(COP) |>filter(!is.na(batalhao),
