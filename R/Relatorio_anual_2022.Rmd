@@ -1418,11 +1418,7 @@ tabela_etaria_servico <- base_ssp |>
 
 tabela_etaria_servico
 
-<<<<<<< HEAD
-# Participação percecntual por Faixa etaria agrupada
-
-# Colocar o laber da participação percentual de cada faixa
-# arrumar o tema
+# Participação percentual por Faixa etaria agrupada
 
 base_ssp |> 
   filter(ano_bo == c(2018, 2022)) |> 
@@ -1434,17 +1430,22 @@ base_ssp |>
   ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
     geom_bar(position="dodge", stat="identity")+
   geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
-              position = position_dodge(3.5), 
-              vjust = -0.6, hjust = 0.5,
-            check_overlap = TRUE, size= 2.8) +
-   
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis")+
-  theme_sdpa_let
+              position = position_dodge(3.65), 
+              vjust = -0.6, hjust = 0.4,
+            check_overlap = TRUE, size= 2.75) +
+  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
+  scale_x_continuous(breaks = c(2018, 2022)) + 
+  theme_void()+
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=10),
+        legend.title = element_text(size = 10, face = "bold"),
+        axis.text.x=element_text(size=12),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
 
 
 
-=======
->>>>>>> 5d08a6e79255b08b59e35b41164f39a16519a730
 ```
 
 ANÁLISE E PREENCHER ÁREAS EM BRANCO
@@ -1583,7 +1584,9 @@ Entre os batalhões que receberam as COPs, houve uma pequena redução da propor
 Já entre os batalhões que não receberam as câmeras corporais esse número 
 
 
-```{r batalhões macro,eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
+
+```{r batalhões macro, echo=FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
+
 batalhoes<- base_ssp |>
   filter(!is.na(batalhao_limpo), 
          batalhao_limpo != c("PC", "PM")) |> 
