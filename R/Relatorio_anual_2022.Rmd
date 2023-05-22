@@ -1418,10 +1418,7 @@ tabela_etaria_servico <- base_ssp |>
 
 tabela_etaria_servico
 
-# Participação percecntual por Faixa etaria agrupada
-
-# Colocar o laber da participação percentual de cada faixa
-# arrumar o tema
+# Participação percentual por Faixa etaria agrupada
 
 base_ssp |> 
   filter(ano_bo == c(2018, 2022)) |> 
@@ -1433,12 +1430,110 @@ base_ssp |>
   ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
     geom_bar(position="dodge", stat="identity")+
   geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
-              position = position_dodge(3.5), 
-              vjust = -0.6, hjust = 0.5,
-            check_overlap = TRUE, size= 2.8) +
-   
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis")+
-  theme_sdpa_let
+              position = position_dodge(3.65), 
+              vjust = -0.6, hjust = 0.4,
+            check_overlap = TRUE, size= 2.75) +
+  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
+  scale_x_continuous(breaks = c(2018, 2022)) + 
+  theme_void()+
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=10),
+        legend.title = element_text(size = 10, face = "bold"),
+        axis.text.x=element_text(size=12),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+
+
+# Participação percentual por Faixa etaria agrupada APENAS BATALHÕES COP
+
+base_ssp |> 
+  filter(ano_bo == c(2018, 2022)) |> 
+  filter(COP == "SIM") |> 
+  filter(!is.na(ano_bo)) |> 
+   filter(!is.na(idade_pessoa_agregada)) |> 
+  group_by(ano_bo, idade_pessoa_agregada) |> 
+  summarise(count=n()) |> 
+  mutate(percent = round(count / sum(count), 3)) |> 
+  ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
+    geom_bar(position="dodge", stat="identity")+
+  geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
+              position = position_dodge(3.65), 
+              vjust = -0.6, hjust = 0.4,
+            check_overlap = TRUE, size= 2.75) +
+  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
+  scale_x_continuous(breaks = c(2018, 2022)) + 
+  theme_void()+
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=10),
+        legend.title = element_text(size = 10, face = "bold"),
+        axis.text.x=element_text(size=12),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+
+# Participação percentual por Faixa etaria agrupada EM SERVIÇO
+
+base_ssp |> 
+  filter(ano_bo == c(2018, 2022)) |> 
+  filter(servico == "SIM") |> 
+  filter(!is.na(ano_bo)) |> 
+   filter(!is.na(idade_pessoa_agregada)) |> 
+  group_by(ano_bo, idade_pessoa_agregada) |> 
+  summarise(count=n()) |> 
+  mutate(percent = round(count / sum(count), 3)) |> 
+  ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
+    geom_bar(position="dodge", stat="identity")+
+  geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
+              position = position_dodge(3.65), 
+              vjust = -0.6, hjust = 0.4,
+            check_overlap = TRUE, size= 2.75) +
+  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
+  scale_x_continuous(breaks = c(2018, 2022)) + 
+  theme_void()+
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=10),
+        legend.title = element_text(size = 10, face = "bold"),
+        axis.text.x=element_text(size=12),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+
+# Participação percentual por Faixa etaria agrupada EM FOLGA
+
+base_ssp |> 
+  filter(ano_bo == c(2018, 2022)) |> 
+  filter(!is.na(ano_bo)) |> 
+  filter(servico == "NÃO") |> 
+   filter(!is.na(idade_pessoa_agregada)) |> 
+  group_by(ano_bo, idade_pessoa_agregada) |> 
+  summarise(count=n()) |> 
+  mutate(percent = round(count / sum(count), 3)) |> 
+  ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
+    geom_bar(position="dodge", stat="identity")+
+  geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
+              position = position_dodge(3.65), 
+              vjust = -0.6, hjust = 0.4,
+            check_overlap = TRUE, size= 2.75) +
+  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
+  scale_x_continuous(breaks = c(2018, 2022)) + 
+  theme_void()+
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=10),
+        legend.title = element_text(size = 10, face = "bold"),
+        axis.text.x=element_text(size=12),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+
+# DADOS DAS IDADES
+
+base_ssp %>%
+  filter(!is.na(idade_pessoa)) |> 
+  filter(ano_bo < 2023) |> 
+  group_by(ano_bo, COP) |> 
+  summarise(mean(idade_pessoa), median(idade_pessoa), 
+            min(idade_pessoa), max(idade_pessoa)) |> view()
 
 
 ```
@@ -1579,7 +1674,9 @@ Entre os batalhões que receberam as COPs, houve uma pequena redução da propor
 Já entre os batalhões que não receberam as câmeras corporais esse número 
 
 
+
 ```{r batalhões macro, echo=FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
+
 batalhoes<- base_ssp |>
   filter(!is.na(batalhao_limpo), 
          batalhao_limpo != c("PC", "PM")) |> 
@@ -1591,23 +1688,12 @@ batalhoes<- base_ssp |>
   mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
          variacao = (`2022` - `2018`) / `2018` * 100,
          media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
-         desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)))  |>
+         desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)),
+         servico = case_when(servico == "SIM" ~"Sim",
+                             servico == "NÃO" ~ "Não"),
+         COP = case_when(COP == "SIM" ~"Sim",
+                         COP =="NÃO" ~"Não"))  |>
   arrange(desc(total)) 
-
-
-batalhoes |> 
-  filter(total >20) |>
-   #summarize_at(.vars = c("total", "media", "servico", "variacao", "desviop"), .funs = ~ mean (., na.rm = T)|> 
-                 gt(rowname_col = "batalhao_limpo",
-                    groupname_col = "macrorreg") |> 
-             cols_label(variacao= md("Variação"), 
-             COP= md("Cop"),
-             macrorreg= md("Região"),
-             desviop= md("Desvio Padrão"),
-             media = md("Média"),
-             total = md("Total"),
-             servico = md("Serviço"))
-
 
 #ROTA             
  ocorrencias_rota <- str_detect(batalhoes$batalhao_limpo, "Rota")
@@ -1616,19 +1702,6 @@ if (any(ocorrencias_rota)) {
 } else {
     print("Nenhuma ocorrência de 'rota' encontrada.")
 }
-resultado_rota |>
-  filter (total > 2,
-          macrorreg != "NA") |>
-  gt(rowname_col = "batalhao_limpo", 
-                     groupname_col = "macrorreg") |>
-            cols_label(variacao= md("Variação"),
-             COP= md("Cop"),
-             macrorreg= md("Região"),
-             desviop= md("Desvio Padrão"),
-             media = md("Média"),
-             total = md("Total"),
-             servico = md("Serviço"))
-                                                                                  
 
 #BAEP
  ocorrencias_baep <- str_detect(batalhoes$batalhao_limpo, "BAEP")
@@ -1660,19 +1733,66 @@ resultado_baep<- resultado_baep |>
        TRUE~ (as.character(batalhao_limpo))))
 
 
-resultado_baep |>  view()
-resultado_baep <- if (resultado_baep$ano_criacao > 2018) {
-  resultado_baep <- mutate(resultado_baep, variacao = (2022 - ano_criacao) / ano_criacao * 100)
-} else {
-  resultado_baep <- mutate(resultado_baep, variacao = variacao)
-}
 
-resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2018, (`2022` - `2019`) / `2019` * 100, variacao))
-
+#variação
+resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao> 2018, (`2022` - `2019`) / `2019` * 100, variacao))
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2019, (`X2022` - `X2020`) / `X2020` * 100, variacao))
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2020, (`X2022` - `X2021`) / `X2021` * 100, variacao))
 
-resultado_baep |>  
+#média
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2018, (`X2022`+ `X2021`+`X2020`+ `X2019` + `X2018` ) / 5 * 100, media))
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2019, (`X2022`+ `X2021`+`X2020`+`X2019` ) / 4 * 100, media))
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2020, (`X2022`+ `X2021`+`X2020` ) / 3 * 100, media))
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2021, (`X2022`+ `X2021` ) / 2 * 100, media))
+#sd
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2018 , sd(c(`X2018`, `X2019`,`X2020`,`X2021`,`X2022`)), desviop))
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2019 , sd(c(`X2019`,`X2020`,`X2021`,`X2022`)), desviop))
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2020, sd(c(`X2020`,`X2021`,`X2022`)), desviop))
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2021 , sd(c(`X2021`,`X2022`)), desviop))
+
+############## TABELAS
+
+
+#total 
+batalhoes |> 
+  filter(total >20) |>
+                 gt(rowname_col = "batalhao_limpo",
+                    groupname_col = "macrorreg") |> 
+             cols_label(variacao= md("Variação"), 
+             COP= md("Cop"),
+             macrorreg= md("Região"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
+             total = md("Total"),
+             servico = md("Serviço"))|> 
+   tab_header(
+    title = md("Batalhões com maior número de MDIPs por Região"),
+    subtitle = md("Variação, Média e Desvio Padrão entre 2018-2020")) |>
+  opt_align_table_header(align = "left") 
+
+#rota
+
+resultado_rota |>
+  filter (total > 2,
+          macrorreg != "NA") |>
+  gt(rowname_col = "batalhao_limpo", 
+                     groupname_col = "macrorreg") |>
+            cols_label(variacao= md("Variação"),
+             COP= md("Cop"),
+             macrorreg= md("Região"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
+             total = md("Total"),
+             servico = md("Serviço")) |> 
+   tab_header(
+    title = md("MDIPs nos batalhões da Rota por Região"),
+    subtitle = md("Variação, Média e Desvio Padrão entre 2018-2020")) |>
+  opt_align_table_header(align = "left")  
+
+#baep
+
+resultado_baep |> 
+  select(-ano_criacao) |> 
   filter (total > 2,
           macrorreg != "NA") |> 
   gt(rowname_col = "batalhao_limpo", 
@@ -1688,7 +1808,18 @@ resultado_baep |>
              desviop= md("Desvio Padrão"),
              media = md("Média"),
              total = md("Total"),
-             servico = md("Serviço"))
+             servico = md("Serviço")) |> 
+  tab_header(
+    title = md("MDIPs nos BAEPs por Região"),
+    subtitle = md("Variação, Média e Desvio Padrão entre 2018-2020")) |>
+  opt_align_table_header(align = "left") |> 
+  tab_footnote(
+    footnote = "Para os Baep's implementados após 2018 os valores foram recalculados a partir do seu respectivo ano de criação.",
+    locations = cells_stub(rows = c("6° BAEP", "7° BAEP" ,"8° BAEP",
+                                    "9° BAEP","10° BAEP","11° BAEP",
+                                    "12° BAEP","13° BAEP","14° BAEP"))) |> 
+    opt_footnote_marks(marks = "standard")
+
 ```
 
 
