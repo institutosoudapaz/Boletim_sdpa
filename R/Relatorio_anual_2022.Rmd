@@ -934,7 +934,7 @@ FAZER COMPARAÇÃO POR DEINTER DE LETALIDADE E VITIMIZAÇÃO USANDO DADOS CORREG
 Vitimização policial antes e depois das COPs
 :::
 
-```{r vitimização policial, eval=FALSE, fig.height=4.5, fig.width=8}
+```{r vitimização policial, echo=FALSE, fig.height=4.5, fig.width=8}
 
 tabela_vit_pol <- base_cor |> 
    filter(cod_reg %in% c(10, 20, 30, 99), periodo %in% c(2018, 2019, 2021, 2022)) |>  
