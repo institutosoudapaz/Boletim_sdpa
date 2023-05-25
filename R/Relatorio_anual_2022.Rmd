@@ -1015,12 +1015,19 @@ base_completa %>%
     summarise(letalidade = sum(let_ser + let_fol),
               vitimizacao = sum(mort_ser + mort_fol),
               proporcao =  paste0(round(letalidade/vitimizacao, 1)," / 1")) %>%
-    kbl(col.names = c("Ano", "Macroregião", "Letalidade Policial", 
-                      "Vitimização Policial", "Proporção")) |>  
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
+   gt(rowname_col = "regiao") |>   
+  cols_label(regiao= md("Região"), 
+            ano= md("Ano"),
+             letalidade = md("Letalidade Policial"),
+             vitimizacao = md("Vitimização Policial"),
+             proporcao = md("Proporção"))|> 
+   tab_header(
+    title = md("Vitimização policial por Região"),
+    subtitle = md("2018 e 2020")) |>
+  opt_align_table_header(align = "left")
 
-
+  
+ 
 ```
 No intervalo entre 2018 e 2022, o número de vítimas de letalidade policial no estado teve uma redução de -50,7%, enquanto a vitimização de policiais em serviço e de folga, caiu -44%: 59 policiais foram mortos nop estado em 2018, contra 33 policiais vitimados em 2022. 
 
@@ -1037,15 +1044,18 @@ Ocorrências de letalidade policial com 2 ou mais vítimas
 
 ```{r ocorrências com mais de uma vítima por ano, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
 
-base_mp_total|> filter( between(ano, 2018,2022), vitimas >2) |> group_by(ano) |>  count() |> kbl(col.names = c("Ano", "Casos")) |>  
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-base_mp_total |> filter( vitimas >2) |> group_by(vitimas, ano) |> summarise(mean = mean(vitimas),
-                                                                            median = median(vitimas),
-                                                                            total = sum(vitimas))|> kbl(col.names = c("No de Vitimas", "Média","Mediana", "Ano", "Número de Vítimas")) |>    kable_paper("hover", full_width = F) |>  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-base_mp_total |> filter( vitimas >2, ano ==2019) |>count(cidade)  |> view() 
+base_mp_total|> 
+  filter( between(ano, 2018,2022), vitimas >2) |>
+  group_by(ano) |>  
+  count() |>
+  ungroup()|> 
+  gt() |> 
+             cols_label(ano= md("Ano"), 
+             n= md("Casos"))|> 
+   tab_header(
+    title = md("Ocorrências com mais de uma vítima"),
+    subtitle = md("Entre 2018-2020")) |>
+  opt_align_table_header(align = "left") 
 
 ```
 
@@ -1323,20 +1333,23 @@ base_ssp |>
   filter(between(ano_bo, 2018, 2022)) |> 
   mutate(cor_pele_todas = case_when(
       cor_pele %in% c("Parda","Preta") ~ "Negra",
-      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",
-      TRUE ~ as.character (cor_pele))) |>
+      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",T ~ as.character (cor_pele))) |>
   group_by(cor_pele_todas) |> 
   summarise(total = n()) |> 
   mutate(freq = round(total / sum(total)*100, 2)) |> 
-  kbl(col.names = c("Cor", "Total", "Frequência")) |>  
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
+  gt() |>   
+  cols_label(cor_pele_todas= md("Raça/Cor"), 
+             total= md("Total"),
+             freq = md("Frequência"))|> 
+   tab_header(
+    title = md("Proporção de Raça/Cor"),
+    subtitle = md("Entre 2018-2020")) |>
+  opt_align_table_header(align = "left")
 
 ```
 
 Dentre o total de 3.405 vítimas de MDIP no período analisado, com a aglutinação entre as classificações raciais do IBGE, observa-se que do total global de casos, 2.155 são de pessoas negras --- correspondente à 63,29% ---, enquanto pessoas brancas correspondem a 1.184 vitimizações pela polícia no período, equivalente a 34,77% do total.
-Dos casos em que não houve preenchimento da raça e de pessoas Amarelas, temos a porcentagem final 1,94% para 100% dos casos.
+Dos casos em que não houve preenchimento da raça e de pessoas Amarelas, temos a porcentagem final 1,95% para 100% dos casos.
 
 \newpage
 
@@ -1373,17 +1386,23 @@ base_ssp |>
 
 # Tabela percentual etário mortes em serviço e de folga
 
-tabela_etaria_servico <- base_ssp |> 
-  filter(servico %in% c("SIM", "NÃO")) |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
+ base_ssp |> 
+  filter(servico %in% c("SIM", "NÃO"),
+         !is.na(idade_pessoa_agregada),
+         between(ano, 2018,2022)) |> 
   group_by(servico, idade_pessoa_agregada) |> 
   summarise(count=n()) |> 
-  mutate(freq = round(count / sum(count)*100, 2)) |> 
-  kbl(col.names = c("Serviço", "Idade", "Total", "Participação Percentual")) |>
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-tabela_etaria_servico
+  mutate(freq = round(count / sum(count)*100, 2)) |>
+   ungroup() |>#opcional  
+  gt() |>   
+  cols_label(servico= md("Serviço"), 
+             idade_pessoa_agregada = md("Idade"),
+             count = md("Total"),
+             freq= md("Frequência"))|> 
+   tab_header(
+    title = md("Mortes em Serviço e em folga"),
+    subtitle = md("Entre 2018-2020")) |> 
+  opt_align_table_header(align = "left")
 
 ```
 Mortes em serviço e de folga entre 2018 e 2022. Ajustar que falta uma coluna no lado de Folga.
@@ -1409,19 +1428,7 @@ base_ssp |>
    summarise(cnt= n()) %>%
    ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico)
 
-# Tabela percentual etário mortes em serviço e de folga
 
-tabela_etaria_servico <- base_ssp |> 
-  filter(servico %in% c("SIM", "NÃO")) |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
-  group_by(servico, idade_pessoa_agregada) |> 
-  summarise(count=n()) |> 
-  mutate(freq = round(count / sum(count)*100, 2)) |> 
-  kbl(col.names = c("Serviço", "Idade", "Total", "Participação Percentual")) |>
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-tabela_etaria_servico
 
 # Participação percentual por Faixa etaria agrupada
 
