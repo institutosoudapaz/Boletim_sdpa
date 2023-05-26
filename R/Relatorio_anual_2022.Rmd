@@ -485,7 +485,7 @@ base_taxa |>
   geom_point(aes(color = trend), size = 3) + 
   geom_text_repel(data = base_taxa, 
         aes(x = ifelse(periodo == 2021, 1 - 0.35, 2 + 0.35),
-          label = glue::glue("{deinter} ({scales::number(hd_taxa, accuracy = 0.1)} por 100 mil)")), 
+          label = glue::glue("{deinter} ({scales::number(hd_taxa, accuracy = 0.1)})")), 
     size = 4, nudge_x = 0, direction = "y",
     segment.size = 0)+
   scale_x_discrete(position = "top") +
@@ -679,6 +679,11 @@ Esse estudo busca analisar o impacto dos esforços de controlar o uso da força 
 
 \newpage
 ::: {custom-style="Estilo1"}
+O programa Olho Vivo e as medidas de controle do uso da força pela PMSP
+:::
+
+\newpage
+::: {custom-style="Estilo1"}
 Metodologia
 :::
 As análises sobre letalidade policial que se seguem neste relatório foram elaboradas a partir de três fontes distintas de dados.
@@ -768,19 +773,18 @@ A letalidade policial, ou seja, o número de pessoas mortas por policiais em ser
 Letalidade Policial no Interior
 :::
 
-
 ```{r letalidade por deinter , echo=FALSE, fig.width=8, fig.height=4.5}
 
 # Trata base
 base_taxa <- base_completa %>% 
-  filter(periodo > (ano_referencia-2)) %>% 
+  filter(periodo != c(2019, 2020, 2021)) %>% 
   filter(cod_reg != 99 & cod_reg > 30) %>% 
   group_by(periodo, deinter) %>%
    summarise(let_pol = sum(let_ser + let_fol)) |> 
     pivot_wider(names_from = periodo, values_from = let_pol) |> 
-  mutate(var = `2022` - `2021`) |> 
+  mutate(var = `2022` - `2018`) |> 
   mutate(trend = ifelse(var <= 0, "queda", "aumento")) |> 
-  pivot_longer(cols = c(`2021`, `2022`), names_to = "periodo", values_to = "let_pol") 
+  pivot_longer(cols = c(`2018`, `2022`), names_to = "periodo", values_to = "let_pol") 
   
 base_taxa |> 
   ggplot(aes(factor(periodo), let_pol, group = deinter, color = trend)) +
@@ -788,7 +792,7 @@ base_taxa |>
   geom_line(size = 0.4) +
   geom_point(aes(color = trend), size = 3) + 
   geom_text_repel(data = base_taxa, 
-        aes(x = ifelse(periodo == 2021, 1 - 0.3, 2 + 0.3),
+        aes(x = ifelse(periodo == 2018, 1 - 0.3, 2 + 0.3),
           label = glue::glue("{deinter} ({scales::number(let_pol)} mortes)")), 
     size = 4, nudge_x = 0, direction = "y",
     segment.size = 0)+
@@ -814,9 +818,10 @@ base_taxa |>
     
 ```
 
-FAZER ANALISE
+A macrorregião do Interior registrou uma redução de -36,9% das mortes cometidas por policiais entre 2018 e 2022. Dentre os dez Departamentos de Polícia Judiciária de São Paulo Interior (Deinter), oito registraram redução na letalidade policial neste intervalo de 5 anos, e apenas os dois departamentos com menos mortes em 2018 e tiveram crescimento nas mortes cometidas pelas polícias, com destaque negativo para o Deinter 08 - Presidente Prudente, que passou de 2 mortes em 2018 para 8 vítimas em 2022.
 
-# Mudar análise para 2018 a 2022
+As maiores reduções proporcionais se deram no Deinter 09 - Piracicaba, com uma redução de -56% na letalidade policial entre 2018 e 2022 (menos 28 vítimas), e o Deinter 02 - Campinas, que registrou 19 vítimas a menos, uma redução de -45,2%.
+
 
 \newpage
 
