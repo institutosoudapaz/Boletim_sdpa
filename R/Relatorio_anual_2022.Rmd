@@ -934,7 +934,7 @@ FAZER COMPARAÇÃO POR DEINTER DE LETALIDADE E VITIMIZAÇÃO USANDO DADOS CORREG
 Vitimização policial antes e depois das COPs
 :::
 
-```{r vitimização policial, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
+```{r vitimização policial, echo=FALSE, fig.height=4.5, fig.width=8}
 
 tabela_vit_pol <- base_cor |> 
    filter(cod_reg %in% c(10, 20, 30, 99), periodo %in% c(2018, 2019, 2021, 2022)) |>  
@@ -953,12 +953,17 @@ tabela_vit_pol <- base_cor |>
   group_by(cod_reg, cop_limpo) |> 
   summarise(n= sum(c(mort_ser, mort_fol)), 
          morte_ser_perc = round(mort_ser/n*100,2),
-         morte_fol_perc = round(mort_fol/n*100,2))|>
-  kbl(col.names = c("Região", "COP", "Total", "Morte em Serviço","Morte em Folga")) |>
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-tabela_vit_pol
+         morte_fol_perc = round(mort_fol/n*100,2))|> 
+  gt() |>   
+  cols_label(cod_reg= md("Região"), 
+             cop_limpo= md("Cop"),
+             morte_fol_perc = md("Morte em Folga"),
+             n = md("Total"),
+             morte_ser_perc = md("Morte em Serviço"))|> 
+   tab_header(
+    title = md("Vitimização policial por Região"),
+    subtitle = md("Entre 2018-2020")) |>
+  opt_align_table_header(align = "left")
 
 ```
 
@@ -1010,12 +1015,19 @@ base_completa %>%
     summarise(letalidade = sum(let_ser + let_fol),
               vitimizacao = sum(mort_ser + mort_fol),
               proporcao =  paste0(round(letalidade/vitimizacao, 1)," / 1")) %>%
-    kbl(col.names = c("Ano", "Macroregião", "Letalidade Policial", 
-                      "Vitimização Policial", "Proporção")) |>  
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
+   gt(rowname_col = "regiao") |>   
+  cols_label(regiao= md("Região"), 
+            ano= md("Ano"),
+             letalidade = md("Letalidade Policial"),
+             vitimizacao = md("Vitimização Policial"),
+             proporcao = md("Proporção"))|> 
+   tab_header(
+    title = md("Vitimização policial por Região"),
+    subtitle = md("2018 e 2020")) |>
+  opt_align_table_header(align = "left")
 
-
+  
+ 
 ```
 No intervalo entre 2018 e 2022, o número de vítimas de letalidade policial no estado teve uma redução de -50,7%, enquanto a vitimização de policiais em serviço e de folga, caiu -44%: 59 policiais foram mortos nop estado em 2018, contra 33 policiais vitimados em 2022. 
 
@@ -1032,15 +1044,18 @@ Ocorrências de letalidade policial com 2 ou mais vítimas
 
 ```{r ocorrências com mais de uma vítima por ano, eval=FALSE, fig.height=4.5, fig.width=8, include=FALSE}
 
-base_mp_total|> filter( between(ano, 2018,2022), vitimas >2) |> group_by(ano) |>  count() |> kbl(col.names = c("Ano", "Casos")) |>  
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-base_mp_total |> filter( vitimas >2) |> group_by(vitimas, ano) |> summarise(mean = mean(vitimas),
-                                                                            median = median(vitimas),
-                                                                            total = sum(vitimas))|> kbl(col.names = c("No de Vitimas", "Média","Mediana", "Ano", "Número de Vítimas")) |>    kable_paper("hover", full_width = F) |>  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-base_mp_total |> filter( vitimas >2, ano ==2019) |>count(cidade)  |> view() 
+base_mp_total|> 
+  filter( between(ano, 2018,2022), vitimas >2) |>
+  group_by(ano) |>  
+  count() |>
+  ungroup()|> 
+  gt() |> 
+             cols_label(ano= md("Ano"), 
+             n= md("Casos"))|> 
+   tab_header(
+    title = md("Ocorrências com mais de uma vítima"),
+    subtitle = md("Entre 2018-2020")) |>
+  opt_align_table_header(align = "left") 
 
 ```
 
@@ -1318,20 +1333,23 @@ base_ssp |>
   filter(between(ano_bo, 2018, 2022)) |> 
   mutate(cor_pele_todas = case_when(
       cor_pele %in% c("Parda","Preta") ~ "Negra",
-      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",
-      TRUE ~ as.character (cor_pele))) |>
+      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",T ~ as.character (cor_pele))) |>
   group_by(cor_pele_todas) |> 
   summarise(total = n()) |> 
   mutate(freq = round(total / sum(total)*100, 2)) |> 
-  kbl(col.names = c("Cor", "Total", "Frequência")) |>  
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
+  gt() |>   
+  cols_label(cor_pele_todas= md("Raça/Cor"), 
+             total= md("Total"),
+             freq = md("Frequência"))|> 
+   tab_header(
+    title = md("Proporção de Raça/Cor"),
+    subtitle = md("Entre 2018-2020")) |>
+  opt_align_table_header(align = "left")
 
 ```
 
 Dentre o total de 3.405 vítimas de MDIP no período analisado, com a aglutinação entre as classificações raciais do IBGE, observa-se que do total global de casos, 2.155 são de pessoas negras --- correspondente à 63,29% ---, enquanto pessoas brancas correspondem a 1.184 vitimizações pela polícia no período, equivalente a 34,77% do total.
-Dos casos em que não houve preenchimento da raça e de pessoas Amarelas, temos a porcentagem final 1,94% para 100% dos casos.
+Dos casos em que não houve preenchimento da raça e de pessoas Amarelas, temos a porcentagem final 1,95% para 100% dos casos.
 
 \newpage
 
@@ -1368,17 +1386,23 @@ base_ssp |>
 
 # Tabela percentual etário mortes em serviço e de folga
 
-tabela_etaria_servico <- base_ssp |> 
-  filter(servico %in% c("SIM", "NÃO")) |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
+ base_ssp |> 
+  filter(servico %in% c("SIM", "NÃO"),
+         !is.na(idade_pessoa_agregada),
+         between(ano, 2018,2022)) |> 
   group_by(servico, idade_pessoa_agregada) |> 
   summarise(count=n()) |> 
-  mutate(freq = round(count / sum(count)*100, 2)) |> 
-  kbl(col.names = c("Serviço", "Idade", "Total", "Participação Percentual")) |>
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-tabela_etaria_servico
+  mutate(freq = round(count / sum(count)*100, 2)) |>
+   ungroup() |>#opcional  
+  gt() |>   
+  cols_label(servico= md("Serviço"), 
+             idade_pessoa_agregada = md("Idade"),
+             count = md("Total"),
+             freq= md("Frequência"))|> 
+   tab_header(
+    title = md("Mortes em Serviço e em folga"),
+    subtitle = md("Entre 2018-2020")) |> 
+  opt_align_table_header(align = "left")
 
 ```
 Mortes em serviço e de folga entre 2018 e 2022. Ajustar que falta uma coluna no lado de Folga.
@@ -1404,19 +1428,7 @@ base_ssp |>
    summarise(cnt= n()) %>%
    ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico)
 
-# Tabela percentual etário mortes em serviço e de folga
 
-tabela_etaria_servico <- base_ssp |> 
-  filter(servico %in% c("SIM", "NÃO")) |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
-  group_by(servico, idade_pessoa_agregada) |> 
-  summarise(count=n()) |> 
-  mutate(freq = round(count / sum(count)*100, 2)) |> 
-  kbl(col.names = c("Serviço", "Idade", "Total", "Participação Percentual")) |>
-  kable_paper("hover", full_width = F) |>  
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), fixed_thead = T)
-
-tabela_etaria_servico
 
 # Participação percentual por Faixa etaria agrupada
 
@@ -1615,7 +1627,7 @@ base_ssp |>
     group_by(local_limpo, cor_pele_agregada,ano_bo, total)|>
     summarise(count= n()) |>
     mutate(freq = paste0(round(count/sum(total)*100,2))) |>     arrange(desc(total)) |> 
-    ggplot(aes(x= ano_bo, y= count, colour = cor_pele_agregada, label = total)) +
+    ggplot(aes(x= ano_bo, y= count, colour = cor_pele_agregada, label = count)) +
   geom_line(size=1.8)+
      geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
     scale_fill_manual(values= cores_2)+
@@ -1645,7 +1657,7 @@ base_ssp |>
    group_by(cor_pele_agregada, ano_bo, macrorreg,total) |>
    summarise(count = n()) |> 
    mutate(freq = paste0(round(count/sum(total)*100,2))) |>
-   arrange(desc(total)) |>
+   arrange(desc(total)) |> 
   ggplot(aes(fill=factor(cor_pele_agregada, levels=c("Negra", "Branca")),
              y= factor (freq,levels= c("Negra", "Branca")), x= factor(ano_bo, levels=c("2018", "2019","2020", "2021", "2022")))) + 
   geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
@@ -1661,6 +1673,31 @@ base_ssp |>
   theme_sdpa_macroreg +
   guides(fill = guide_legend(reverse = TRUE))+
    facet_wrap(~macrorreg)
+ 
+ 
+ 
+   #Raça por Bairro em SP (top 20 bairros com maior números de MDIP)
+  base_ssp |> 
+    filter( local_limpo %in% c("Via Pública","Residência"),
+            cor_pele_agregada %in% c("Negra", "Branca"), 
+            municipio_limpo.x == "São Paulo") |>
+    group_by(bairro, cor_pele_agregada)|>
+    summarise(total= n()) |>
+    filter(total >=13) |> 
+    ungroup() |> 
+    mutate(count = sum(total),
+      freq = paste0(round(total/count*100,2))) |>     
+    arrange(desc(total)) |>
+    select(-count) |> 
+     gt(rowname_col = "cor_pele_agregada", 
+                     groupname_col = "local_limpo") |>
+            cols_label( bairro = md("Bairro"),
+                        total = md("Total"),
+                        freq = md( "Frequência") ) |> 
+   tab_header(
+    title = md("Top 20 bairros da Cidade de São Paulo com mais MDIPs"),
+    subtitle = md("Período entre 2018-2020")) |>
+  opt_align_table_header(align = "left") 
   
 ```
 Diversos estudos tem observado ao longos dos anos como o perfil mais vitimado no Brasil têm sido também, aquele que mais sofre com a letalidade policial, que afeta desproporcionalmente a homens, negros e jovens. 
@@ -1683,17 +1720,17 @@ batalhoes<- base_ssp |>
    group_by(batalhao_limpo, ano, COP, macrorreg, servico) |>
   summarise(count = n()) |>
   pivot_wider(names_from = ano, values_from = count) |> 
-  select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", macrorreg, servico)|> 
-  mutate_all(funs(ifelse(is.na(.), 0, .))) |>
+  select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", macrorreg, servico)|>   mutate_all(funs(ifelse(is.na(.), 0, .))) |>
   mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
-         variacao = (`2022` - `2018`) / `2018` * 100,
+         variacao = (`2022`+`2021`) - (`2019`+`2018`) / (`2019`+`2018`) * 100,
          media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
          desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)),
          servico = case_when(servico == "SIM" ~"Sim",
                              servico == "NÃO" ~ "Não"),
          COP = case_when(COP == "SIM" ~"Sim",
                          COP =="NÃO" ~"Não"))  |>
-  arrange(desc(total)) 
+  arrange(desc(total))
+  
 
 #ROTA             
  ocorrencias_rota <- str_detect(batalhoes$batalhao_limpo, "Rota")
@@ -1822,8 +1859,74 @@ resultado_baep |>
 
 ```
 
+Foram identificados 64 batalhões de diferentes companhias que passaram a integrar o Programa Olho Vivo. 
+O preenchimento da variável batalhão em 723 casos possibilitou analisar como se distribuiem das mortes decorrentes de intervenção policial no estado. 
+Dentre eles, destaca-se 1o batalhão de Choque da Rota, sendo o batalhão com maior participação nas mortes decorrentes de intervenção policial no estado. Os Batalhões Especiais da Polícia Militar (BAEPs) também aparecem como unidades com alta letalidade. 
+A variação entre o período 2018
+
+ROTA
+Dos 276 registros de MDIPs cometidos pelo 1o BPChoque, 147 concentraram-se na Capital, 46 na Grande São Paulo e 43 no Interior. 
+A redução das mortes também foi signfificativa nesse batalhão, que apresentou uma redução de 81% dos casos. 
+
+BAEP 
+
+
+
+```{r municípios antes/depois cops, fig.height=4.5, fig.width=8, warning=FALSE, }
+
+# perfil do local pós COP
+  base_ssp |>
+    filter(!is.na(cidade),
+           cidade != "São Paulo") |> 
+     mutate(periodo_cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes das COPs",
+         ano_bo%in% c(2021, 2022) ~ "Depois das COPs")) |>
+    filter(periodo_cop %in% c("Antes das COPs", "Depois das COPs")) |>
+      group_by(cidade, periodo_cop) |> 
+   summarise(total= n()) |>
+    arrange(desc(total)) |> 
+    pivot_wider( names_from = periodo_cop, values_from = total ) |> 
+     filter( between(`Antes das COPs`, 10,200),
+             between(`Depois das COPs`, 10, 200)) |>
+    mutate(var = (`Depois das COPs` - `Antes das COPs`)/`Antes das COPs`*100 )|> 
+      pivot_longer(cols = c("Antes das COPs", "Depois das COPs"), values_to = "total") |>
+    ungroup() |> 
+    select(-var) |> 
+    group_by(cidade, name)|> 
+    ggplot((aes(x =total , y = reorder(cidade,total), label = total )))  +
+  geom_bar(position="stack", stat="identity", size=.4)+
+  geom_col(show.legend = F , fill = "#134a86")+
+  geom_label(fill = "white", nudge_y = .0)+
+    #scale_fill_manual(values = "darkblue") +
+  hrbrthemes::theme_ipsum() +
+  theme(
+    legend.position = "right",
+    axis.text.y = element_text(size = 8.5) 
+  ) +
+  labs(title = "Top 11 municípios com mais MDIPs",
+       subtitle = "Antes e depois das COPs",
+       x = "Total",
+       y = "",
+       fill= "") +
+    facet_wrap(~ name)+
+    scale_fill_manual(values = teste_2) +
+  guides(color = "none")+
+  #theme_sdpa_maps +
+  guides(fill = guide_legend(reverse = TRUE))
+
+
+#Bairros
+
+base_ssp |> filter(cidade == "Guarulhos") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+base_ssp |> filter(cidade == "Osasco") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+base_ssp |> filter(cidade == "Guarujá") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+base_ssp |> filter(cidade == "Campinas") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+base_ssp |> filter(cidade == "São Vicente") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+```
+
+
 
 ```{r batalhões com e sem câmera, eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
+#VER O QUE VAI SER JOGADO FORA AQUI E APAGAR ESSA BAGUNCINHA!!!
 #total de ocorrências
 
 base_ssp |> group_by(COP) |>filter(!is.na(batalhao),
@@ -1855,128 +1958,16 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
     filter(ano_bo >= 2020 & ano_bo <= 2022) |> 
    group_by(COP, idade_pessoa) |> 
    summarise(cnt= n())
-
-#perfil racial
-  ##2018 a 2019 a variável COP não faz sentido aqui já que ninguém tinha câmera, mas ajuda a olhar como no agregado estava a letalidade policial nas unidades que receberam camera posteriormente
-   base_ssp |>
-   filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
-    filter(ano_bo >= 2018 & ano_bo <= 2019) |> 
-   group_by(COP, cor_pele_agregada) |> 
-   summarise(total= n()) |> 
-  arrange(desc(total)) |> 
-  ggplot((aes(x = total, y = COP , fill = cor_pele_agregada, label = total))) +
-  geom_bar(position="dodge", stat="identity", size=.4)+
-  geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
-   scale_fill_manual(values= cores_sdp)+
-  hrbrthemes::theme_ipsum() +
-   coord_flip()+
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
-  labs(title = "Perfil Racial das Vítimas por uso de Câmeras Operacionais Portáteis",
-       subtitle = "2018 a 2019",
-       x = "Total",
-       y = "",
-       fill= "") 
-  
-##2021 a 2022  
- base_ssp |>
-   filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
-    filter(ano_bo >= 2021 & ano_bo <= 2022) |> 
-   group_by(COP, cor_pele_agregada) |> 
-   summarise(total= n()) |> 
-  arrange(desc(total)) |> 
-  ggplot((aes(x = total, y = COP , fill = cor_pele_agregada, label = total))) +
-  geom_bar(position="dodge", stat="identity", size=.4)+
-  geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
-   scale_fill_manual(values= cores_sdp)+
-  hrbrthemes::theme_ipsum() +
-   coord_flip()+
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
-  labs(title = "Perfil Racial das Vítimas por uso de Câmeras Operacionais Portáteis",
-       subtitle = "2021 a 2022",
-       x = "Total",
-       y = "",
-       fill= "") 
-  
-   # perfil do local pré COP
-  base_ssp |>
-    filter(ano_bo >= 2018 & ano_bo <= 2019,
-           !is.na(cidade),
-           cidade != c ("São Paulo", "Piracicaba"))|>  
-    group_by( cidade) |> 
-   summarise(total= n()) |> 
-  arrange(desc(total)) |> 
-    filter(total >= 35) |> 
-    ggplot((aes(x = total, y = reorder(cidade,total), label = total ))) +
-  geom_bar(position="stack", stat="identity", size=.4)+
-  geom_col(show.legend = F, fill = "darkblue")+
-  geom_label(fill = "white", nudge_y = .0)+
-    scale_fill_manual(values = cores_sdp) +
-  hrbrthemes::theme_ipsum() +
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
-  labs(title = "Top 10 municípios com mais MDIPs",
-       subtitle = "2018 a 2019",
-       x = "Total",
-       y = "",
-       fill= "")
-  
-  # perfil do local pós COP
-  base_ssp |>
-    filter(!is.na(cidade),
-           cidade != c("São Paulo", "Mauá", "Diadema")) |> 
-    group_by( ano_bo, cidade) |> 
-   summarise(total= n()) |> 
-  arrange(desc(total)) |> 
-    filter( between(total, 10,200)) |> 
-    ungroup()
-     mutate(periodo_cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes das COPs",
-         ano_bo%in% c(2021, 2022) ~ "Depois das COPs")) |>
-    filter(periodo_cop %in% c("Antes das COPs", "Depois das COPs")) |> 
-       group_by(cidade, periodo_cop) |> 
-    ggplot((aes(x = total, y = reorder(cidade,total), label = total ))) +
-  geom_bar(position="stack", stat="identity", size=.4)+
-  geom_col(show.legend = F, fill = "darkblue")+
-  geom_label(fill = "white", nudge_y = .0)+
-    scale_fill_manual(values = "darkblue") +
-  hrbrthemes::theme_ipsum() +
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
-  labs(title = "Top 10 municípios com mais MDIPs",
-       subtitle = "2021 a 2022",
-       x = "Total",
-       y = "",
-       fill= "") +
-    facet_wrap(~ periodo_cop, scales = "free")
-  
-  base_ssp |> group_by(cidade,COP, batalhao) |> count() |> arrange(desc(n))
   
   #Raça por Local 
   base_ssp |> 
     filter( local_limpo %in% c("Via Pública","Residência"),
             cor_pele_agregada %in% c("Negra", "Branca")) |>
-    group_by(local_limpo, cor_pele_agregada)|>
+    group_by(MMlocal_limpo, cor_pele_agregada)|>
     summarise(total= n()) |>
-    mutate(freq = paste0(round(total/sum(total)*100,2))) |>     arrange(desc(total)) |> view()
+    mutate(freq = paste0(round(total/sum(total)*100,2))) |>
+    arrange(desc(total)) 
   
-   #Raça por Bairro em SP (top 20 bairros com maior números de MDIP)
-  base_ssp |> 
-    filter( local_limpo %in% c("Via Pública","Residência"),
-            cor_pele_agregada %in% c("Negra", "Branca"), 
-            municipio_limpo.x == "São Paulo") |>
-    group_by(bairro, cor_pele_agregada)|>
-    summarise(total= n()) |>
-    filter(total >=13) |> 
-    mutate(freq = paste0(round(total/sum(total)*100,2))) |>     arrange(desc(total)) |> view()
   
   anova<- base_ssp |> mutate(cod_COP = case_when(COP == "SIM" ~1, 
                                      COP == "NÃO"~ 0))
