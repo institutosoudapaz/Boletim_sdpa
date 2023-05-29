@@ -3,10 +3,10 @@ title: "Boletim Sou da Paz Analisa 2022 - Panorama"
 author: "Instituto Sou da Paz"
 date: "`r Sys.Date()`"
 output:
-    word_document: 
-     reference_docx: "../template_doc.docx"
     html_document:
       df_print: paged
+    word_document: 
+     reference_docx: "../template_doc.docx"
   #powerpoint_presentation:
     #reference_doc: "../template_doc.pptx"
 editor_options: 
@@ -822,7 +822,6 @@ A macrorregião do Interior registrou uma redução de -36,9% das mortes cometid
 
 As maiores reduções proporcionais se deram no Deinter 09 - Piracicaba, com uma redução de -56% na letalidade policial entre 2018 e 2022 (menos 28 vítimas), e o Deinter 02 - Campinas, que registrou 19 vítimas a menos, uma redução de -45,2%.
 
-
 \newpage
 
 ::: {custom-style="Estilo1"}
@@ -1409,6 +1408,7 @@ base_ssp |>
     subtitle = md("Entre 2018-2020")) |> 
   opt_align_table_header(align = "left")
 
+
 ```
 Mortes em serviço e de folga entre 2018 e 2022. Ajustar que falta uma coluna no lado de Folga.
 As mortes de jovens (de 15 a 24 anos) se distribui diferentemente em folga. Analisar porcentagem da tabela anexa. Crianças e adolescentes, proporcionalmente, foram mais mortos em folga. A partir de 20 a 24 anos a proporção se inverte
@@ -1576,17 +1576,20 @@ base_ssp |>
   ungroup() |> 
  group_by(cor_pele_agregada, ano_bo, total) |>
   summarise(count = n()) |> 
-    mutate(freq = round(count/sum(total)*100,2)) |>
+    mutate(freq = round(count/sum(total),3)) |>
     arrange(desc(ano_bo)) |>
   ggplot((aes(x = ano_bo, y = freq , fill = cor_pele_agregada, label = freq))) +
   geom_bar(position="stack", stat="identity", size=.4)+
-  geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
+    geom_text(aes(label = scales::percent(freq), big.mark = ".", scientific = FALSE), 
+                colour ="white",position=position_stack(vjust=0.5), size=3.7) +
    scale_fill_manual(values= cores_sdp)+
-  hrbrthemes::theme_ipsum() +
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
+  scale_y_continuous(labels = scales::percent)+
+  theme_void()+
+  theme(legend.position = "right",
+        axis.text.y = element_text(size = 8.5), 
+        legend.text=element_text(size=12),
+        axis.text.x=element_text(size=12),
+        legend.title = element_blank()) +
   labs(title = "Perfil Racial das Vítimas de Letalidade Policial",
        subtitle = "2018 a 2022",
        x = "Total",
@@ -1602,16 +1605,19 @@ base_ssp |>
   ungroup() |> 
     group_by(COP, cor_pele_agregada, ano_bo, total) |> 
     summarise(count = n()) |> 
-     mutate(freq = round(count/sum(total)*100,2)) |> 
-  ggplot((aes(x = ano_bo, y =freq  , fill = cor_pele_agregada, label = freq))) +
+     mutate(freq = round(count/sum(total),3)) |> 
+  ggplot((aes(x = ano_bo, y =freq  , fill = cor_pele_agregada, label = freq, group))) +
   geom_bar(position="stack", stat="identity", size=.4)+
-  geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
-   scale_fill_manual(values= cores_sdp)+
-  hrbrthemes::theme_ipsum() +
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
+  geom_text(aes(label = scales::percent(freq)), 
+                colour ="white",position=position_stack(vjust=0.5), size=3.7) +
+    scale_fill_manual(values= cores_sdp) + 
+    scale_y_continuous(labels = scales::percent)+
+    theme_void()+
+    theme(legend.position = "right",
+          axis.text.y = element_text(size = 8.5), 
+          legend.text=element_text(size=12),
+          axis.text.x=element_text(size=12),
+          legend.title = element_blank()) +
   labs(title = "Perfil Racial das Vítimas por uso de Câmeras Operacionais Portáteis",
        subtitle = "2018 a 2022",
        x = "Total",
@@ -1620,36 +1626,6 @@ base_ssp |>
   facet_wrap(~COP)+
     coord_flip()
 
-
-  #Raça por Local 
-  base_ssp |> 
-    filter( local_limpo %in% c("Via Pública","Residência"),
-            cor_pele_agregada %in% c("Negra", "Branca"),
-            between(ano_bo, 2018, 2022)) |>
-     group_by(ano_bo) |> 
-   mutate(total= n()) |> 
-  ungroup() |> 
-    group_by(local_limpo, cor_pele_agregada,ano_bo, total)|>
-    summarise(count= n()) |>
-    mutate(freq = paste0(round(count/sum(total)*100,2))) |>     arrange(desc(total)) |> 
-    ggplot(aes(x= ano_bo, y= count, colour = cor_pele_agregada, label = count)) +
-  geom_line(size=1.8)+
-     geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
-    scale_fill_manual(values= cores_2)+
-  hrbrthemes::theme_ipsum() +
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
-  labs(title = "Perfil Racial das Vítimas Por Local do Homicídio",
-       subtitle = "2018 a 2022",
-       x = "Total",
-       y = "",
-         fill= "",
-       legend= "Raça/ Cor"
-       )+
-    facet_wrap(~local_limpo)
-  
 #raça por macrorregião
   
  base_ssp |>
