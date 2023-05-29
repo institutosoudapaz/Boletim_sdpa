@@ -3,10 +3,10 @@ title: "Boletim Sou da Paz Analisa 2022 - Panorama"
 author: "Instituto Sou da Paz"
 date: "`r Sys.Date()`"
 output:
-    word_document: 
-     reference_docx: "../template_doc.docx"
     html_document:
       df_print: paged
+    word_document: 
+     reference_docx: "../template_doc.docx"
   #powerpoint_presentation:
     #reference_doc: "../template_doc.pptx"
 editor_options: 
@@ -822,7 +822,6 @@ A macrorregião do Interior registrou uma redução de -36,9% das mortes cometid
 
 As maiores reduções proporcionais se deram no Deinter 09 - Piracicaba, com uma redução de -56% na letalidade policial entre 2018 e 2022 (menos 28 vítimas), e o Deinter 02 - Campinas, que registrou 19 vítimas a menos, uma redução de -45,2%.
 
-
 \newpage
 
 ::: {custom-style="Estilo1"}
@@ -1353,8 +1352,10 @@ base_ssp |>
 
 ```
 
-Dentre o total de 3.405 vítimas de MDIP no período analisado, com a aglutinação entre as classificações raciais do IBGE, observa-se que do total global de casos, 2.155 são de pessoas negras --- correspondente à 63,29% ---, enquanto pessoas brancas correspondem a 1.184 vitimizações pela polícia no período, equivalente a 34,77% do total.
-Dos casos em que não houve preenchimento da raça e de pessoas Amarelas, temos a porcentagem final 1,95% para 100% dos casos.
+Dentre o total de 3.405 vítimas de Mortes Decorrente de Intervenção Policial (MDIP) no período entre 2018 e 2022, com a aglutinação entre as classificações raciais do IBGE, observa-se que do total global de casos, 2.155 são de pessoas negras — correspondente à 63,29% —, enquanto pessoas brancas correspondem a 1.184 vitimizações pela polícia no período, equivalente a 34,77% do total. Dos casos em que não houve preenchimento da raça ou de pessoas Amarelas, temos a porcentagem final 1,95% para dentre o total dos casos.
+
+De acordo com o Censo de 2010, 63,9% dos habitantes paulistas se declararam brancos, 34,6% negros (pretos e pardos), 1,4% amarelos e 0,1% indígenas. Ou seja, existe uma inversão entre a proporção da população negra do estado, e sua sobre representação dentre as vítimas de mortes decorrentes de intervenção policial. 
+
 
 \newpage
 
@@ -1370,8 +1371,7 @@ Dos casos em que não houve preenchimento da raça e de pessoas Amarelas, temos 
 
 ```
 
-Durante o período de 2018 a 2022, o estado de São Paulo contabilizou um total de 3.405 Mortes Decorrente de Intervenção Policial (MDIP) e é evidente a proeminência de mortes decorrentes da ação de policiais entre pessoas com idades entre 15 e 34 anos, compreendendo um total de 2.166 casos, sendo 1.372 de pessoas negras e 794 brancas --- uma variação de 72,8% entre os dois grupos.
-Num conjunto global dos dados, é possível observar que o período de 2018 a 2022, do total de casos ao longo destes anos, as mortes de pessoas de 15 a 34 anos de idade representam 57,2% do todo observado de 2018 até 2022.
+Dentre as 3.405 Mortes Decorrente de Intervenção Policial registradas no estado entre 2018 e 20222, é evidente a proeminência de mortes decorrentes da ação de policiais entre pessoas com idades entre 15 e 34 anos, compreendendo um total de 2.166 casos (63,6% do total de mortes cometidas por policiais), destas sendo 1.372 de pessoas negras e 794 brancas — uma variação de 72,8% entre os dois grupos. 
 
 \newpage
 
@@ -1384,34 +1384,22 @@ Perfil etário das vitímas de MDIP
 base_ssp |>
   filter(servico %in% c("SIM", "NÃO")) |> 
   filter(!is.na(idade_pessoa_agregada)) |> 
+  filter(idade_pessoa_agregada != "65+") |> 
   filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
+    mutate(servico = case_when(
+      servico == "SIM" ~ "Em Serviço",
+      servico == "NÃO" ~ "De Folga",
+      T ~ as.character (servico))) |> 
   group_by(servico, idade_pessoa_agregada) %>%
    summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico)
-
-# Tabela percentual etário mortes em serviço e de folga
-
- base_ssp |> 
-  filter(servico %in% c("SIM", "NÃO"),
-         !is.na(idade_pessoa_agregada),
-         between(ano, 2018,2022)) |> 
-  group_by(servico, idade_pessoa_agregada) |> 
-  summarise(count=n()) |> 
-  mutate(freq = round(count / sum(count)*100, 2)) |>
-   ungroup() |>#opcional  
-  gt() |>   
-  cols_label(servico= md("Serviço"), 
-             idade_pessoa_agregada = md("Idade"),
-             count = md("Total"),
-             freq= md("Frequência"))|> 
-   tab_header(
-    title = md("Mortes em Serviço e em folga"),
-    subtitle = md("Entre 2018-2020")) |> 
-  opt_align_table_header(align = "left")
+   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "")
 
 ```
-Mortes em serviço e de folga entre 2018 e 2022. Ajustar que falta uma coluna no lado de Folga.
-As mortes de jovens (de 15 a 24 anos) se distribui diferentemente em folga. Analisar porcentagem da tabela anexa. Crianças e adolescentes, proporcionalmente, foram mais mortos em folga. A partir de 20 a 24 anos a proporção se inverte
+
+Ao analisar o perfil etário das mortes cometidas por policiais em serviço e de folga no período de 2018 a 2022, é possível identificar padrões distintos na idade das vítimas. Dentre as pessoas vitimadas por policiais em serviço, 21,5% tinham até 19 anos de idade, e 45,8% tinham idades entre 20 e 29 anos. 
+
+Já entre as pessoas mortas por policiais em folga, 31,8% tinham entre 10 e 19 anos, e 47,1% tinham entre 20 e 29 anos de idade. Ou seja, ainda que as polícias matem mais durante o exercício de suas funções, uma maior proporção de adolescentes e jovens até 19 anos tende a ser morta por policiais de folga. 
+
 
 ```{r piramide idade e serviço e folga antes e depois das COPs, echo=FALSE, fig.height=4.5, fig.width=8}
 
@@ -1419,19 +1407,33 @@ As mortes de jovens (de 15 a 24 anos) se distribui diferentemente em folga. Anal
 base_ssp |>
   filter(servico %in% c("SIM", "NÃO")) |> 
   filter(!is.na(idade_pessoa_agregada)) |> 
+  filter(idade_pessoa_agregada != "65+") |> 
+  filter(idade_pessoa_agregada != "55-59") |> 
   filter(ano_bo >= 2018 & ano_bo <= 2019) |> 
+      mutate(servico = case_when(
+      servico == "SIM" ~ "Em Serviço",
+      servico == "NÃO" ~ "De Folga",
+      T ~ as.character (servico))) |> 
   group_by(servico, idade_pessoa_agregada) %>%
    summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico)
+   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "",
+                           title = "2018 & 2019")
 
 # DEPOIS DAS COPS
 base_ssp |>
   filter(servico %in% c("SIM", "NÃO")) |> 
   filter(!is.na(idade_pessoa_agregada)) |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
   filter(ano_bo >= 2021 & ano_bo <= 2022) |> 
+        mutate(servico = case_when(
+      servico == "SIM" ~ "Em Serviço",
+      servico == "NÃO" ~ "De Folga",
+      T ~ as.character (servico))) |> 
   group_by(servico, idade_pessoa_agregada) %>%
    summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico)
+   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "",
+                           title = "2021 & 2022")
 
 
 
@@ -1576,17 +1578,20 @@ base_ssp |>
   ungroup() |> 
  group_by(cor_pele_agregada, ano_bo, total) |>
   summarise(count = n()) |> 
-    mutate(freq = round(count/sum(total)*100,2)) |>
+    mutate(freq = round(count/sum(total),3)) |>
     arrange(desc(ano_bo)) |>
   ggplot((aes(x = ano_bo, y = freq , fill = cor_pele_agregada, label = freq))) +
   geom_bar(position="stack", stat="identity", size=.4)+
-  geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
+    geom_text(aes(label = scales::percent(freq), big.mark = ".", scientific = FALSE), 
+                colour ="white",position=position_stack(vjust=0.5), size=3.7) +
    scale_fill_manual(values= cores_sdp)+
-  hrbrthemes::theme_ipsum() +
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
+  scale_y_continuous(labels = scales::percent)+
+  theme_void()+
+  theme(legend.position = "right",
+        axis.text.y = element_text(size = 8.5), 
+        legend.text=element_text(size=12),
+        axis.text.x=element_text(size=12),
+        legend.title = element_blank()) +
   labs(title = "Perfil Racial das Vítimas de Letalidade Policial",
        subtitle = "2018 a 2022",
        x = "Total",
@@ -1602,16 +1607,19 @@ base_ssp |>
   ungroup() |> 
     group_by(COP, cor_pele_agregada, ano_bo, total) |> 
     summarise(count = n()) |> 
-     mutate(freq = round(count/sum(total)*100,2)) |> 
-  ggplot((aes(x = ano_bo, y =freq  , fill = cor_pele_agregada, label = freq))) +
+     mutate(freq = round(count/sum(total),3)) |> 
+  ggplot((aes(x = ano_bo, y =freq  , fill = cor_pele_agregada, label = freq, group))) +
   geom_bar(position="stack", stat="identity", size=.4)+
-  geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
-   scale_fill_manual(values= cores_sdp)+
-  hrbrthemes::theme_ipsum() +
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
+  geom_text(aes(label = scales::percent(freq)), 
+                colour ="white",position=position_stack(vjust=0.5), size=3.7) +
+    scale_fill_manual(values= cores_sdp) + 
+    scale_y_continuous(labels = scales::percent)+
+    theme_void()+
+    theme(legend.position = "right",
+          axis.text.y = element_text(size = 8.5), 
+          legend.text=element_text(size=12),
+          axis.text.x=element_text(size=12),
+          legend.title = element_blank()) +
   labs(title = "Perfil Racial das Vítimas por uso de Câmeras Operacionais Portáteis",
        subtitle = "2018 a 2022",
        x = "Total",
@@ -1620,36 +1628,6 @@ base_ssp |>
   facet_wrap(~COP)+
     coord_flip()
 
-
-  #Raça por Local 
-  base_ssp |> 
-    filter( local_limpo %in% c("Via Pública","Residência"),
-            cor_pele_agregada %in% c("Negra", "Branca"),
-            between(ano_bo, 2018, 2022)) |>
-     group_by(ano_bo) |> 
-   mutate(total= n()) |> 
-  ungroup() |> 
-    group_by(local_limpo, cor_pele_agregada,ano_bo, total)|>
-    summarise(count= n()) |>
-    mutate(freq = paste0(round(count/sum(total)*100,2))) |>     arrange(desc(total)) |> 
-    ggplot(aes(x= ano_bo, y= count, colour = cor_pele_agregada, label = count)) +
-  geom_line(size=1.8)+
-     geom_label(fill = "white", nudge_y = 0, nudge_x = 0 )+
-    scale_fill_manual(values= cores_2)+
-  hrbrthemes::theme_ipsum() +
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
-  labs(title = "Perfil Racial das Vítimas Por Local do Homicídio",
-       subtitle = "2018 a 2022",
-       x = "Total",
-       y = "",
-         fill= "",
-       legend= "Raça/ Cor"
-       )+
-    facet_wrap(~local_limpo)
-  
 #raça por macrorregião
   
  base_ssp |>
@@ -1717,7 +1695,7 @@ Já entre os batalhões que não receberam as câmeras corporais esse número
 
 
 
-```{r batalhões macro, echo=FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
+```{r batalhões macro, fig.height=4.5, fig.width=8, warning=FALSE}
 
 batalhoes<- base_ssp |>
   filter(!is.na(batalhao_limpo), 
