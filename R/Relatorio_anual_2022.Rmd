@@ -1726,8 +1726,8 @@ batalhoes<- base_ssp |>
   select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", macrorreg, servico)|>   mutate_all(funs(ifelse(is.na(.), 0, .))) |>
   mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
          variacao = (`2022`+`2021`) - (`2019`+`2018`) / (`2019`+`2018`) * 100,
-         media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
-         desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)),
+         #media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
+         #desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)),
          servico = case_when(servico == "SIM" ~"Sim",
                              servico == "NÃO" ~ "Não"),
          COP = case_when(COP == "SIM" ~"Sim",
@@ -1780,15 +1780,15 @@ resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2019
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2020, (`X2022` - `X2021`) / `X2021` * 100, variacao))
 
 #média
-resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2018, (`X2022`+ `X2021`+`X2020`+ `X2019` + `X2018` ) / 5 * 100, media))
-resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2019, (`X2022`+ `X2021`+`X2020`+`X2019` ) / 4 * 100, media))
-resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2020, (`X2022`+ `X2021`+`X2020` ) / 3 * 100, media))
-resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2021, (`X2022`+ `X2021` ) / 2 * 100, media))
+#resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2018, (`X2022`+ `X2021`+`X2020`+ `X2019` + `X2018` ) / 5 * #100, media))
+#resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2019, (`X2022`+ `X2021`+`X2020`+`X2019` ) / 4 * 100, media))
+#resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2020, (`X2022`+ `X2021`+`X2020` ) / 3 * 100, media))
+#resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2021, (`X2022`+ `X2021` ) / 2 * 100, media))
 #sd
-resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2018 , sd(c(`X2018`, `X2019`,`X2020`,`X2021`,`X2022`)), desviop))
-resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2019 , sd(c(`X2019`,`X2020`,`X2021`,`X2022`)), desviop))
-resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2020, sd(c(`X2020`,`X2021`,`X2022`)), desviop))
-resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2021 , sd(c(`X2021`,`X2022`)), desviop))
+#resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2018 , sd(c(`X2018`, `X2019`,`X2020`,`X2021`,`X2022`)), desviop))
+#resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2019 , sd(c(`X2019`,`X2020`,`X2021`,`X2022`)), desviop))
+#resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2020, sd(c(`X2020`,`X2021`,`X2022`)), desviop))
+#resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2021 , sd(c(`X2021`,`X2022`)), desviop))
 
 ############## TABELAS
 
@@ -1801,8 +1801,8 @@ batalhoes |>
              cols_label(variacao= md("Variação"), 
              COP= md("Cop"),
              macrorreg= md("Região"),
-             desviop= md("Desvio Padrão"),
-             media = md("Média"),
+             #desviop= md("Desvio Padrão"),
+             #media = md("Média"),
              total = md("Total"),
              servico = md("Serviço"))|> 
    tab_header(
@@ -1820,8 +1820,8 @@ resultado_rota |>
             cols_label(variacao= md("Variação"),
              COP= md("Cop"),
              macrorreg= md("Região"),
-             desviop= md("Desvio Padrão"),
-             media = md("Média"),
+             #desviop= md("Desvio Padrão"),
+             #media = md("Média"),
              total = md("Total"),
              servico = md("Serviço")) |> 
    tab_header(
@@ -1845,8 +1845,8 @@ resultado_baep |>
               variacao= md("Variação"),
              COP= md("Cop"),
              macrorreg= md("Região"),
-             desviop= md("Desvio Padrão"),
-             media = md("Média"),
+             #desviop= md("Desvio Padrão"),
+             #media = md("Média"),
              total = md("Total"),
              servico = md("Serviço")) |> 
   tab_header(
@@ -1919,11 +1919,11 @@ BAEP
 
 #Bairros
 
-base_ssp |> filter(cidade == "Guarulhos") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
-base_ssp |> filter(cidade == "Osasco") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
-base_ssp |> filter(cidade == "Guarujá") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
-base_ssp |> filter(cidade == "Campinas") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
-base_ssp |> filter(cidade == "São Vicente") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+#base_ssp |> filter(cidade == "Guarulhos") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+#base_ssp |> filter(cidade == "Osasco") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+#base_ssp |> filter(cidade == "Guarujá") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+#base_ssp |> filter(cidade == "Campinas") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+#base_ssp |> filter(cidade == "São Vicente") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
 ```
 
 
