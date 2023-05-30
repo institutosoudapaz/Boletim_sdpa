@@ -1003,7 +1003,7 @@ base_completa %>%
 
 ```
 
-NÃO ENTENDI BEM ESTA VISUALIZAÇÃO POR DOIS MOTIVOS. PRIMEIRO POR TERMOS FILTRADO 2021 E 2022 APENAS (E NÃO O PERIODO DE CINCO ANOS), E PRINCIPALMENTE PQ PODERÍAMOS TER FEITO COM MACROREGIÕES POR ANO (GRÁFICOS EMPILHADOS OU LADO A LADO?). DE QUALQUER FORMA ACHO QUE DEVERÍAMOS MANTER ESTE RECORTE, SÓ MELHORAR A VISUALIZAÇÃO
+
 
 \newpage
 
@@ -1319,41 +1319,10 @@ ANALISE
 
 \newpage
 
-::: {custom-style="Estilo1"}
-Perfil racial e etário das vítimas de letalidade policial em São Paulo
-:::
-
-\newpage
 
 :::{custom-style="Estilo1"}
-Perfil racial das vitímas de MDIP
+Perfil etário das vitímas de MDIP
 :::
-
-\newpage
-
-```{r proporção de raça, echo=FALSE, fig.dim = c(9, 6)}
-
-base_ssp |> 
-  filter(between(ano_bo, 2018, 2022)) |> 
-  mutate(cor_pele_todas = case_when(
-      cor_pele %in% c("Parda","Preta") ~ "Negra",
-      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",T ~ as.character (cor_pele))) |>
-  group_by(cor_pele_todas) |> 
-  summarise(total = n()) |> 
-  mutate(freq = round(total / sum(total)*100, 2)) |> 
-  gt() |>   
-  cols_label(cor_pele_todas= md("Raça/Cor"), 
-             total= md("Total"),
-             freq = md("Frequência"))|> 
-   tab_header(
-    title = md("Proporção de Raça/Cor"),
-    subtitle = md("Entre 2018-2020")) |>
-  opt_align_table_header(align = "left")
-
-```
-
-Dentre o total de 3.405 vítimas de MDIP no período analisado, com a aglutinação entre as classificações raciais do IBGE, observa-se que do total global de casos, 2.155 são de pessoas negras --- correspondente à 63,29% ---, enquanto pessoas brancas correspondem a 1.184 vitimizações pela polícia no período, equivalente a 34,77% do total.
-Dos casos em que não houve preenchimento da raça e de pessoas Amarelas, temos a porcentagem final 1,95% para 100% dos casos.
 
 \newpage
 
@@ -1561,6 +1530,9 @@ ANÁLISE E PREENCHER ÁREAS EM BRANCO
 \newpage
 
 
+::: {custom-style="Estilo1"}
+Perfil racial e etário das vítimas de letalidade policial em São Paulo
+:::
 
 ```{r perfil racial,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
 
