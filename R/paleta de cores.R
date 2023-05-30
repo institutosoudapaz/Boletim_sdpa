@@ -38,7 +38,7 @@
   tons_pasteis <- c("#f9aa74","#fcdbc5", "#c1cddb", "#4e7099","#7eba75")
   #referencia: https://coolors.co/palette/f68a3c-fcdbc5-c1cddb-4e7099-7eba75
   
-  complementares ,_ c("#8cb369","#f4e285","#f4a259","5b8e7d","bc4b51")
+  complementares <- c("#8cb369","#f4e285","#f4a259","5b8e7d","bc4b51")
   #referencia: https://coolors.co/palette/8cb369-f4e285-f4a259-5b8e7d-bc4b51
   
   cor_stack <- c("#97bb77","#fed685","#7c9885")
