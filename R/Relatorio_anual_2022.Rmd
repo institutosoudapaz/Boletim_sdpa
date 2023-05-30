@@ -1394,6 +1394,7 @@ base_ssp |>
    summarise(cnt= n()) %>%
    ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "")
 
+
 ```
 
 Ao analisar o perfil etário das mortes cometidas por policiais em serviço e de folga no período de 2018 a 2022, é possível identificar padrões distintos na idade das vítimas. Dentre as pessoas vitimadas por policiais em serviço, 21,5% tinham até 19 anos de idade, e 45,8% tinham idades entre 20 e 29 anos. 
@@ -1566,8 +1567,24 @@ ANÁLISE E PREENCHER ÁREAS EM BRANCO
 
 ```{r perfil racial,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
 
-##tabela proporção de raça (pegar a análise do Pedro)
-#criar imagem e colocar na lateral da folha
+##tabela proporção de raça 
+base_ssp |> 
+  filter(between(ano_bo, 2018, 2022)) |> 
+  mutate(cor_pele_todas = case_when(
+      cor_pele %in% c("Parda","Preta") ~ "Negra",
+      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",T ~ as.character (cor_pele))) |>
+  group_by(cor_pele_todas) |> 
+  summarise(total = n()) |> 
+  mutate(freq = round(total / sum(total)*100, 2)) |> 
+  gt() |>   
+  cols_label(cor_pele_todas= md("Raça/Cor"), 
+             total= md("Total"),
+             freq = md("Frequência"))|> 
+   tab_header(
+    title = md("Proporção de Raça/Cor"),
+    subtitle = md("Entre 2018-2020")) |>
+  opt_align_table_header(align = "left")
+
 
 # perfil racial total
 base_ssp |>
@@ -1659,15 +1676,17 @@ base_ssp |>
  
  
  
-   #Raça por Bairro em SP (top 20 bairros com maior números de MDIP)
+    #Raça por Bairro em SP (top 20 bairros com maior números de MDIP)
   base_ssp |> 
-    filter( local_limpo %in% c("Via Pública","Residência"),
-            cor_pele_agregada %in% c("Negra", "Branca"), 
-            municipio_limpo.x == "São Paulo") |>
+    filter(cor_pele_agregada %in% c("Negra", "Branca"), 
+            municipio_limpo.x == "São Paulo") |> 
     group_by(bairro, cor_pele_agregada)|>
     summarise(total= n()) |>
+      pivot_wider(names_from = cor_pele_agregada, values_from = total) |> 
+    mutate(total = `Negra`+`Branca`) |> 
     filter(total >=13) |> 
     ungroup() |> 
+    group_by(bairro) |> 
     mutate(count = sum(total),
       freq = paste0(round(total/count*100,2))) |>     
     arrange(desc(total)) |>
@@ -1680,17 +1699,19 @@ base_ssp |>
    tab_header(
     title = md("Top 20 bairros da Cidade de São Paulo com mais MDIPs"),
     subtitle = md("Período entre 2018-2020")) |>
-  opt_align_table_header(align = "left") 
+  opt_align_table_header(align = "left")  
   
 ```
 Diversos estudos tem observado ao longos dos anos como o perfil mais vitimado no Brasil têm sido também, aquele que mais sofre com a letalidade policial, que afeta desproporcionalmente a homens, negros e jovens. 
-A análise da raça das vítimas pelas macrorregiões revel que a Capital é a região com a maior proporção de pessoas negras vitimadas pela polícia, sendo 71,27% do total de casos. Seguida pela Grande São Paulo em que 68,77% dos casos são de pessoas negras . O Interior do estado é a região menos desproporcional na vitimização de negros por policiais, com 55,56% de vítimas negras.
+Dentre o total de 3.405 vítimas de MDIP no período analisado, observa-se que 2.155 são de pessoas negras --- correspondente à 63,29% ---, enquanto pessoas brancas contabilizam 1.184 das vitimizações pela polícia no período, equivalente a 34,77% do total. Em 63 casos não houve preenchimento da categoria de raça e, houve também 3 casos em que a cor/raça das vítimas foram identificadas como amarelas, contabilizando 1,95% dos casos. 
+A proporção de casos se manteve estável ao longo dos anos analisados, destacando-se o ano de 2021 em que 68,37% das MDIPs foram de pessoas negras. Entre os batalhões que receberam as COPs, houve uma pequena redução da proporção de negros vitimados, sendo 2021 o ano com a maior proporção, 75,09% dos casos e 2020 e 2021 com a menor, 66,74%.
+Em nenhum ano a proporção de vítimas negras se aproxima do percentual de negros habitantes do Estado de São Paulo, que em 2021, correspondia apenas a 37%,10 da população. (dados do Mapa da Desigualdade, citar!) A média de letalidade de pessoas negras nos batalhões que participam do programa Olho Vivo é de 69,60%, já entre os batalhões sem câmera a proporção é 10% menor com 59,67% dos casos com vítimas negras.  
+
+A análise da raça das vítimas pelas macrorregiões revela que a Capital é a região com a maior proporção de pessoas negras vitimadas pela polícia, sendo 71,27% do total de casos. Seguida pela Grande São Paulo em que 68,77% dos casos são de pessoas negras . O Interior do estado é a região menos desproporcional na vitimização de negros por policiais, com 55,56% de vítimas negras.
+
 Treze mulheres foram vítimas da letalidade policial entre 2018-2022. As ocorrências concentram-se entre 2018 a 2020, em que ocorreram 12 desses casos, dos quais quatro deles com mais de uma vítima na mesma ocorrência. 
 O local da vitimização foi majoritariamente em via pública, com onze casos. Dentre as vítimas sete foram declaradas brancas e seis pardas ou pretas. 
 Quanto a faixa etária das vítimas, prevalece também o perfil jovem. Sete delas possuíam entre 15 e 24 anos.
- No período analisado, a proporção de negros se manteve estável, representando em média 64,81% das mortes decorrente de intervenção policial. 
- Destaca-se o ano de 2021 em que 68,37% das MDIPs foram de pessoas negras.
-Entre os batalhões que receberam as COPs, houve uma pequena redução da proporção de negros vitimados, sendo 2021 o ano com a maior proporção e 2020 e 2021 com a menor, 66.74%. 
 Já entre os batalhões que não receberam as câmeras corporais esse número 
 
 
