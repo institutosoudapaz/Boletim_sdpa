@@ -1685,14 +1685,16 @@ base_ssp |>
     ungroup() |> 
     group_by(bairro) |> 
     mutate(count = sum(total),
-      freq = paste0(round(total/count*100,2))) |>     
-    arrange(desc(total)) |>view()
-    select(-count) |> 
+      pct_n = paste0(round(`Negra`/total*100,2)),
+      pct_b = paste0(round(`Branca`/total*100,2))) |>     
+    arrange(desc(total)) |>
+    select(bairro, Negra, pct_n,Branca,  pct_b, total) |> 
      gt(rowname_col = "cor_pele_agregada", 
                      groupname_col = "local_limpo") |>
             cols_label( bairro = md("Bairro"),
                         total = md("Total"),
-                        freq = md( "Frequência") ) |> 
+                        pct_n = md( "% Negros"),
+                        pct_b = md("% Brancos")) |> 
    tab_header(
     title = md("Top 20 bairros da Cidade de São Paulo com mais MDIPs"),
     subtitle = md("Período entre 2018-2020")) |>
@@ -1873,7 +1875,7 @@ BAEP
 
 
 
-```{r municípios antes/depois cops, fig.height=4.5, fig.width=8, warning=FALSE, }
+```{r municípios antes/depois cops, fig.height=4.5, fig.width=8, warning=FALSE, echo = FALSE }
 
 # perfil do local pós COP
   base_ssp |>
