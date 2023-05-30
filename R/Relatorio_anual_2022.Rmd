@@ -1317,17 +1317,12 @@ tab_ssp |>
 
 ANALISE
 
+
+
 \newpage
-
-
 :::{custom-style="Estilo1"}
 Perfil etário das vitímas de MDIP
 :::
-
-\newpage
-
-<<<<<<< HEAD
-=======
 ```{r proporção de raça, echo=FALSE, fig.dim = c(9, 6)}
 
 base_ssp |> 
@@ -1356,7 +1351,7 @@ De acordo com o Censo de 2010, 63,9% dos habitantes paulistas se declararam bran
 
 \newpage
 
->>>>>>> 435a09f5d515f35ccf48e9af581357acc18c7968
+
 
 ```{r piramide raça e idade, echo=FALSE, fig.height=4.5, fig.width=8}
   base_ssp |>
