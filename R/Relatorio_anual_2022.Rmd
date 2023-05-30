@@ -1326,6 +1326,37 @@ Perfil etário das vitímas de MDIP
 
 \newpage
 
+<<<<<<< HEAD
+=======
+```{r proporção de raça, echo=FALSE, fig.dim = c(9, 6)}
+
+base_ssp |> 
+  filter(between(ano_bo, 2018, 2022)) |> 
+  mutate(cor_pele_todas = case_when(
+      cor_pele %in% c("Parda","Preta") ~ "Negra",
+      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",T ~ as.character (cor_pele))) |>
+  group_by(cor_pele_todas) |> 
+  summarise(total = n()) |> 
+  mutate(freq = round(total / sum(total)*100, 2)) |> 
+  gt() |>   
+  cols_label(cor_pele_todas= md("Raça/Cor"), 
+             total= md("Total"),
+             freq = md("Frequência"))|> 
+   tab_header(
+    title = md("Proporção de Raça/Cor"),
+    subtitle = md("Entre 2018-2020")) |>
+  opt_align_table_header(align = "left")
+
+```
+
+Dentre o total de 3.405 vítimas de Mortes Decorrente de Intervenção Policial (MDIP) no período entre 2018 e 2022, com a aglutinação entre as classificações raciais do IBGE, observa-se que do total global de casos, 2.155 são de pessoas negras — correspondente à 63,29% —, enquanto pessoas brancas correspondem a 1.184 vitimizações pela polícia no período, equivalente a 34,77% do total. Dos casos em que não houve preenchimento da raça ou de pessoas Amarelas, temos a porcentagem final 1,95% para dentre o total dos casos.
+
+De acordo com o Censo de 2010, 63,9% dos habitantes paulistas se declararam brancos, 34,6% negros (pretos e pardos), 1,4% amarelos e 0,1% indígenas. Ou seja, existe uma inversão entre a proporção da população negra do estado, e sua sobre representação dentre as vítimas de mortes decorrentes de intervenção policial. 
+
+
+\newpage
+
+>>>>>>> 435a09f5d515f35ccf48e9af581357acc18c7968
 
 ```{r piramide raça e idade, echo=FALSE, fig.height=4.5, fig.width=8}
   base_ssp |>
@@ -1338,8 +1369,7 @@ Perfil etário das vitímas de MDIP
 
 ```
 
-Durante o período de 2018 a 2022, o estado de São Paulo contabilizou um total de 3.405 Mortes Decorrente de Intervenção Policial (MDIP) e é evidente a proeminência de mortes decorrentes da ação de policiais entre pessoas com idades entre 15 e 34 anos, compreendendo um total de 2.166 casos, sendo 1.372 de pessoas negras e 794 brancas --- uma variação de 72,8% entre os dois grupos.
-Num conjunto global dos dados, é possível observar que o período de 2018 a 2022, do total de casos ao longo destes anos, as mortes de pessoas de 15 a 34 anos de idade representam 57,2% do todo observado de 2018 até 2022.
+Dentre as 3.405 Mortes Decorrente de Intervenção Policial registradas no estado entre 2018 e 20222, é evidente a proeminência de mortes decorrentes da ação de policiais entre pessoas com idades entre 15 e 34 anos, compreendendo um total de 2.166 casos (63,6% do total de mortes cometidas por policiais), destas sendo 1.372 de pessoas negras e 794 brancas — uma variação de 72,8% entre os dois grupos. 
 
 \newpage
 
@@ -1352,35 +1382,23 @@ Perfil etário das vitímas de MDIP
 base_ssp |>
   filter(servico %in% c("SIM", "NÃO")) |> 
   filter(!is.na(idade_pessoa_agregada)) |> 
+  filter(idade_pessoa_agregada != "65+") |> 
   filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
+    mutate(servico = case_when(
+      servico == "SIM" ~ "Em Serviço",
+      servico == "NÃO" ~ "De Folga",
+      T ~ as.character (servico))) |> 
   group_by(servico, idade_pessoa_agregada) %>%
    summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico)
-
-# Tabela percentual etário mortes em serviço e de folga
-
- base_ssp |> 
-  filter(servico %in% c("SIM", "NÃO"),
-         !is.na(idade_pessoa_agregada),
-         between(ano, 2018,2022)) |> 
-  group_by(servico, idade_pessoa_agregada) |> 
-  summarise(count=n()) |> 
-  mutate(freq = round(count / sum(count)*100, 2)) |>
-   ungroup() |>#opcional  
-  gt() |>   
-  cols_label(servico= md("Serviço"), 
-             idade_pessoa_agregada = md("Idade"),
-             count = md("Total"),
-             freq= md("Frequência"))|> 
-   tab_header(
-    title = md("Mortes em Serviço e em folga"),
-    subtitle = md("Entre 2018-2020")) |> 
-  opt_align_table_header(align = "left")
+   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "")
 
 
 ```
-Mortes em serviço e de folga entre 2018 e 2022. Ajustar que falta uma coluna no lado de Folga.
-As mortes de jovens (de 15 a 24 anos) se distribui diferentemente em folga. Analisar porcentagem da tabela anexa. Crianças e adolescentes, proporcionalmente, foram mais mortos em folga. A partir de 20 a 24 anos a proporção se inverte
+
+Ao analisar o perfil etário das mortes cometidas por policiais em serviço e de folga no período de 2018 a 2022, é possível identificar padrões distintos na idade das vítimas. Dentre as pessoas vitimadas por policiais em serviço, 21,5% tinham até 19 anos de idade, e 45,8% tinham idades entre 20 e 29 anos. 
+
+Já entre as pessoas mortas por policiais em folga, 31,8% tinham entre 10 e 19 anos, e 47,1% tinham entre 20 e 29 anos de idade. Ou seja, ainda que as polícias matem mais durante o exercício de suas funções, uma maior proporção de adolescentes e jovens até 19 anos tende a ser morta por policiais de folga. 
+
 
 ```{r piramide idade e serviço e folga antes e depois das COPs, echo=FALSE, fig.height=4.5, fig.width=8}
 
@@ -1388,19 +1406,33 @@ As mortes de jovens (de 15 a 24 anos) se distribui diferentemente em folga. Anal
 base_ssp |>
   filter(servico %in% c("SIM", "NÃO")) |> 
   filter(!is.na(idade_pessoa_agregada)) |> 
+  filter(idade_pessoa_agregada != "65+") |> 
+  filter(idade_pessoa_agregada != "55-59") |> 
   filter(ano_bo >= 2018 & ano_bo <= 2019) |> 
+      mutate(servico = case_when(
+      servico == "SIM" ~ "Em Serviço",
+      servico == "NÃO" ~ "De Folga",
+      T ~ as.character (servico))) |> 
   group_by(servico, idade_pessoa_agregada) %>%
    summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico)
+   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "",
+                           title = "2018 & 2019")
 
 # DEPOIS DAS COPS
 base_ssp |>
   filter(servico %in% c("SIM", "NÃO")) |> 
   filter(!is.na(idade_pessoa_agregada)) |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
   filter(ano_bo >= 2021 & ano_bo <= 2022) |> 
+        mutate(servico = case_when(
+      servico == "SIM" ~ "Em Serviço",
+      servico == "NÃO" ~ "De Folga",
+      T ~ as.character (servico))) |> 
   group_by(servico, idade_pessoa_agregada) %>%
    summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico)
+   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "",
+                           title = "2021 & 2022")
 
 
 
@@ -1657,16 +1689,14 @@ base_ssp |>
     ungroup() |> 
     group_by(bairro) |> 
     mutate(count = sum(total),
-      pct_n = paste0(round(`Negra`/total*100,2)),
-      pct_b = paste0(round(`Branca`/total*100,2))) |>     
+      freq = paste0(round(total/count*100,2))) |>     
     arrange(desc(total)) |>
-    select(bairro, Negra, pct_n,Branca,  pct_b, total) |> 
+    select(-count) |> 
      gt(rowname_col = "cor_pele_agregada", 
                      groupname_col = "local_limpo") |>
             cols_label( bairro = md("Bairro"),
                         total = md("Total"),
-                        pct_n = md( "% Negros"),
-                        pct_b = md("% Brancos")) |> 
+                        freq = md( "Frequência") ) |> 
    tab_header(
     title = md("Top 20 bairros da Cidade de São Paulo com mais MDIPs"),
     subtitle = md("Período entre 2018-2020")) |>
@@ -1687,7 +1717,7 @@ Já entre os batalhões que não receberam as câmeras corporais esse número
 
 
 
-```{r batalhões macro, echo=FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
+```{r batalhões macro, fig.height=4.5, fig.width=8, warning=FALSE}
 
 batalhoes<- base_ssp |>
   filter(!is.na(batalhao_limpo), 
@@ -1698,8 +1728,8 @@ batalhoes<- base_ssp |>
   select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", macrorreg, servico)|>   mutate_all(funs(ifelse(is.na(.), 0, .))) |>
   mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
          variacao = (`2022`+`2021`) - (`2019`+`2018`) / (`2019`+`2018`) * 100,
-         #media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
-         #desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)),
+         media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
+         desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)),
          servico = case_when(servico == "SIM" ~"Sim",
                              servico == "NÃO" ~ "Não"),
          COP = case_when(COP == "SIM" ~"Sim",
@@ -1752,15 +1782,15 @@ resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2019
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2020, (`X2022` - `X2021`) / `X2021` * 100, variacao))
 
 #média
-#resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2018, (`X2022`+ `X2021`+`X2020`+ `X2019` + `X2018` ) / 5 * #100, media))
-#resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2019, (`X2022`+ `X2021`+`X2020`+`X2019` ) / 4 * 100, media))
-#resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2020, (`X2022`+ `X2021`+`X2020` ) / 3 * 100, media))
-#resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2021, (`X2022`+ `X2021` ) / 2 * 100, media))
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2018, (`X2022`+ `X2021`+`X2020`+ `X2019` + `X2018` ) / 5 * 100, media))
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2019, (`X2022`+ `X2021`+`X2020`+`X2019` ) / 4 * 100, media))
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2020, (`X2022`+ `X2021`+`X2020` ) / 3 * 100, media))
+resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2021, (`X2022`+ `X2021` ) / 2 * 100, media))
 #sd
-#resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2018 , sd(c(`X2018`, `X2019`,`X2020`,`X2021`,`X2022`)), desviop))
-#resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2019 , sd(c(`X2019`,`X2020`,`X2021`,`X2022`)), desviop))
-#resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2020, sd(c(`X2020`,`X2021`,`X2022`)), desviop))
-#resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2021 , sd(c(`X2021`,`X2022`)), desviop))
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2018 , sd(c(`X2018`, `X2019`,`X2020`,`X2021`,`X2022`)), desviop))
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2019 , sd(c(`X2019`,`X2020`,`X2021`,`X2022`)), desviop))
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2020, sd(c(`X2020`,`X2021`,`X2022`)), desviop))
+resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2021 , sd(c(`X2021`,`X2022`)), desviop))
 
 ############## TABELAS
 
@@ -1773,8 +1803,8 @@ batalhoes |>
              cols_label(variacao= md("Variação"), 
              COP= md("Cop"),
              macrorreg= md("Região"),
-             #desviop= md("Desvio Padrão"),
-             #media = md("Média"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
              total = md("Total"),
              servico = md("Serviço"))|> 
    tab_header(
@@ -1792,8 +1822,8 @@ resultado_rota |>
             cols_label(variacao= md("Variação"),
              COP= md("Cop"),
              macrorreg= md("Região"),
-             #desviop= md("Desvio Padrão"),
-             #media = md("Média"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
              total = md("Total"),
              servico = md("Serviço")) |> 
    tab_header(
@@ -1817,8 +1847,8 @@ resultado_baep |>
               variacao= md("Variação"),
              COP= md("Cop"),
              macrorreg= md("Região"),
-             #desviop= md("Desvio Padrão"),
-             #media = md("Média"),
+             desviop= md("Desvio Padrão"),
+             media = md("Média"),
              total = md("Total"),
              servico = md("Serviço")) |> 
   tab_header(
@@ -1847,7 +1877,7 @@ BAEP
 
 
 
-```{r municípios antes/depois cops, fig.height=4.5, fig.width=8, warning=FALSE, echo = FALSE }
+```{r municípios antes/depois cops, fig.height=4.5, fig.width=8, warning=FALSE, }
 
 # perfil do local pós COP
   base_ssp |>
@@ -1891,11 +1921,11 @@ BAEP
 
 #Bairros
 
-#base_ssp |> filter(cidade == "Guarulhos") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
-#base_ssp |> filter(cidade == "Osasco") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
-#base_ssp |> filter(cidade == "Guarujá") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
-#base_ssp |> filter(cidade == "Campinas") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
-#base_ssp |> filter(cidade == "São Vicente") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+base_ssp |> filter(cidade == "Guarulhos") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+base_ssp |> filter(cidade == "Osasco") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+base_ssp |> filter(cidade == "Guarujá") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+base_ssp |> filter(cidade == "Campinas") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
+base_ssp |> filter(cidade == "São Vicente") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
 ```
 
 
