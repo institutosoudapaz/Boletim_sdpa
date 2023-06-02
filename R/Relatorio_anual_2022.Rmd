@@ -1445,6 +1445,17 @@ base_ssp |>
 
 ```
 
+
+Analisamos o perfil etário das mortes cometidas por policiais de folga e em serviço nos períodos antes da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (em 2018 e 2019), e nos dois anos imediatamente após o início destas medidas (2021 e 2022).
+
+No período anterior as medidas de controle do uso da força pela PMSP, um quarto (24,8%) das vítimas de morte decorrentes de intervenção policial em serviço tinham entre 10 e 19 anos de idade. As vítimas com idade entre 20 e 29 anos compunham 43,8% do total das pessoas mortas por policiais em serviço. Já dentre as mortes cometidas por policiais de folga, um terço (31,9%) vitimaram jovens até 19 anos, e as vítimas entre 20 e 29 anos foram 45,4% do total de vítimas de letalidade policial em folga.
+
+Já em 2021 e 2022, período posterior a implementação das medidas de controle do uso da força pela PMSP, 17% das vítimas de morte decorrentes de intervenção policial em serviço no estado de São Paulo tinha entre 10 e 19 anos, enquanto as vítimas com idades entre 20 e 29 anos representaram 49,6% do total de pessoas mortas por policiais em serviço nestes dois anos. Dentre os casos de MDIP cometidos por policiais de folga nos anos de 2021 e 2022, as vítimas com menos de 19 anos representam 30,5% do total, enquanto as pessoas com idade entre 20 e 29 anos foram 48,9% das vítimas de policiais de folga no período.
+
+Na comparação da composição percentual das vítimas de letalidade policial de acordo com sua faixa etária, foi perceptível no período após a implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (2021 e 2022), uma redução mais concentrada da vitimização de adolescentes e jovens até 19 anos – uma redução percentual de 7,8% na participação destas vítimas no total dos mortos por policiais em serviço após a implementação do programa Olho Vivo. Mas em relação as vítimas de 10 a 19 anos nas ocorrências de letalidade por policiais de folga, esta redução proporcional foi muito menor, de apenas 1,4% na comparação entre os períodos antes e depois da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP.
+
+=======
+
 Analisamos o perfil etário das mortes cometidas por policiais de folga e em serviço nos períodos antes da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (em 2018 e 2019), e nos dois anos imediatamente após o início destas medidas (2021 e 2022).
 
 No período anterior as medidas de controle do uso da força pela PMSP, um quarto (24,8%) das vítimas de morte decorrentes de intervenção policial em serviço tinham entre 10 e 19 anos de idade. As vítimas com idade entre 20 e 29 anos compunham 43,8% do total das pessoas mortas por policiais em serviço. Já dentre as mortes cometidas por policiais de folga, um terço (31,9%) vitimaram jovens até 19 anos, e as vítimas entre 20 e 29 anos foram 45,4% do total de vítimas de letalidade policial em folga.
