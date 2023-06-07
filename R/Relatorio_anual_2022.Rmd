@@ -1742,7 +1742,7 @@ Já entre os batalhões que não receberam as câmeras corporais esse número
 
 
 
-```{r batalhões macro, ECHO = FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
+```{r batalhões macro, echo = FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
 
 batalhoes<- base_ssp |>
   filter(!is.na(batalhao_limpo), 
