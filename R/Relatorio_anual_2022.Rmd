@@ -93,9 +93,11 @@ theme_sdpa_macroreg <- theme_void()+
         plot.margin=unit(c(0.2,0,0,0), 'cm'))
 
 theme_sdpa_maps <-  theme_void()+
-  theme(legend.text=element_text(size=12),
+  theme(legend.text=element_text(size=10),
+        legend.title=element_blank (),
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
+        legend.key.size = unit(0.5, 'cm'), 
         plot.margin=unit(c(0.2,0,0,0), 'cm'))
 
 # FUNÇÕES PARA OS GRÁFICOS
@@ -276,6 +278,7 @@ shp_capital$DpGeoDes <- c("010 DP - Penha de França",
                                   "014 DP - Pinheiros",                                    
                                   "001 DP - Sé")
 
+
 # Mesclar base_mensal e o shape pela coluna de nome dos DPs
 
 tab_dp <- base_mensal_dp %>% 
@@ -293,7 +296,7 @@ base_ssp_sp <- base_ssp |>
 # Mesclar base_ssp_sp e o shape pela coluna de nome dos DPs
 
 tab_ssp <- base_ssp_sp %>% 
-  right_join(shp_capital, by = c("dp_circunscricao_limpo" = "DpGeoDes")) %>% 
+  left_join(shp_capital, by = c("dp_circunscricao_limpo" = "DpGeoDes")) %>% 
   mutate(legenda = stringr::str_extract(dp_circunscricao_limpo,"^.{3}"))
 
 # Mapa para crimes da base mensal
@@ -616,7 +619,7 @@ tab_dp |>
     total_roubos > 5000 ~ "Mais de 5000 roubos")) |> 
   ggplot() +
   geom_sf(aes(geometry = geometry, fill = total_roubos_agregado))+
-  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1, color = "black") +
   scale_fill_manual(values = colors_map, name = NULL, 
                     breaks=c("Menos de 1000 roubos", "Entre 1000 e 2000 roubos", 
                              "Entre 2001 e 3000 roubos", "Entre 3001 e 4000 roubos",
@@ -1297,7 +1300,7 @@ tab_ssp |>
   filter(servico == "SIM") |> 
   mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
          ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
-  group_by(dp_circunscricao_limpo, cop ) |> 
+  group_by(dp_circunscricao_limpo, cop) |> 
   mutate(total_vit = n())  |>
    mutate(total_vit_agregado = case_when(
      NA ~ "Nenhuma vítima",
@@ -1307,6 +1310,7 @@ tab_ssp |>
      total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
      total_vit > 10 ~ "10 ou mais vítimas")) |> 
   ggplot() +
+  geom_sf(aes(geometry = geometry)) +
   geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
   geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
     scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
