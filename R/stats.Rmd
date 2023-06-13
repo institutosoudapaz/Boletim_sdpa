@@ -1,0 +1,61 @@
+---
+title: "testes estatísticos"
+author: "Mayra Pinheiro"
+date: "2023-06-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggcharts)
+library(kableExtra)
+library(ggrepel)
+library(gt)
+library(easystats)
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+source("../R/limpeza_dp.R")
+
+#base_completa <- readRDS("../data-raw/base_completa.rds")
+#base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds")
+#base_cor <- readRDS("../data-raw/base_corregedoria.rds")
+base_ssp <- readRDS("../data-raw/mdip_total.rds")
+#base_mensal_dp <- readRDS("../data-raw/base_mensal_dp.rds")
+base_mp_total <- readRDS("../data-raw/mdip_mp_vitimas.rds")
+
+```
+
+
+```{r cars}
+#lm (variavel dependente ~ independente, dados)
+
+base_lm  <- base_lm  |> 
+  mutate(total_vit = n(),
+         servico_lm = case_when( servico == "SIM" ~ 1,
+                              servico == "NÃO" ~ 0)) |> 
+  filter (!is.na(batalhao_limpo),
+          !is.na(cor_pele_agregada),
+          cor_pele_agregada != "NA") |> 
+  mutate(cor_lm = case_when(cor_pele_agregada == "Negra" ~ 1,
+                            cor_pele_agregada == "Branca"~0))
+#modelos
+model_1 <- lm(vitimas~ batalhao_limpo*servico_lm,base_lm)
+model_2 <- lm(total_vit~ batalhao_limpo*servico_lm,base_lm)
+model_3 <- lm(total_vit ~cor_lm*idade_pessoa_agregada, base_lm)
+model_4 <- lm(cor_lm ~ batalhao_limpo, base_lm)
+plot(model)
+check_model(model_1)
+check_model(model_2)
+check_model(model_3)
+check_model(model_4)
+r2(model_1)
+r2(model_2)
+r2(model_3)
+r2(model_4)
+
+compare_models(model_2, model_3)
+```
+
