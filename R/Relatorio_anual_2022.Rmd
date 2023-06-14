@@ -1035,9 +1035,9 @@ tab_vit_pol_reg <-base_completa %>%
              proporcao = md("Proporção"))|> 
    tab_header(
     title = md("Vitimização policial por Região"),
-    subtitle = md("2018 e 2020")) |>
+    subtitle = md("2018 e 2022")) |>
   opt_align_table_header(align = "left")
-
+tab_vit_pol_reg
 
 #gtsave(tab_vit_pol_reg, filename = "tabela_vit_reg.png")
 ```
