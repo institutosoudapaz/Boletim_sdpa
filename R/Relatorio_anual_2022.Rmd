@@ -1018,7 +1018,7 @@ Proporção entre vitimização e letalidade policial por macrorregião
 :::
 
 ```{r proporção vitimização e letalidade macrorregião, echo=FALSE, fig.width=8, fig.height=4.5 }
-base_completa %>%
+tab_vit_pol_reg <-base_completa %>%
   filter(cod_reg < 31 | cod_reg == 99)|> 
   filter(ano == 2018 |ano == 2022) |> 
     group_by(ano, regiao) %>%
@@ -1036,8 +1036,8 @@ base_completa %>%
     subtitle = md("2018 e 2020")) |>
   opt_align_table_header(align = "left")
 
-  
- 
+
+#gtsave(tab_vit_pol_reg, filename = "tabela_vit_reg.png")
 ```
 No intervalo entre 2018 e 2022, o número de vítimas de letalidade policial no estado teve uma redução de -50,7%, enquanto a vitimização de policiais em serviço e de folga, caiu -44%: 59 policiais foram mortos no estado em 2018, contra 33 policiais vitimados em 2022. 
 
@@ -1054,7 +1054,7 @@ Ocorrências de letalidade policial com 2 ou mais vítimas
 
 ```{r ocorrências com mais de uma vítima por ano, fig.height=4.5, fig.width=8, echo=FALSE}
 
-base_mp_total|> 
+ocorrencias<- base_mp_total|> 
   filter( between(ano, 2018,2022), vitimas >2) |>
   group_by(ano) |>  
   count() |>
@@ -1067,7 +1067,9 @@ base_mp_total|>
     subtitle = md("Entre 2018-2020")) |>
   opt_align_table_header(align = "left") 
 
+#gtsave(ocorrencias, filename = "tabela_ocorrencias.png")
 ```
+
 Houve também uma redução no número de ocorrências em que mais de uma pessoa foi vitimizada em decorrência de intervenção policial. Em 2019 foram registrados 20 casos com mais de uma vítima, já em 2022 esse número cai para três casos. 
 
 
@@ -1332,7 +1334,7 @@ Perfil etário das vitímas de MDIP
 :::
 ```{r proporção de raça, echo=FALSE, fig.dim = c(9, 6)}
 
-base_ssp |> 
+raca<- base_ssp |> 
   filter(between(ano_bo, 2018, 2022)) |> 
   mutate(cor_pele_todas = case_when(
       cor_pele %in% c("Parda","Preta") ~ "Negra",
@@ -1349,7 +1351,10 @@ base_ssp |>
     subtitle = md("Entre 2018-2020")) |>
   opt_align_table_header(align = "left")
 
+raca
+#gtsave(raca, filename = "tabela_raca.png")
 ```
+
 
 Dentre o total de 3.405 vítimas de Mortes Decorrente de Intervenção Policial (MDIP) no período entre 2018 e 2022, com a aglutinação entre as classificações raciais do IBGE, observa-se que do total global de casos, 2.155 são de pessoas negras — correspondente à 63,29% —, enquanto pessoas brancas correspondem a 1.184 vitimizações pela polícia no período, equivalente a 34,77% do total. Dos casos em que não houve preenchimento da raça ou de pessoas Amarelas, temos a porcentagem final 1,95% para dentre o total dos casos.
 
@@ -1707,7 +1712,7 @@ base_ssp |>
  
  
     #Raça por Bairro em SP (top 20 bairros com maior números de MDIP)
-  base_ssp |> 
+  raca_bairro <- base_ssp |> 
     filter(cor_pele_agregada %in% c("Negra", "Branca"), 
             municipio_limpo.x == "São Paulo") |> 
     group_by(bairro, cor_pele_agregada)|>
@@ -1731,7 +1736,11 @@ base_ssp |>
     subtitle = md("Período entre 2018-2020")) |>
   opt_align_table_header(align = "left")  
   
+  raca_bairro
+  
+  #gtsave(raca_bairro, filename = "tabela_raca_bairro.png")
 ```
+  
 Diversos estudos tem observado ao longos dos anos como o perfil mais vitimado no Brasil têm sido também, aquele que mais sofre com a letalidade policial, que afeta desproporcionalmente a homens, negros e jovens. 
 Dentre o total de 3.405 vítimas de MDIP no período analisado, observa-se que 2.155 são de pessoas negras --- correspondente à 63,29% ---, enquanto pessoas brancas contabilizam 1.184 das vitimizações pela polícia no período, equivalente a 34,77% do total. Em 63 casos não houve preenchimento da categoria de raça e, houve também 3 casos em que a cor/raça das vítimas foram identificadas como amarelas, contabilizando 1,95% dos casos. 
 A proporção de casos se manteve estável ao longo dos anos analisados, destacando-se o ano de 2021 em que 68,37% das MDIPs foram de pessoas negras. Entre os batalhões que receberam as COPs, houve uma pequena redução da proporção de negros vitimados, sendo 2021 o ano com a maior proporção, 75,09% dos casos e 2020 e 2021 com a menor, 66,74%.
@@ -1825,7 +1834,7 @@ resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2021 
 
 
 #total 
-batalhoes |> 
+tab_batalhao <- batalhoes |> 
   filter(total >20) |>
   select(-media, -desviop) |> 
                  gt(rowname_col = "batalhao_limpo",
@@ -1844,7 +1853,7 @@ batalhoes |>
 
 #rota
 
-resultado_rota |>
+tab_rota <- resultado_rota |>
   filter (total > 2,
           macrorreg != "NA") |>
   select(-media, -desviop) |> 
@@ -1864,7 +1873,7 @@ resultado_rota |>
 
 #baep
 
-resultado_baep |> 
+tab_baep <- resultado_baep |> 
   select(-ano_criacao, -media, -desviop) |> 
   filter (total > 2,
           macrorreg != "NA") |> 
@@ -1892,7 +1901,13 @@ resultado_baep |>
                                     "9° BAEP","10° BAEP","11° BAEP",
                                     "12° BAEP","13° BAEP","14° BAEP"))) |> 
     opt_footnote_marks(marks = "standard")
+tab_batalhao
+tab_rota
+tab_baep
 
+#gtsave(tab_batalhao, filename = "tabela_batalhao.png")
+#gtsave(tab_rota, filename = "tabela_rota.png")
+#gtsave(tab_baep, filename = "tabela_rota.png")
 ```
 
 Foram identificados 64 batalhões de diferentes companhias que passaram a integrar o Programa Olho Vivo. 
