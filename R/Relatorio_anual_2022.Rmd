@@ -972,7 +972,7 @@ tabela_vit_pol <- base_cor |>
              morte_ser_perc = md("Morte em Serviço"))|> 
    tab_header(
     title = md("Vitimização policial por Região"),
-    subtitle = md("Entre 2018-2020")) |>
+    subtitle = md("Entre 2018-2022")) |>
   opt_align_table_header(align = "left")
 tabela_vit_pol
 
@@ -1066,7 +1066,7 @@ ocorrencias<- base_mp_total|>
              n= md("Casos"))|> 
    tab_header(
     title = md("Ocorrências com mais de uma vítima"),
-    subtitle = md("Entre 2018-2020")) |>
+    subtitle = md("Entre 2018-2022")) |>
   opt_align_table_header(align = "left") 
 
 #gtsave(ocorrencias, filename = "tabela_ocorrencias.png")
@@ -1350,7 +1350,7 @@ raca<- base_ssp |>
              freq = md("Frequência"))|> 
    tab_header(
     title = md("Proporção de Raça/Cor"),
-    subtitle = md("Entre 2018-2020")) |>
+    subtitle = md("Entre 2018-2022")) |>
   opt_align_table_header(align = "left")
 
 raca
@@ -1619,7 +1619,7 @@ prop_raca <- base_ssp |>
              freq = md("Frequência"))|> 
    tab_header(
     title = md("Proporção de Raça/Cor"),
-    subtitle = md("Entre 2018-2020")) |>
+    subtitle = md("Entre 2018-2022")) |>
   opt_align_table_header(align = "left")
 
 #gtsave(prop_raca, filename = "tabela_raca_prop.png")
@@ -1736,7 +1736,7 @@ base_ssp |>
                         freq = md( "Frequência") ) |> 
    tab_header(
     title = md("Top 20 bairros da Cidade de São Paulo com mais MDIPs"),
-    subtitle = md("Período entre 2018-2020")) |>
+    subtitle = md("Período entre 2018-2022")) |>
   opt_align_table_header(align = "left")  
   
   raca_bairro
@@ -1851,7 +1851,7 @@ tab_batalhao <- batalhoes |>
              servico = md("Serviço"))|> 
    tab_header(
     title = md("Batalhões com maior número de MDIPs por Região"),
-    subtitle = md("Variação entre 2018-2020")) |>
+    subtitle = md("Variação entre 2018-2022")) |>
   opt_align_table_header(align = "left") 
 
 #rota
@@ -1871,7 +1871,7 @@ tab_rota <- resultado_rota |>
              servico = md("Serviço")) |> 
    tab_header(
     title = md("MDIPs nos batalhões da Rota por Região"),
-    subtitle = md("Variação entre 2018-2020")) |>
+    subtitle = md("Variação entre 2018-2022")) |>
   opt_align_table_header(align = "left")  
 
 #baep
@@ -1896,7 +1896,7 @@ tab_baep <- resultado_baep |>
              servico = md("Serviço")) |> 
   tab_header(
     title = md("MDIPs nos BAEPs por Região"),
-    subtitle = md("Variação entre 2018-2020")) |>
+    subtitle = md("Variação entre 2018-2022")) |>
   opt_align_table_header(align = "left") |> 
   tab_footnote(
     footnote = "Para os Baep's implementados após 2018 os valores foram recalculados a partir do seu respectivo ano de criação.",
