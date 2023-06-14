@@ -975,6 +975,8 @@ tabela_vit_pol <- base_cor |>
     subtitle = md("Entre 2018-2020")) |>
   opt_align_table_header(align = "left")
 tabela_vit_pol
+
+#gtsave(tabela_vit_pol, filename = "tabela_vit_pol.png")
 ```
 
 Os anos de 2018 e 2019, antes da implementação das Câmeras Corporais Operacionais (COPs), registraram um total de 95 mortes de agentes de segurança em todo o estado, com a capital paulista sendo a região com a maior quantidade, 52 casos - 54,7% de todos os casos.
@@ -1603,7 +1605,7 @@ Perfil racial e etário das vítimas de letalidade policial em São Paulo
 ```{r perfil racial,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
 
 ##tabela proporção de raça 
-base_ssp |> 
+prop_raca <- base_ssp |> 
   filter(between(ano_bo, 2018, 2022)) |> 
   mutate(cor_pele_todas = case_when(
       cor_pele %in% c("Parda","Preta") ~ "Negra",
@@ -1620,6 +1622,7 @@ base_ssp |>
     subtitle = md("Entre 2018-2020")) |>
   opt_align_table_header(align = "left")
 
+#gtsave(prop_raca, filename = "tabela_raca_prop.png")
 
 # perfil racial total
 base_ssp |>
@@ -1848,7 +1851,7 @@ tab_batalhao <- batalhoes |>
              servico = md("Serviço"))|> 
    tab_header(
     title = md("Batalhões com maior número de MDIPs por Região"),
-    subtitle = md("Variação, Média e Desvio Padrão entre 2018-2020")) |>
+    subtitle = md("Variação entre 2018-2020")) |>
   opt_align_table_header(align = "left") 
 
 #rota
@@ -1868,7 +1871,7 @@ tab_rota <- resultado_rota |>
              servico = md("Serviço")) |> 
    tab_header(
     title = md("MDIPs nos batalhões da Rota por Região"),
-    subtitle = md("Variação, Média e Desvio Padrão entre 2018-2020")) |>
+    subtitle = md("Variação entre 2018-2020")) |>
   opt_align_table_header(align = "left")  
 
 #baep
@@ -1893,7 +1896,7 @@ tab_baep <- resultado_baep |>
              servico = md("Serviço")) |> 
   tab_header(
     title = md("MDIPs nos BAEPs por Região"),
-    subtitle = md("Variação, Média e Desvio Padrão entre 2018-2020")) |>
+    subtitle = md("Variação entre 2018-2020")) |>
   opt_align_table_header(align = "left") |> 
   tab_footnote(
     footnote = "Para os Baep's implementados após 2018 os valores foram recalculados a partir do seu respectivo ano de criação.",
@@ -1907,7 +1910,7 @@ tab_baep
 
 #gtsave(tab_batalhao, filename = "tabela_batalhao.png")
 #gtsave(tab_rota, filename = "tabela_rota.png")
-#gtsave(tab_baep, filename = "tabela_rota.png")
+#gtsave(tab_baep, filename = "tabela_baep.png")
 ```
 
 Foram identificados 64 batalhões de diferentes companhias que passaram a integrar o Programa Olho Vivo. 
