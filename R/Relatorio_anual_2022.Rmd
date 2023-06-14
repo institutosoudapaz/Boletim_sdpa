@@ -1334,33 +1334,7 @@ ANALISE
 :::{custom-style="Estilo1"}
 Perfil etário das vitímas de MDIP
 :::
-```{r proporção de raça, echo=FALSE, fig.dim = c(9, 6)}
 
-raca<- base_ssp |> 
-  filter(between(ano_bo, 2018, 2022)) |> 
-  mutate(cor_pele_todas = case_when(
-      cor_pele %in% c("Parda","Preta") ~ "Negra",
-      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",T ~ as.character (cor_pele))) |>
-  group_by(cor_pele_todas) |> 
-  summarise(total = n()) |> 
-  mutate(freq = round(total / sum(total)*100, 2)) |> 
-  gt() |>   
-  cols_label(cor_pele_todas= md("Raça/Cor"), 
-             total= md("Total"),
-             freq = md("Frequência"))|> 
-   tab_header(
-    title = md("Proporção de Raça/Cor"),
-    subtitle = md("Entre 2018-2022")) |>
-  opt_align_table_header(align = "left")
-
-raca
-#gtsave(raca, filename = "tabela_raca.png")
-```
-
-
-Dentre o total de 3.405 vítimas de Mortes Decorrente de Intervenção Policial (MDIP) no período entre 2018 e 2022, com a aglutinação entre as classificações raciais do IBGE, observa-se que do total global de casos, 2.155 são de pessoas negras — correspondente à 63,29% —, enquanto pessoas brancas correspondem a 1.184 vitimizações pela polícia no período, equivalente a 34,77% do total. Dos casos em que não houve preenchimento da raça ou de pessoas Amarelas, temos a porcentagem final 1,95% para dentre o total dos casos.
-
-De acordo com o Censo de 2010, 63,9% dos habitantes paulistas se declararam brancos, 34,6% negros (pretos e pardos), 1,4% amarelos e 0,1% indígenas. Ou seja, existe uma inversão entre a proporção da população negra do estado, e sua sobre representação dentre as vítimas de mortes decorrentes de intervenção policial. 
 
 
 \newpage
@@ -1468,15 +1442,6 @@ Já em 2021 e 2022, período posterior a implementação das medidas de controle
 
 Na comparação da composição percentual das vítimas de letalidade policial de acordo com sua faixa etária, foi perceptível no período após a implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (2021 e 2022), uma redução mais concentrada da vitimização de adolescentes e jovens até 19 anos – uma redução percentual de 7,8% na participação destas vítimas no total dos mortos por policiais em serviço após a implementação do programa Olho Vivo. Mas em relação as vítimas de 10 a 19 anos nas ocorrências de letalidade por policiais de folga, esta redução proporcional foi muito menor, de apenas 1,4% na comparação entre os períodos antes e depois da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP.
 
-=======
-
-Analisamos o perfil etário das mortes cometidas por policiais de folga e em serviço nos períodos antes da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (em 2018 e 2019), e nos dois anos imediatamente após o início destas medidas (2021 e 2022).
-
-No período anterior as medidas de controle do uso da força pela PMSP, um quarto (24,8%) das vítimas de morte decorrentes de intervenção policial em serviço tinham entre 10 e 19 anos de idade. As vítimas com idade entre 20 e 29 anos compunham 43,8% do total das pessoas mortas por policiais em serviço. Já dentre as mortes cometidas por policiais de folga, um terço (31,9%) vitimaram jovens até 19 anos, e as vítimas entre 20 e 29 anos foram 45,4% do total de vítimas de letalidade policial em folga.
-
-Já em 2021 e 2022, período posterior a implementação das medidas de controle do uso da força pela PMSP, 17% das vítimas de morte decorrentes de intervenção policial em serviço no estado de São Paulo tinha entre 10 e 19 anos, enquanto as vítimas com idades entre 20 e 29 anos representaram 49,6% do total de pessoas mortas por policiais em serviço nestes dois anos. Dentre os casos de MDIP cometidos por policiais de folga nos anos de 2021 e 2022, as vítimas com menos de 19 anos representam 30,5% do total, enquanto as pessoas com idade entre 20 e 29 anos foram 48,9% das vítimas de policiais de folga no período.
-
-Na comparação da composição percentual das vítimas de letalidade policial de acordo com sua faixa etária, foi perceptível no período após a implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (2021 e 2022), uma redução mais concentrada da vitimização de adolescentes e jovens até 19 anos – uma redução percentual de 7,8% na participação destas vítimas no total dos mortos por policiais em serviço após a implementação do programa Olho Vivo. Mas em relação as vítimas de 10 a 19 anos nas ocorrências de letalidade por policiais de folga, esta redução proporcional foi muito menor, de apenas 1,4% na comparação entre os períodos antes e depois da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP.
 
 ```{r faixa etaria agrupada, echo=FALSE, fig.height=4.5, fig.width=8}
 # Participação percentual por Faixa etaria agrupada
@@ -1621,37 +1586,38 @@ prop_raca <- base_ssp |>
     title = md("Proporção de Raça/Cor"),
     subtitle = md("Entre 2018-2022")) |>
   opt_align_table_header(align = "left")
+prop_raca
 
 #gtsave(prop_raca, filename = "tabela_raca_prop.png")
 
 # perfil racial total
-base_ssp |>
-   filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
-    filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
-   group_by (ano_bo) |>
-   mutate(total= n()) |> 
-  ungroup() |> 
- group_by(cor_pele_agregada, ano_bo, total) |>
-  summarise(count = n()) |> 
-    mutate(freq = round(count/sum(total),3)) |>
-    arrange(desc(ano_bo)) |>
-  ggplot((aes(x = ano_bo, y = freq , fill = cor_pele_agregada, label = freq))) +
-  geom_bar(position="stack", stat="identity", size=.4)+
-    geom_text(aes(label = scales::percent(freq), big.mark = ".", scientific = FALSE), 
-                colour ="white",position=position_stack(vjust=0.5), size=3.7) +
-   scale_fill_manual(values= cores_sdp)+
-  scale_y_continuous(labels = scales::percent)+
-  theme_void()+
-  theme(legend.position = "right",
-        axis.text.y = element_text(size = 8.5), 
-        legend.text=element_text(size=12),
-        axis.text.x=element_text(size=12),
-        legend.title = element_blank()) +
-  labs(title = "Perfil Racial das Vítimas de Letalidade Policial",
-       subtitle = "2018 a 2022",
-       x = "Total",
-       y = "",
-       fill= "")
+#base_ssp |>
+ #  filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
+  #  filter(ano_bo >= 2018 & ano_bo <= 2022) |> 
+   #group_by (ano_bo) |>
+   #mutate(total= n()) |> 
+  #ungroup() |> 
+ #group_by(cor_pele_agregada, ano_bo, total) |>
+  #summarise(count = n()) |> 
+   # mutate(freq = round(count/sum(total),3)) |>
+    #arrange(desc(ano_bo)) |>
+  #ggplot((aes(x = ano_bo, y = freq , fill = cor_pele_agregada, label = freq))) +
+  #geom_bar(position="stack", stat="identity", size=.4)+
+   # geom_text(aes(label = scales::percent(freq), big.mark = ".", scientific = FALSE), 
+                #colour ="white",position=position_stack(vjust=0.5), size=3.7) +
+   #scale_fill_manual(values= cores_sdp)+
+  #scale_y_continuous(labels = scales::percent)+
+  #theme_void()+
+  #theme(legend.position = "right",
+    #    axis.text.y = element_text(size = 8.5), 
+     #   legend.text=element_text(size=12),
+      #  axis.text.x=element_text(size=12),
+       # legend.title = element_blank()) +
+  #labs(title = "Perfil Racial das Vítimas de Letalidade Policial",
+   #    subtitle = "2018 a 2022",
+    #   x = "Total",
+     #  y = "",
+      # fill= "")
 
 #facet cor/raça por ano com/ sem COP
   base_ssp |>
@@ -1728,12 +1694,12 @@ base_ssp |>
     mutate(count = sum(total),
       freq = paste0(round(total/count*100,2))) |>     
     arrange(desc(total)) |>
-    select(-count) |> 
+    select(-count, -freq) |> 
      gt(rowname_col = "cor_pele_agregada", 
                      groupname_col = "local_limpo") |>
             cols_label( bairro = md("Bairro"),
-                        total = md("Total"),
-                        freq = md( "Frequência") ) |> 
+                        total = md("Total")) |> 
+                        #freq = md( "Frequência"))  
    tab_header(
     title = md("Top 20 bairros da Cidade de São Paulo com mais MDIPs"),
     subtitle = md("Período entre 2018-2022")) |>
@@ -1775,6 +1741,7 @@ batalhoes<- base_ssp |>
                              servico == "NÃO" ~ "Não"),
          COP = case_when(COP == "SIM" ~"Sim",
                          COP =="NÃO" ~"Não"))  |>
+ mutate(variacao = paste0(round(variacao, 0), "%")) |> 
   arrange(desc(total))
   
 
@@ -1821,6 +1788,7 @@ resultado_baep<- resultado_baep |>
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao> 2018, (`2022` - `2019`) / `2019` * 100, variacao))
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2019, (`X2022` - `X2020`) / `X2020` * 100, variacao))
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2020, (`X2022` - `X2021`) / `X2021` * 100, variacao))
+resultado_baep <- resultado_baep |>  filter(is.numeric(variacao)) |> view()  mutate(variacao = paste0(round(variacao, 0), "%")) 
 
 #média
 resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2018, (`X2022`+ `X2021`+`X2020`+ `X2019` + `X2018` ) / 5 * 100, media))
