@@ -928,15 +928,7 @@ Proporção da Vitimização Policial em serviço e em folga
 
 ```
 
-ANALISE (AVALIAR SE VALE A PENA MANTER)
-
-\newpage
-
-::: {custom-style="Estilo1"}
-Proporção entre Vitimização e Letalidade policial no interior
-:::
-
-FAZER COMPARAÇÃO POR DEINTER DE LETALIDADE E VITIMIZAÇÃO USANDO DADOS CORREGEDORIA.
+ANALISE 
 
 \newpage
 
@@ -1056,7 +1048,7 @@ Ocorrências de letalidade policial com 2 ou mais vítimas
 
 ```{r ocorrências com mais de uma vítima por ano, fig.height=4.5, fig.width=8, echo=FALSE}
 
-ocorrencias<- base_mp_total|> 
+base_mp_total|> 
   filter( between(ano, 2018,2022), vitimas >2) |>
   group_by(ano) |>  
   count() |>
@@ -1073,9 +1065,6 @@ ocorrencias<- base_mp_total|>
 ```
 
 Houve também uma redução no número de ocorrências em que mais de uma pessoa foi vitimizada em decorrência de intervenção policial. Em 2019 foram registrados 20 casos com mais de uma vítima, já em 2022 esse número cai para três casos. 
-
-
-TALVEZ POSSA SER INTERESSANTE (PRINCIPALMENTE NO CASO DE TABELA) MOSTRARMOS ONDE ESTAS OCORRÊNCIAS ACONTECERAM (MACROREGIÃO) -> Vai dar um trabalhinho fazer isso pq a base não tem essa . 
 
 \newpage
 
@@ -1443,32 +1432,8 @@ base_ssp |>
    ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "",
                            title = "2021 & 2022")
 
-base_ssp |>
-  filter(servico %in% c("SIM", "NÃO")) |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
-  filter(idade_pessoa_agregada != "60-64") |> 
-  filter(idade_pessoa_agregada != "65+") |> 
-  filter(ano_bo >= 2021 & ano_bo <= 2022) |> 
-        mutate(servico = case_when(
-      servico == "SIM" ~ "Em Serviço",
-      servico == "NÃO" ~ "De Folga",
-      T ~ as.character (servico))) |> 
-  group_by(servico, idade_pessoa_agregada) %>%
-  summarise(total = n()) |> 
-  mutate(freq = round(total / sum(total)*100, 2)) 
-
 ```
 
-
-Analisamos o perfil etário das mortes cometidas por policiais de folga e em serviço nos períodos antes da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (em 2018 e 2019), e nos dois anos imediatamente após o início destas medidas (2021 e 2022).
-
-No período anterior as medidas de controle do uso da força pela PMSP, um quarto (24,8%) das vítimas de morte decorrentes de intervenção policial em serviço tinham entre 10 e 19 anos de idade. As vítimas com idade entre 20 e 29 anos compunham 43,8% do total das pessoas mortas por policiais em serviço. Já dentre as mortes cometidas por policiais de folga, um terço (31,9%) vitimaram jovens até 19 anos, e as vítimas entre 20 e 29 anos foram 45,4% do total de vítimas de letalidade policial em folga.
-
-Já em 2021 e 2022, período posterior a implementação das medidas de controle do uso da força pela PMSP, 17% das vítimas de morte decorrentes de intervenção policial em serviço no estado de São Paulo tinha entre 10 e 19 anos, enquanto as vítimas com idades entre 20 e 29 anos representaram 49,6% do total de pessoas mortas por policiais em serviço nestes dois anos. Dentre os casos de MDIP cometidos por policiais de folga nos anos de 2021 e 2022, as vítimas com menos de 19 anos representam 30,5% do total, enquanto as pessoas com idade entre 20 e 29 anos foram 48,9% das vítimas de policiais de folga no período.
-
-Na comparação da composição percentual das vítimas de letalidade policial de acordo com sua faixa etária, foi perceptível no período após a implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (2021 e 2022), uma redução mais concentrada da vitimização de adolescentes e jovens até 19 anos – uma redução percentual de 7,8% na participação destas vítimas no total dos mortos por policiais em serviço após a implementação do programa Olho Vivo. Mas em relação as vítimas de 10 a 19 anos nas ocorrências de letalidade por policiais de folga, esta redução proporcional foi muito menor, de apenas 1,4% na comparação entre os períodos antes e depois da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP.
-
-=======
 
 Analisamos o perfil etário das mortes cometidas por policiais de folga e em serviço nos períodos antes da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (em 2018 e 2019), e nos dois anos imediatamente após o início destas medidas (2021 e 2022).
 
@@ -1596,7 +1561,6 @@ ANÁLISE E PREENCHER ÁREAS EM BRANCO
 
 
 \newpage
-
 
 ::: {custom-style="Estilo1"}
 Perfil racial e etário das vítimas de letalidade policial em São Paulo
