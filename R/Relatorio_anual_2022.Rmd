@@ -1665,16 +1665,16 @@ prop_raca
       ungroup() |> 
     group_by(bairro) |> 
     mutate(count = sum(total),
-      freq = paste0(round(total/count*100,2))) |>     
+      freq_negr = paste0(round(`Negra`/count*100,2))) |>     
     arrange(desc(total)) |>
   head(20) 
 
-  raca_bairro$zona <- zona 
   zona <- c("z sul","z leste","z sul","z leste","z leste","z leste","z oeste","z sul", "z sul","z leste","z norte","z leste","z norte","z leste","z leste","z norte",
 "z norte","z sul","z sul","z sul")
+  raca_bairro$zona <- zona 
   
-    raca_bairro |> 
-      select(-count, -freq, -zona) |>  
+   raça_bairro <-  raca_bairro |> 
+      select(-count, -zona, -freq_negr) |>  
      gt(rowname_col = "cor_pele_agregada", 
                      groupname_col = "local_limpo") |>
             cols_label( bairro = md("Bairro"),
@@ -1684,9 +1684,12 @@ prop_raca
     title = md("Top 20 bairros da Cidade de São Paulo com mais MDIPs"),
     subtitle = md("Período entre 2018-2022")) |>
   opt_align_table_header(align = "left")  
-    
-    #raca_bairro |> 
-     # group_by(zona) |> count()
+  
+   
+   raça_bairro
+   
+  #raca_bairro |> 
+    #group_by(zona) |> count()
   
 
   #gtsave(raca_bairro, filename = "tabela_raca_bairro.png")
@@ -1703,6 +1706,11 @@ Treze mulheres foram vítimas da letalidade policial entre 2018-2022. As ocorrê
 O local da vitimização foi majoritariamente em via pública, com onze casos. Dentre as vítimas sete foram declaradas brancas e seis pardas ou pretas. 
 Quanto a faixa etária das vítimas, prevalece também o perfil jovem. Sete delas possuíam entre 15 e 24 anos.
 
+
+Bairros
+
+Dentre as ocorrências na capital, nota-se também uma concentração de casos em bairros da zona leste e zona sul da cidade. Os bairros com maior ocorrência de MDIPs na cidade de São Paulo, são também bairros com alta concentração de moradores negros, conforme os dados divulgados pelo Mapa da Desiguldade (referenciar). Grajaú, por exemplo, situado na lista como o segundo bairro com maior concentração da população negra na cidade (56,8%) é o terceiro bairro com maior número de casos de letalidade policial no período analisado. Apesar da população majoritariamente negra, há ainda uma sobrerepresentação de negros vitimados pela polícia na região, que dos 27 casos, 21 das mortes foram de homens negros, 77,7% dos casos.
+Foram contabilizados ainda, quatro casos na zona norte e um na zona oeste. Em todos os bairros entre os 20 com maiores quantidades de casos, os negros foram vitimados em maior proporção (mais de 50% dos casos) do que brancos.  
 
 
 ```{r batalhões macro, echo = FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
@@ -1873,11 +1881,12 @@ Dos 276 registros de MDIPs cometidos pelo 1o BPChoque(Rota) no período, 147 con
 A redução das mortes também foi signfificativa nesse batalhão, que apresentou uma redução de 81% dos casos na comparação do período antes e depois das câmeras corporais. Essa queda se torna ainda mais significativa considerando o alto padrão de letalidade do batalhão da rota, já registrada em estudos anteriores (citar).
 Foram 82 casos em serviço registrados em 2018 e 2019 na Capital e no período pós câmeras (2021 e 2022) 22 ocorrências. Fora de serviço os casos também caem pela metade, oito casos antes das câmeras e 4 depois. Na região da Grande São Paulo e no Interior as quedas também são verificadas, somando 7 e 11 casos em serviço pós câmeras, respectivamente.  
 
-
-
 BAEP 
 
-
+Os Baeps também tiveram uma partipacção relevante na quantidade de mortes decorrentes de intervenção policial entre 2018 e 2022. Com destaque para 2020, ano em que foi verificada queda de vários indicadores de criminalidade. Neste ano, foram registradas 62 ocorrências entre os cinco BAEPs com maior letalidade no estado( 2o,1o, 10o, 4o e 5o) fenômeno que vai de encontro as dinâmicas
+de redução da violência policial registrada no período. 
+Contudo, apartir de 2021, nota-se uma redução significativa dos casos, observando-se por exemplo, que os mesmos BAEPs com maior número de vítimas em 2020, em 2022 registraram quatro mortes.
+Há de se considerar ainda, a implementação recente dos BAPEs, o que dificulta a comparação no período da análise deste relatório. Com exceção do 10o Batalhão de Operações Especiais, que atua no Interior do estado, houve queda na comparação do período antes das câmeras e depois das camêras em todos os batalhões analisados. Apesar disso, este batalhão apresentou uma redução no número de MDIPs entre 2021 e 2022, de oito para três casos. 
 
 ```{r municípios antes/depois cops, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE, }
 
