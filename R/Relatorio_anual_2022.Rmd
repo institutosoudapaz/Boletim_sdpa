@@ -1661,13 +1661,20 @@ prop_raca
     summarise(total= n()) |>
       pivot_wider(names_from = cor_pele_agregada, values_from = total) |> 
     mutate(total = `Negra`+`Branca`) |> 
-    filter(total >=13) |> 
-    ungroup() |> 
+    #filter(total >=13) |> 
+      ungroup() |> 
     group_by(bairro) |> 
     mutate(count = sum(total),
       freq = paste0(round(total/count*100,2))) |>     
     arrange(desc(total)) |>
-    select(-count, -freq) |> 
+  head(20) 
+
+  raca_bairro$zona <- zona 
+  zona <- c("z sul","z leste","z sul","z leste","z leste","z leste","z oeste","z sul", "z sul","z leste","z norte","z leste","z norte","z leste","z leste","z norte",
+"z norte","z sul","z sul","z sul")
+  
+    raca_bairro |> 
+      select(-count, -freq, -zona) |>  
      gt(rowname_col = "cor_pele_agregada", 
                      groupname_col = "local_limpo") |>
             cols_label( bairro = md("Bairro"),
@@ -1677,9 +1684,11 @@ prop_raca
     title = md("Top 20 bairros da Cidade de São Paulo com mais MDIPs"),
     subtitle = md("Período entre 2018-2022")) |>
   opt_align_table_header(align = "left")  
+    
+    #raca_bairro |> 
+     # group_by(zona) |> count()
   
-  raca_bairro
-  
+
   #gtsave(raca_bairro, filename = "tabela_raca_bairro.png")
 ```
   
@@ -1693,7 +1702,6 @@ A análise da raça das vítimas pelas macrorregiões revela que a Capital é a 
 Treze mulheres foram vítimas da letalidade policial entre 2018-2022. As ocorrências concentram-se entre 2018 a 2020, em que ocorreram 12 desses casos, dos quais quatro deles com mais de uma vítima na mesma ocorrência. 
 O local da vitimização foi majoritariamente em via pública, com onze casos. Dentre as vítimas sete foram declaradas brancas e seis pardas ou pretas. 
 Quanto a faixa etária das vítimas, prevalece também o perfil jovem. Sete delas possuíam entre 15 e 24 anos.
-Já entre os batalhões que não receberam as câmeras corporais esse número 
 
 
 
@@ -1761,7 +1769,7 @@ resultado_baep<- resultado_baep |>
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao> 2018, (`2022` - `2019`) / `2019` * 100, variacao))
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2019, (`X2022` - `X2020`) / `X2020` * 100, variacao))
 resultado_baep <- transform(resultado_baep, variacao = ifelse(ano_criacao > 2020, (`X2022` - `X2021`) / `X2021` * 100, variacao))
-resultado_baep <- resultado_baep |>  filter(is.numeric(variacao)) |> view()  mutate(variacao = paste0(round(variacao, 0), "%")) 
+#resultado_baep <- resultado_baep |>  filter(is.numeric(variacao)) |> view()  mutate(variacao = paste0(round(variacao, 0), "%")) 
 
 #média
 resultado_baep <- transform(resultado_baep, media = ifelse(ano_criacao >= 2018, (`X2022`+ `X2021`+`X2020`+ `X2019` + `X2018` ) / 5 * 100, media))
@@ -1800,11 +1808,11 @@ tab_batalhao <- batalhoes |>
 tab_rota <- resultado_rota |>
   filter (total > 2,
           macrorreg != "NA") |>
-  select(-media, -desviop) |> 
+  select(-media, -desviop, -COP) |> 
   gt(rowname_col = "batalhao_limpo", 
                      groupname_col = "macrorreg") |>
             cols_label(variacao= md("Variação"),
-             COP= md("Cop"),
+             #COP= md("Cop"),
              macrorreg= md("Região"),
              #desviop= md("Desvio Padrão"),
              #media = md("Média"),
@@ -1861,8 +1869,11 @@ Na capital, outros batalhões que se destacaram foram o 16o, 38o, 28o, 23o, 05o 
 A variação entre o período 2018 representa em todos os casos uma notável redução no número de MDIPs. 
 
 ROTA
-Dos 276 registros de MDIPs cometidos pelo 1o BPChoque, 147 concentraram-se na Capital, 46 na Grande São Paulo e 43 no Interior. 
-A redução das mortes também foi signfificativa nesse batalhão, que apresentou uma redução de 81% dos casos. 
+Dos 276 registros de MDIPs cometidos pelo 1o BPChoque(Rota) no período, 147 concentraram-se na Capital, 46 na Grande São Paulo e 43 no Interior. 
+A redução das mortes também foi signfificativa nesse batalhão, que apresentou uma redução de 81% dos casos na comparação do período antes e depois das câmeras corporais. Essa queda se torna ainda mais significativa considerando o alto padrão de letalidade do batalhão da rota, já registrada em estudos anteriores (citar).
+Foram 82 casos em serviço registrados em 2018 e 2019 na Capital e no período pós câmeras (2021 e 2022) 22 ocorrências. Fora de serviço os casos também caem pela metade, oito casos antes das câmeras e 4 depois. Na região da Grande São Paulo e no Interior as quedas também são verificadas, somando 7 e 11 casos em serviço pós câmeras, respectivamente.  
+
+
 
 BAEP 
 
