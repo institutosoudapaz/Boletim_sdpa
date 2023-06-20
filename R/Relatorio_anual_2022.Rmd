@@ -928,7 +928,7 @@ Proporção da Vitimização Policial em serviço e em folga
 
 ```
 
-ANALISE 
+Não apenas o número de policiais mortos reduziu na comparação entre os anos de 2018 e 2022 (ainda que de maneira não uniforme), mas também a proporção destas mortes que ocorreram em períodos de folga e de serviço. As mortes de policiais no estado de São Paulo ocorrem majoritariamente em períodos de folga, ainda que esta proporção varie de 52,8% em 2019, ano em que mais a dinâmica proporcional das mortes em serviço e folga se aproximou, até 78,8% em 2022. No período de cinco anos entre 2018 e 2022, 202 policiais do estado de São Paulo foram mortos, sendo 71 em serviço (35%) e 131 (65%) em períodos de folga. Neste sentido, o ano de 2022 se destaca ainda mais como aquele com menor proporção de vitimização policial em serviço.
 
 \newpage
 
@@ -971,9 +971,12 @@ tabela_vit_pol
 #gtsave(tabela_vit_pol, filename = "tabela_vit_pol.png")
 ```
 
-Os anos de 2018 e 2019, antes da implementação das Câmeras Corporais Operacionais (COPs), registraram um total de 95 mortes de agentes de segurança em todo o estado, com a capital paulista sendo a região com a maior quantidade, 52 casos - 54,7% de todos os casos.
-Porém, a partir de 2021, com a implantação das COPs, entre 21 e 2022, o estado teve um total de 58 mortes de policiais, uma redução de 39% no número de vitimizações.
-Ademais, é visível que, com a implementação das COPs se observa uma maior concentração das mortes de policiais, com maiores registros de casos de agentes que estão em contexto de folga, como por exemplo na Capital, com 3 mortes de oficiais em serviço e 21 de oficiais em folga no período de 2021 à 2022.
+Os anos de 2018 e 2019, antes da implementação das Câmeras Corporais Operacionais (COPs), registraram um total de 95 mortes de agentes de segurança em todo o estado, com a capital paulista sendo a região com a maior quantidade, 52 casos (54,7% do total de mortes).
+
+Porém, nos anos de 2021 e 2022, após a implantação das COPs e demais medidas de mitigação do uso da força pela PMSP, o estado teve um total de 58 mortes de policiais, uma redução de 39% no número de vitimizações de agentes de segurança.
+
+É visível que, após a implementação das COPs houve uma maior redução da vitimização policial nas regiões da Capital e da Grande São Paulo. A proporção de policiais mortos em período de folga na capital passou de 30,7% em 2018 e 2019 para 12,5% do total de policiais mortos em 2021 e 2022, e movimento semelhante foi encontrado nos municípios da região metropolitana. No Interior, por sua vez, a proporção de policiais vitimados em folga aumentou, passando de 43,3% para 45,5% na soma das mortes de policiais em 2021 e 2022. 
+
 
 \newpage
 ::: {custom-style="Estilo1"}
@@ -999,11 +1002,11 @@ base_completa %>%
     scale_x_discrete(labels = c("2018", "2019", "2020", "2021", "2022"),
                      name = "Ano") +
     scale_y_continuous(limits = c(0, 4300), name = "Número de crimes") +
-    theme_sdpa_let 
+    theme_sdpa_macroreg +
+   theme(axis.text.y=element_text(size=11))
 
 ```
-##Os anos não estão aparecendo
-Com a redução da letelidade policial, há uma significativa redução da participação policial no total de ocorrências letais no estado. Entre o período analisado a letalidade policial sai de 20,7% dos homicídios ocorridos no estado para 11,8% dos casos. A redução das mortes em decorrência de intervenção policial associam-se a diferentes fenômenos observados no período, como a redução dos conflitos violentos, redução geral dos homicídios no estado, assim como o objeto de investigação deste relatório, a implementação das câmeras corporais entre os agentes policiais. 
+Com a queda da letalidade policial, há uma significativa redução da participação policial no total de ocorrências letais no estado. No ano de 2018 a letalidade policial era responsável por 20,7% das mortes violentas intencionais (soma de latrocínios, homicídios dolosos, lesões seguidas de mortes e das próprias mortes cometidas por policiais) do estado de São Paulo. Em 2022, após a intensa redução das mortes em decorrência de intervenção policial, as mortes cometidas por policiais passaram a representar 11,8% do total de mortes violentas intencionais no estado.
 
 \newpage
 
@@ -1064,46 +1067,13 @@ base_mp_total|>
 #gtsave(ocorrencias, filename = "tabela_ocorrencias.png")
 ```
 
-Houve também uma redução no número de ocorrências em que mais de uma pessoa foi vitimizada em decorrência de intervenção policial. Em 2019 foram registrados 20 casos com mais de uma vítima, já em 2022 esse número cai para três casos. 
+Além da redução das mortes cometidas por policiais entre os anos de 2018 a 2022, também é possível identificar uma forte queda no número de ocorrências em que mais de uma pessoa foi vitimizada em decorrência de intervenção policial. Nos anos de 2018 e 2019 somados, o estado registrou 36 ocorrências de morte decorrente de intervenção policial com 2 ou mais vítimas. Já em 2021 e 2022, após a implementação das câmeras corporais e das demais medidas de controle do uso da força policial, foram registrados 11 casos de mortes cometidas por policiais com mais de uma vítima, uma redução expressiva de -69,4% nas ocorrências com mais de uma vítima fatal.
 
 \newpage
 
 ::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial em São Paulo 2018 a 2022
+Mapas das ocorrências de letalidade policial em São Paulo
 :::
-
-(base SSP): Ocorrências de letalidade na capital facet por ano.
-\newpage
-
-
-::: {custom-style="Estilo1"}
-Ranking dos municípios em relação a letalidade 2018 a 2022 
-:::
-
-AQUI PODEMOS FAZER POR FACETS, UMA LISTA DE TOP 20 (POR NUMERO ABSOLUTO E POR TAXA PRA GENTE VER COMO FICA). A IDEIA É VER SE OS MUNICIPIOS QUE "SOBEM" NO RANKING DE LETALIDADE SÃO AQUELES SEM CAMERAS NOS BATALHOES.
-
-Caso hajam destaques de variações muito intensas de municípios, tentar cruzar com apreensão de drogas, e armas da base completa
-
-
-\newpage
-
-
-::: {custom-style="Estilo1"}
-Comparar entre batalhões com e sem câmera
-:::
-
-FAZER DUAS ANÁLISES, APONTANDO QUE A TENDENCIA DE QUEDA MAIOR NOS BATALHOES COM COP E REDUÇÃO MAIS CONTIDA NOS DEMAIS.
-
-TAMBÉM FAZER ANÁLISE DO Número de ocorrências em serviço e fora
-
-APONTAR Destaques de variações muito intensas de batalhões
-
-\newpage
-
-::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial na cidade de São Paulo antes e depois do Programa Olho Vivo
-:::
-
 
 ```{r mapa MDIP antes e depois COP, echo=FALSE, fig.width=8, fig.height=4.5}
 
@@ -1136,8 +1106,9 @@ tab_ssp |>
 
 ```
 
-ANÁLISE E PREENCHER ÁREAS EM BRANCO
+Somadas as mortes cometidas pelas polícias na cidade de São Paulo nos anos de 2018 e 2019, dois distritos policiais registraram 7 vítimas cada um: 054 DP - Cidade Tiradentes e 089 DP - Portal do Morumbi, respectivamente na zona leste e sul da cidade. Outros 7 distritos policiais registraram 5 ou 6 vítimas nestes dois anos. 
 
+Nos anos de 2021 e 2022, após a implementação das medidas de controle do uso da força pela PMSP, nenhum distrito policial de São Paulo registrou 5 ou mais vítimas de letalidade policial no agregado destes dois anos. Dois DPs registraram 4 vítimas nestes dois anos: 047 DP - Capão Redondo, na zona sul e 064 DP - Cidade A. E. Carvalho, na zona leste. Outros 3 distritos policiais registraram 3 nestes dois anos:  050 DP - Itaim Paulista e 055 DP - Parque São Rafael, ambos na zona leste, e 092 DP - Parque Santo Antônio, na zona sul da capital.
 
 \newpage
 
@@ -1991,3 +1962,33 @@ base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |>
   car::leveneTest(cod_COP~batalhao , anova, center=mean)
   
 ```
+
+
+
+::: {custom-style="Estilo1"}
+Ranking dos municípios em relação a letalidade 2018 a 2022 
+:::
+
+AQUI PODEMOS FAZER POR FACETS, UMA LISTA DE TOP 20 (POR NUMERO ABSOLUTO E POR TAXA PRA GENTE VER COMO FICA). A IDEIA É VER SE OS MUNICIPIOS QUE "SOBEM" NO RANKING DE LETALIDADE SÃO AQUELES SEM CAMERAS NOS BATALHOES.
+
+Caso hajam destaques de variações muito intensas de municípios, tentar cruzar com apreensão de drogas, e armas da base completa
+
+
+\newpage
+
+
+::: {custom-style="Estilo1"}
+Comparar entre batalhões com e sem câmera
+:::
+
+FAZER DUAS ANÁLISES, APONTANDO QUE A TENDENCIA DE QUEDA MAIOR NOS BATALHOES COM COP E REDUÇÃO MAIS CONTIDA NOS DEMAIS.
+
+TAMBÉM FAZER ANÁLISE DO Número de ocorrências em serviço e fora
+
+APONTAR Destaques de variações muito intensas de batalhões
+
+\newpage
+
+::: {custom-style="Estilo1"}
+Mapas das ocorrências de letalidade policial na cidade de São Paulo antes e depois do Programa Olho Vivo
+:::
