@@ -1673,7 +1673,7 @@ prop_raca
 "z norte","z sul","z sul","z sul")
   raca_bairro$zona <- zona 
   
-   raça_bairro <-  raca_bairro |> 
+   raca_bairro <-  raca_bairro |> 
       select(-count, -zona, -freq_negr) |>  
      gt(rowname_col = "cor_pele_agregada", 
                      groupname_col = "local_limpo") |>
@@ -1686,7 +1686,7 @@ prop_raca
   opt_align_table_header(align = "left")  
   
    
-   raça_bairro
+   raca_bairro
    
   #raca_bairro |> 
     #group_by(zona) |> count()
