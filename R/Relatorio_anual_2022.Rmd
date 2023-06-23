@@ -1638,10 +1638,9 @@ prop_raca
     mutate(count = sum(total),
       freq_negr = paste0(round(`Negra`/count*100,2))) |>     
     arrange(desc(total)) |>
-  head(20) 
+  head(10) 
 
-  zona <- c("z sul","z leste","z sul","z leste","z leste","z leste","z oeste","z sul", "z sul","z leste","z norte","z leste","z norte","z leste","z leste","z norte",
-"z norte","z sul","z sul","z sul")
+  zona <- c("z sul","z leste","z sul","z leste","z leste","z leste","z oeste","z sul", "z sul","z leste")
   raca_bairro$zona <- zona 
   
    raca_bairro <-  raca_bairro |> 
@@ -1652,7 +1651,7 @@ prop_raca
                         total = md("Total")) |> 
                         #freq = md( "Frequência"))  
    tab_header(
-    title = md("Top 20 bairros da Cidade de São Paulo com mais MDIPs"),
+    title = md("Top 10 bairros da Cidade de São Paulo com mais MDIPs"),
     subtitle = md("Período entre 2018-2022")) |>
   opt_align_table_header(align = "left")  
   
@@ -1660,10 +1659,10 @@ prop_raca
    raca_bairro
    
   #raca_bairro |> 
-    #group_by(zona) |> count()
+   # group_by(zona) |> count()
   
 
-  #gtsave(raca_bairro, filename = "tabela_raca_bairro.png")
+  gtsave(raca_bairro, filename = "tabela_raca_bairro.png")
 ```
   
 Diversos estudos tem observado ao longos dos anos como o perfil mais vitimado no Brasil têm sido também, aquele que mais sofre com a letalidade policial, que afeta desproporcionalmente a homens, negros e jovens. 
