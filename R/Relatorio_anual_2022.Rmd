@@ -628,7 +628,10 @@ tab_dp |>
 
              
 ```
-Os dez distritos policiais com maior número de registros de ocorrências de roubos (total) em 2022 foram responsáveis por 25.6% de todas as ocorrências deste crime na capital do estado. Dentre os 103 distritos policiais da cidade de São Paulo, o 03 DP - Campos Elísios foi aquele que registrou o maior número de roubos, um total de 7.245 ocorrências. A região do centro também teve entre os dez distritos policiais com maior número de registros de ocorrências de roubos (total) o 01 DP - Sé, que ficou na terceira posição com 4.815 roubos registrados e o 12 DP - Pari. A região sul, por sua vez, teve, respectivamente, no 47 DP - Capão Redondo, 37 DP - Campo Limpo, 92 DP - Parque Santo Antônio seus distritos policiais com mais roubos, enquanto a zona oeste teve no 14 DP - Pinheiros, 23 DP - Perdizes e 78 DP - Jardins seus distritos com mais ocorrências de roubos. Finalmente, o 49 DP - São Mateus é o único dos dez distritos policiais com mais registros de roubos da zona leste.
+Dentre os 103 distritos policiais da cidade de São Paulo, somente 10 DPs foram responsáveis por 25,6% de todas as ocorrências de roubo (total)  na capital do estado em 2022. O 03 DP, Campos Elísios, registrou o maior número de roubos, um total de 7.245 ocorrências.
+
+A região do centro também teve outros dois DPs entre os 10 distritos policiais com maior número de registros de ocorrências de roubos (total). O 01 DP, Sé, ficou na terceira posição com 4.815 roubos registrados e o 12 DP, Pari, na oitava colocação. Na zona sul, o 47 DP, Capão Redondo, 37 DP, Campo Limpo, 92 DP, Parque Santo Antônio foram os distritos policiais com mais roubos. Na zona oeste teve o 14 DP, Pinheiros, 23 DP, Perdizes e 78 DP, Jardins foram os distritos com mais ocorrências de roubos. O 49 DP, São Mateus, é o único dos 10 distritos policiais com mais registros de roubos da zona leste.
+
 
 \newpage
 
@@ -636,8 +639,7 @@ Os dez distritos policiais com maior número de registros de ocorrências de rou
 Recomendações
 :::
 
-Considerando os dados dos chamados crimes violentos divulgados pela Secretaria da Segurança Pública de São Paulo para o ano de 2022, esta seção do Boletim Sou da Paz Analisa se encerra com as principais recomendações para que o estado de São Paulo possa lidar com o aumento registrado no número de ocorrências em praticamente todas as modalidades destes crimes violentos.
-Ainda que estas recomendações não esgotem todas as preocupações sobre as dinâmicas de violência no estado, acreditamos que elas compõem um cerne de questões prioritárias que devem ser orientadoras para o debate sobre as políticas de segurança pública em São Paulo.
+Considerando os dados divulgados pela Secretaria da Segurança Pública de São Paulo sobre crimes violentos em 2022, elencamos as principais recomendações para que o estado de São Paulo possa lidar com os aumentos nestes crimes. Ainda que estas recomendações não esgotem todas as preocupações sobre as dinâmicas de violência no estado, acreditamos que elas compõem um cerne de questões prioritárias que devem ser orientadoras para o debate das políticas de segurança pública em São Paulo.
 
 -   Os **homicídios dolosos** tiveram uma significativa alta de 7,2% na comparação com o ano anterior, concentrado nas regiões da Grande São Paulo e Interior.
     É essencial que a SSP/SP tenha um olhar atento para as dinâmicas de homicídios na região metropolitana e no interior do estado, sobretudo nas regiões dos Deinter 01 - Araçatuba e Deinter 10 - São José dos Campos, que registraram os maiores aumentos nas taxas de homicídios no interior.
@@ -645,10 +647,10 @@ Ainda que estas recomendações não esgotem todas as preocupações sobre as di
 -   Neste sentido, é importante que o estado de São Paulo intensifique os esforços para elucidação destes assassinatos.O relatório [Onde Mora a Impunidade](https://soudapaz.org/wp-content/uploads/2022/08/OndeMoraAImpunidade.pdf), publicado anualmente pelo Instituto Sou da Paz aponta uma redução do esclarecimento de homicídios no estado: apenas 34% dos assassinatos cometidos em 2019 foram elucidados, uma redução significativa em comparação ao ano anterior, no qual 46% dos homicídios cometidos em 2018 no estado foram elucidados.É preciso que estes crimes sejam solucionados, de forma tanto a levar seus autores à justiça, mas tam bém possibilitar uma real compreensão das dinâmicas criminais causadoras destes homicídios, e assim tomar medidas eficazes de prevenção.E isso só será possível por meio do investimento na Polícia Civil e na estrutura de investigação de homicídios do estado.
 
 -   O número de registros de ocorrências de **estupros** aumentou pelo segundo ano consecutivo em 2022, após uma queda nas notificações em 2020 devido à pandemia de Covid-19.
-    Novamente, este aumento das ocorrências de estupros no ano de 2022 se concentrou nas macrorregiões da Grande São Paulo e Interior, esta última responsável por 6 a cada 10 dos estupros registrados no estado.
+    Novamente, este aumento das ocorrências de estupros se concentrou nas macrorregiões da Grande São Paulo e Interior, esta última responsável por 6 a cada 10 dos estupros registrados no estado.
 
 -   O estupro no estado de São Paulo atinge majoritariamente crianças e adolescentes de até 14 anos - elas e outras categorias de vulneráveis foram as vítimas em 73% dos casos de estupros registrados no estado em 2022.
-    A violência sexual contra crianças e adolecentes em geral acontece entre pessoas com vínculos familiares, de amizade ou de vizinhança, o que torna ainda mais desafiador o enfrentamento destes crimes.
+    A violência sexual contra crianças e adolescentes em geral é cometida por pessoas com vínculos familiares, de amizade ou de vizinhança, o que torna ainda mais desafiador o enfrentamento destes crimes.
     Uma política efetiva de prevenção e combate deve envolver cooperação da Secretaria de Segurança Pública com serviços de educação, assistência e saúde, assim como investimento em atendimento e investigação adequadas.
     A violência sexual é um crime grave, violento, com possíveis consequências físicas e psicológicas difíceis de tratar, prejudicando ainda mais o desenvolvimento humano quando é cometido contra crianças e adolescentes, e é inadimissel que o estado de São Paulo conviva com aumentos seguidos nas ocorrências deste tipo de crime.
 
@@ -670,15 +672,18 @@ Ainda que estas recomendações não esgotem todas as preocupações sobre as di
 Análise Especial - Perfil da letalidade policial no estado de São Paulo 2018 - 2022
 :::
 
-A presente análise busca compreender qual foi o perfil da letalidade policial no estado de São Paulo entre os anos de 2018 e 2022. O intervalo que abarca tanto o período de maior letalidade das polícias na história recente do estado, como aquele de redução mais abrupta das mortes cometidas por policiais a partir da implementação de uma série de medidas de controle do uso da força letal pela Polícia Militar de São Paulo. Observa-se também a existência de marcadores políticos como, a nível estadual, a transição da gestão de Márcio França (PSB) para João Dória(PSDB) e Rodrigo Garcia (PSDB). 
-Outro marco relevante é a pandemia de Covid-19, iniciada no ano de 2020 impactando fortemente a capacidade de circulação da população e os esforços da gestão pública no seu enfrentamento.
+Nesta seção faremos uma análise do perfil da letalidade policial no estado de São Paulo, entre os anos de 2018 e 2022, intervalo que abarca tanto o período de maior letalidade das polícias na história recente do estado, como o período de redução mais abrupta das mortes cometidas por policiais, a partir da implementação de uma série de medidas de controle do uso da força letal pela Polícia Militar do Estado de São Paulo. 
 
-Ao mesmo tempo, uma série de políticas de mitigação do uso da força policial foram implementadas no estado de São Paulo, dentre elas, o projeto Olho Vivo, em que Cameras Operacionais Portáteis passaram a ser utilizada pela força policial. 
-Como diferentes estudos tem demonstrado ao longo dos anos, a letalidade policial tem uma participação relevante na composição dos crimes violentos e nos altos índices de homicídios registrados no país.
-A letalidade policial tem sido justificada frente à organização de grupos paralegais e o controle territorial exercido por facções como Primeiro Comando Capital (PCC) e Comando Vermelho (CV), para fins de controle dos mercados ilegais e pelos altos índices de roubo verificados em diferentes regiões do país. Por outro lado, essa violência vêm sendo contestada juridica e socialmente por diversos atores da sociedade civil, especialmente pelos movimento negro, tendo em vista o perfil racial das vítimas e a localização geográfica de operações policiais com alta mortalidade, que impactam sistematicamente populações periféricas e de baixa renda com desigual proporcionalidade. 
-Do ponto de vista da Segurança Pública, o debate sobre a letalidade da forças policiais destaca ainda, como o uso excessivo da força e a própria forma de atuação não só falhou em apresentar resultados efetivos no combate ao narcotráfico, como também é determinante no aumento das ocorrências de confrontos letais entre policiais e criminosos, que por vezes vitima também a população que reside em áreas de conflito. 
+É importante observar a existência de dois marcos relevantes no período que devem ser considerados na análise e interpretação dos dados sobre a letalidade e vitimização policial no estado. O primeiro deles é a transição dos gestores estaduais no período, já que o governo do estado foi ocupado por Márcio França (PSB, 2018), João Dória (PSDB, 2019-2022), e por Rodrigo Garcia (PSDB, 2022). A implementação das medidas de controle do uso da força pela Polícia Militar começaram a ser implementadas em meados de 2020, no segundo ano da gestão Dória. 
 
-Esse estudo busca analisar o impacto dos esforços de controlar o uso da força policial no Estado de São Paulo a partir de quatro eixos principais: 1) o uso de câmeras corporais, 2) a atuação  dos batalhões nas mortes decorrentes de intervenção policial, 3) o perfil das vítimas da letalidade policial, 4) outras ações de mitigação do uso da força policial. Objetiva-se examinar o efeito concreto e eficaz de medidas de controle do uso da força pelas polícias, não somente no número de pessoas mortas, que certamente é a principal justificativa para a implementação destas ações, mas também na queda da vitimização policial e verificar qual o perfil das vítimas.
+O primeiro semestre de 2020 também foi o início de outro marco que afetou diretamente as dinâmicas letais no estado: a pandemia de Covid-19, cujas medidas de isolamento social foram decretadas ainda em março de 2020, impactando fortemente a capacidade de circulação da população, as dinâmicas criminais e, especificamente em São Paulo, marcando um dos semestres com mais ocorrências de letalidade policial na história recente do estado.
+
+Porém, na segunda metade de 2020 começaram a ser implementadas pela Polícia Militar do Estado de São Paulo uma série de medidas para garantir o controle do uso da força e reduzir sua letalidade. Dentre estas ações, se destaca o programa Olho Vivo, em que Câmeras Operacionais Portáteis (COP) passaram a ser utilizadas pela corporação. As análises sobre a letalidade e vitimização policial apresentadas nesta seção, frequentemente apontam o ano de 2020 como um ponto de virada, não apenas para a redução das mortes cometidas e sofridas por policiais em serviço, mas também de mudanças substantivas no perfil destas ocorrências. 
+
+Como diferentes estudos têm demonstrado ao longo dos anos, a letalidade policial tem uma participação relevante na composição dos crimes violentos letais e nos altos índices de assassinatos registrados no país, e o estado de São Paulo era um dos maiores exemplos desta alta participação da letalidade policial nas mortes violentas. Tamanha letalidade no exercício do trabalho policial tem sido frequentemente justificada pelas próprias policiais e outros atores sociais, como uma espécie de resposta frente à organização de grupos criminais, ao  controle territorial exercido por facções, ou ainda, pelos altos índices de roubos verificados em diferentes regiões do país. Por outro lado, essa violência vêm sendo contestada juridica e socialmente por diversos atores da sociedade civil, especialmente pelo movimento negro, tendo em vista o perfil racial das vítimas e a localização geográfica de operações policiais com alta mortalidade, que impactam sistematicamente e de maneira desproporcional as populações periféricas e de baixa renda.
+
+Do ponto de vista da Segurança Pública, o debate sobre a letalidade da forças policiais destaca ainda, como o uso excessivo da força e a própria forma de atuação não só falhou em apresentar resultados efetivos no combate à criminalidade violenta e ao narcotráfico, como também é determinante no aumento das ocorrências de confrontos letais entre policiais e criminosos, que por vezes vítima também a população que reside em áreas de conflito.
+
 
 \newpage
 ::: {custom-style="Estilo1"}
@@ -1662,7 +1667,7 @@ prop_raca
    # group_by(zona) |> count()
   
 
-  gtsave(raca_bairro, filename = "tabela_raca_bairro.png")
+#gtsave(raca_bairro, filename = "tabela_raca_bairro.png")
 ```
   
 Diversos estudos tem observado ao longos dos anos como o perfil mais vitimado no Brasil têm sido também, aquele que mais sofre com a letalidade policial, que afeta desproporcionalmente a homens, negros e jovens. 
