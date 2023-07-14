@@ -1348,6 +1348,92 @@ Nos dois anos (2018 e 2019) antes da implementação das medidas de controle do 
 
 No período (2021 e 2022) após a implementação do programa Olho Vivo, não só o número absoluto de vítimas caiu, mas a participação de vítimas de 10 a 19 anos cairam para 19,6% de todas as vítimas de letalidade policial no estado no período. Proporcionalmente, houve um aumento das vítimas de 20 a 34 anos após a implementação destas medidas. 
 
+
+```{r faixa etaria agrupada 5, echo=FALSE, fig.height=4.5, fig.width=8}
+# Participação  por Faixa etaria agrupada EM SERVIÇO
+
+base_ssp |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
+  filter(servico == "SIM") |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
+  filter(!is.na(ano_bo)) |> 
+   filter(!is.na(idade_pessoa_agregada)) |> 
+  mutate(periodo_cop = case_when(
+         ano_bo %in% c(2018, 2019) ~ "Antes",
+         ano_bo%in% c(2021, 2022) ~ "Após")) |>
+  group_by(periodo_cop, idade_pessoa_agregada) |> 
+  summarise(count=n()) |> 
+  mutate(percent = round(count / sum(count), 3)) |> 
+  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
+    geom_bar(position="dodge", stat="identity", width = 1.1)+
+   geom_text(aes(label = count),  
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.6) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
+  theme_void()+
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=10),
+        legend.title = element_text(size = 10, face = "bold"),
+        axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+```
+Também nos interessa comparar o efeito da implementação das medidas de controle do uso da força pela PMESP no perfil etário das vítimas de policiais em serviço e em folga. Como esperado, houve uma grande redução no número de vítimas de letalidade policial em serviço em todas as faixas etárias, sobretudo entre jovens.
+
+Foram 212 vítimas com idade entre 15 e 19 anos no período anterior (2018 e 2019) a implementação das medidas de controle da força. Já no período de dois anos após a implementação foram 78 vítimas de 15 a 19 anos, uma intensa redução de -63,2%. Entre as vítimas com idades entre 20 e 24 anos, o número de mortes caiu de 244 vítimas para 145 vítimas na comparação entre os períodos, uma redução de -40,5%. 
+
+No total, considerados apenas as mortes com informações sobre a faixa etária, foram 880 mortes cometidas por policiais em serviço em 2018 e 2019, e 478 vítimas nos anos de 2021 e 2022, uma queda na letalidade em serviço de -45,6%
+
+```{r faixa etaria agrupada 4, echo=FALSE, fig.height=4.5, fig.width=8}
+
+# Participação por Faixa etaria agrupada EM FOLGA
+
+base_ssp |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
+  filter(servico == "NÃO") |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
+   filter(!is.na(idade_pessoa_agregada)) |> 
+  mutate(periodo_cop = case_when(
+         ano_bo %in% c(2018, 2019) ~ "Antes",
+         ano_bo%in% c(2021, 2022) ~ "Após")) |>
+  group_by(periodo_cop, idade_pessoa_agregada) |> 
+  summarise(count=n()) |> 
+  mutate(percent = round(count / sum(count), 3)) |> 
+  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
+    geom_bar(position="dodge", stat="identity", width = 1.1)+
+   geom_text(aes(label = count),  
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.6) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
+  theme_void()+
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=10),
+        legend.title = element_text(size = 10, face = "bold"),
+        axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+
+```
+
+O efeito da implementação das medidas de controle do uso da força pela PMESP no perfil etário das vítimas de policiais em folga foi muito baixo. O que faz sentido, já que estas ocorrências se relacionam mais com a dinâmica de roubos, conflitos interpessoais e trabalhos pontuais realizados por policiais.
+
+Foram 62 vítimas com idade entre 15 e 19 anos no período anterior (2018 e 2019) a implementação das medidas de controle da força. Já no período de dois anos após a implementação foram 55 vítimas adolescentes, uma queda de -11,2%. Entre as vítimas com idades entre 20 e 24 anos, o número de mortes aumentou de 55 vítimas para 63 mortes na comparação entre os períodos, um crescimento de 14,5% na letalidade de pessoas nesta faixa etária. 
+
+
 ```{r faixa etaria agrupada 3 COP, echo=FALSE, fig.height=4.5, fig.width=8}
 # Participação percentual por Faixa etaria agrupada APENAS BATALHÕES COP
 
@@ -1385,88 +1471,11 @@ base_ssp |>
         plot.margin=unit(c(0.2,0,0,0), 'cm')) 
 ```
 
-Fazer análise batalhões COP
+Finalmente nos interessa recortar somente dos batalhões da PMESP que integram o Programa Olho Vivo, ou seja, cujos policiais utilizam as Câmeras Operacionais Portáteis (COP) em serviço.  Como mencionado anteriormente, o Programa Olho Vivo foi implementado, sobretudo nos batalhões da Capital e Grande São Paulo, em unidades com elevada letalidade em serviço. Desta forma, o gráfico compara o perfil etário das vítimas de letalidade destes batalhões antes e depois da implementação das COP.
 
-```{r faixa etaria agrupada 4, echo=FALSE, fig.height=4.5, fig.width=8}
-# Participação  por Faixa etaria agrupada EM SERVIÇO
+Novamente a maior redução da letalidade se deu entre as vítimas com idade entre 10 e 19 anos. Nos dois anos (2018 e 2019) antes da implementação das medidas de controle do uso da força, estes batalhões foram responsáveis pela morte de 205 crianças e adolescentes de 0 a 19 anos.
 
-base_ssp |> 
-  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
-  filter(servico == "SIM") |> 
-  filter(idade_pessoa_agregada != "60-64") |> 
-  filter(idade_pessoa_agregada != "65+") |> 
-  filter(!is.na(ano_bo)) |> 
-   filter(!is.na(idade_pessoa_agregada)) |> 
-  mutate(periodo_cop = case_when(
-         ano_bo %in% c(2018, 2019) ~ "Antes",
-         ano_bo%in% c(2021, 2022) ~ "Após")) |>
-  group_by(periodo_cop, idade_pessoa_agregada) |> 
-  summarise(count=n()) |> 
-  mutate(percent = round(count / sum(count), 3)) |> 
-  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
-    geom_bar(position="dodge", stat="identity", width = 1.1)+
-   geom_text(aes(label = count),  
-              position = position_dodge(width=1.1), 
-              vjust = -0.7, hjust = 0.51,
-            check_overlap = TRUE, size= 2.6) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
-  scale_x_discrete(breaks = c("Antes", "Após")) + 
-  theme_void()+
-  theme(legend.margin=margin(0,0,0,0),
-        legend.box.margin=margin(10,10,10,10),
-        legend.text=element_text(size=10),
-        legend.title = element_text(size = 10, face = "bold"),
-        axis.text.x=element_text(size=12),
-        axis.text.y=element_text(size=8),
-        aspect.ratio=11/20,
-        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
-```
-FAZER ANALISE
-
-```{r faixa etaria agrupada 4, echo=FALSE, fig.height=4.5, fig.width=8}
-# Participação  por Faixa etaria agrupada EM SERVIÇO
-
-# Participação por Faixa etaria agrupada EM FOLGA
-
-base_ssp |> 
-  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
-  filter(servico == "NÃO") |> 
-  filter(idade_pessoa_agregada != "60-64") |> 
-  filter(idade_pessoa_agregada != "65+") |> 
-  filter(!is.na(ano_bo)) |> 
-   filter(!is.na(idade_pessoa_agregada)) |> 
-  mutate(periodo_cop = case_when(
-         ano_bo %in% c(2018, 2019) ~ "Antes",
-         ano_bo%in% c(2021, 2022) ~ "Após")) |>
-  group_by(periodo_cop, idade_pessoa_agregada) |> 
-  summarise(count=n()) |> 
-  mutate(percent = round(count / sum(count), 3)) |> 
-  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
-    geom_bar(position="dodge", stat="identity", width = 1.1)+
-   geom_text(aes(label = count),  
-              position = position_dodge(width=1.1), 
-              vjust = -0.7, hjust = 0.51,
-            check_overlap = TRUE, size= 2.6) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
-  scale_x_discrete(breaks = c("Antes", "Após")) + 
-  theme_void()+
-  theme(legend.margin=margin(0,0,0,0),
-        legend.box.margin=margin(10,10,10,10),
-        legend.text=element_text(size=10),
-        legend.title = element_text(size = 10, face = "bold"),
-        axis.text.x=element_text(size=12),
-        axis.text.y=element_text(size=8),
-        aspect.ratio=11/20,
-        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
-
-```
-
-ANÁLISE
-
+No período de dois anos após a implementação do programa Olho Vivo, os mesmos batalhões foram responsáveis por  69 vítimas letais entre 0 e 19 anos, uma redução de -66,3% na letalidade de crianças e adolescentes. 
 
 \newpage
 
@@ -1474,14 +1483,16 @@ ANÁLISE
 Perfil racial e etário das vítimas de letalidade policial em São Paulo
 :::
 
-```{r perfil racial,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
+```{r perfil racial 1 ,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
 
 ##tabela proporção de raça 
 prop_raca <- base_ssp |> 
   filter(between(ano_bo, 2018, 2022)) |> 
   mutate(cor_pele_todas = case_when(
       cor_pele %in% c("Parda","Preta") ~ "Negra",
-      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",T ~ as.character (cor_pele))) |>
+      cor_pele %in% c("Ignorada","REGISTRADO NA PF",
+                      "Policia Federal", "NULL", "Outros") ~ "NA",
+      T ~ as.character (cor_pele))) |>
   group_by(cor_pele_todas) |> 
   summarise(total = n()) |> 
   mutate(freq = round(total / sum(total)*100, 2)) |> 
@@ -1495,8 +1506,15 @@ prop_raca <- base_ssp |>
   opt_align_table_header(align = "left")
 prop_raca
 
-#gtsave(prop_raca, filename = "tabela_raca_prop.png")
 
+#gtsave(prop_raca, filename = "tabela_raca_prop.png")
+```
+
+Diversos estudos têm observado ao longos dos anos como o perfil de quem mais sofre com a letalidade policial é o mesmo da violência letal no Brasil: jovens homens negros. Dentre o total de 3.387 vítimas de MDIP no período analisado, observa-se que 2.147 são de pessoas negras — 63,4% —, enquanto pessoas brancas contabilizam 1.174 das vitimizações pela polícia no período, equivalente a 34,7% do total.
+
+Em 63 casos não houve preenchimento da categoria de raça e, houve três casos em que a cor/raça das vítimas foram identificadas como amarelas, representando menos de 0,1%  dos casos. 
+
+```{r perfil racial 2 ,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
 # perfil racial total
 #base_ssp |>
  #  filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
@@ -1544,9 +1562,9 @@ prop_raca
     scale_y_continuous(labels = scales::percent)+
     theme_void()+
     theme(legend.position = "right",
-          axis.text.y = element_text(size = 8.5), 
-          legend.text=element_text(size=12),
-          axis.text.x=element_text(size=12),
+          axis.text.y = element_text(size = 10), 
+          legend.text=element_text(size=10),
+          axis.text.x=element_text(size=10),
           legend.title = element_blank()) +
   labs(title = "Perfil Racial das Vítimas por uso de Câmeras Operacionais Portáteis",
        subtitle = "2018 a 2022",
@@ -1555,8 +1573,16 @@ prop_raca
        fill= "") +
   facet_wrap(~COP)+
     coord_flip()
+```
 
+A proporção de casos se manteve estável ao longo dos anos analisados, destacando-se 2021 em que 68,37% das MDIPs foram contra pessoas negras. Entre os batalhões que receberam as COP, houve uma pequena redução da proporção de negros vitimados, sendo 2021 o ano com a maior proporção (75%) dos casos e 2020 e 2021 com a menor (66,7%). Em nenhum ano a proporção de vítimas negras se aproxima do percentual de negros habitantes do Estado de São Paulo, que em 2021, correspondia apenas a 37%,10 da população. (dados do Mapa da Desigualdade)
+
+
+```{r perfil racial 3, eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
+
+# COMO NÃO USAMOS ESTE PLOT, MARQUEI A OPÇÃO PARA NÃO PRODUZIR A VISUALIZAÇÃO
 #raça por macrorregião
+
   
  base_ssp |>
    filter(cor_pele_agregada %in% c("Negra", "Branca"),
@@ -1584,8 +1610,9 @@ prop_raca
   theme_sdpa_macroreg +
   guides(fill = guide_legend(reverse = TRUE))+
    facet_wrap(~macrorreg)
+```
  
- 
+```{r perfil racial 4 ,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
  
     #Raça por Bairro em SP (top 20 bairros com maior números de MDIP)
   raca_bairro <- base_ssp |> 
@@ -1627,24 +1654,12 @@ prop_raca
 
 #gtsave(raca_bairro, filename = "tabela_raca_bairro.png")
 ```
-  
-Diversos estudos tem observado ao longos dos anos como o perfil mais vitimado no Brasil têm sido também, aquele que mais sofre com a letalidade policial, que afeta desproporcionalmente a homens, negros e jovens. 
-Dentre o total de 3.405 vítimas de MDIP no período analisado, observa-se que 2.155 são de pessoas negras --- correspondente à 63,29% ---, enquanto pessoas brancas contabilizam 1.184 das vitimizações pela polícia no período, equivalente a 34,77% do total. Em 63 casos não houve preenchimento da categoria de raça e, houve também 3 casos em que a cor/raça das vítimas foram identificadas como amarelas, contabilizando 1,95% dos casos. 
-A proporção de casos se manteve estável ao longo dos anos analisados, destacando-se o ano de 2021 em que 68,37% das MDIPs foram de pessoas negras. Entre os batalhões que receberam as COPs, houve uma pequena redução da proporção de negros vitimados, sendo 2021 o ano com a maior proporção, 75,09% dos casos e 2020 e 2021 com a menor, 66,74%.
-Em nenhum ano a proporção de vítimas negras se aproxima do percentual de negros habitantes do Estado de São Paulo, que em 2021, correspondia apenas a 37%,10 da população. (dados do Mapa da Desigualdade, citar!) A média de letalidade de pessoas negras nos batalhões que participam do programa Olho Vivo é de 69,60%, já entre os batalhões sem câmera a proporção é 10% menor com 59,67% dos casos com vítimas negras.  
-
-A análise da raça das vítimas pelas macrorregiões revela que a Capital é a região com a maior proporção de pessoas negras vitimadas pela polícia, sendo 71,27% do total de casos. Seguida pela Grande São Paulo em que 68,77% dos casos são de pessoas negras . O Interior do estado é a região menos desproporcional na vitimização de negros por policiais, com 55,56% de vítimas negras.
-
-Treze mulheres foram vítimas da letalidade policial entre 2018-2022. As ocorrências concentram-se entre 2018 a 2020, em que ocorreram 12 desses casos, dos quais quatro deles com mais de uma vítima na mesma ocorrência. 
-O local da vitimização foi majoritariamente em via pública, com onze casos. Dentre as vítimas sete foram declaradas brancas e seis pardas ou pretas. 
-Quanto a faixa etária das vítimas, prevalece também o perfil jovem. Sete delas possuíam entre 15 e 24 anos.
-
 
 Bairros
 
-Dentre as ocorrências na capital, nota-se também uma concentração de casos em bairros da zona leste e zona sul da cidade. Os bairros com maior ocorrência de MDIPs na cidade de São Paulo, são também bairros com alta concentração de moradores negros, conforme os dados divulgados pelo Mapa da Desiguldade (referenciar). Grajaú, por exemplo, situado na lista como o segundo bairro com maior concentração da população negra na cidade (56,8%) é o terceiro bairro com maior número de casos de letalidade policial no período analisado. Apesar da população majoritariamente negra, há ainda uma sobrerepresentação de negros vitimados pela polícia na região, que dos 27 casos, 21 das mortes foram de homens negros, 77,7% dos casos.
-Foram contabilizados ainda, quatro casos na zona norte e um na zona oeste. Em todos os bairros entre os 20 com maiores quantidades de casos, os negros foram vitimados em maior proporção (mais de 50% dos casos) do que brancos.  
+Dentre as ocorrências na capital, nota-se uma concentração de casos em bairros da zona leste e zona sul da cidade. Os bairros com maior ocorrência de MDIPs na cidade de São Paulo, são também bairros com alta concentração de moradores negros, conforme os dados divulgados pelo Mapa da Desiguldade (referenciar). Grajaú, por exemplo, situado na lista como o segundo bairro com maior concentração da população negra na cidade (56,8%), é o terceiro bairro com maior número de casos de letalidade policial no período analisado. Apesar da população majoritariamente negra, há ainda uma sobrerepresentação de negros vitimados pela polícia na região. Dos 27 casos, 21 das mortes foram de homens negros, representando 77,7% dos casos. 
 
+Em todos os bairros, entre os 20 com maiores quantidades de casos, os negros foram vitimados em maior proporção (mais de 50% dos casos) do que brancos.
 
 ```{r batalhões macro, echo = FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
 
@@ -1656,7 +1671,7 @@ batalhoes<- base_ssp |>
   pivot_wider(names_from = ano, values_from = count) |> 
   select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", macrorreg, servico)|>   mutate_all(funs(ifelse(is.na(.), 0, .))) |>
   mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
-         variacao = (`2022`+`2021`) - (`2019`+`2018`) / (`2019`+`2018`) * 100,
+         variacao = ((`2022`+`2021`) - (`2019`+`2018`)) / (`2019`+`2018`) * 100,
          media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
          desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)),
          servico = case_when(servico == "SIM" ~"Sim",
@@ -1803,11 +1818,18 @@ tab_baep
 #gtsave(tab_baep, filename = "tabela_baep.png")
 ```
 
-Foram identificados 64 batalhões de diferentes companhias que passaram a integrar o Programa Olho Vivo. 
-O preenchimento da variável batalhão em 723 casos possibilitou analisar mais localizadamente como se distribuiem das mortes decorrentes de intervenção policial no estado. 
-Dentre eles, destaca-se 1o batalhão de Choque da Rota, sendo o batalhão com maior participação nas mortes decorrentes de intervenção policial no estado. Os Batalhões Especiais da Polícia Militar (BAEPs) também aparecem como unidades com alta letalidade.
-Na capital, outros batalhões que se destacaram foram o 16o, 38o, 28o, 23o, 05o BPM/M, 19o, 43o e 18o - todos com mais de 20 casos de letalidade policial. 
-A variação entre o período 2018 representa em todos os casos uma notável redução no número de MDIPs. 
+Até julho de 2023,  64 dos 135 batalhões da PMESP foram incluídos no Programa Olho Vivo. O preenchimento da variável batalhão em 2.585 dos casos de letalidade policial em serviço possibilitou analisar mais localizadamente como se distribuem estas mortes no estado entre 2018 e 2022. 
+
+As próximas páginas apresentam os batalhões com maior letalidade por macrorregião do estado, além de identificarem se estes batalhões fazem parte do Programa Olho Vivo, o número de vítimas em cada ano da série histórica, e a variação percentual na comparação entre o período antes da implentação do programa Olho Vivo e demais medidas de controle do uso da força (2018 e 2019) e o período de dois após a implementação destas medidas (2021 e 2022).
+
+CAPITAL
+
+Dez dos 31 batalhões da PMESP foram responsáveis por 461 mortes em serviço na capital entre 2018 e 2022, o que representa 46,7% das 983 mortes cometidas em serviço. Todos estes dez batalhões tiveram uma forte queda na letalidade nos períodos antes e depois das medidas de controle do uso da força, com uma redução média de 70,4% na letalidade dentre os batalhões mais violentos.
+
+O 1º batalhão de Choque da Rota, foi a unidade da PMESP com mais mortes na cidade de São Paulo, com 147 vítimas entre 2018 e 2022. A unidade teve uma redução de -73% na letalidade em serviço na comparação no período anterior (2018 e 2019) e posterior (2021 e 2022) a implementação do programa Olho Vivo e demais medidas de controle do uso da força. Se considerarmos que os padrões de letalidade de 2018 e 2019 teriam  se mantido, isso significa que o  1º batalhão de Choque da Rota deixou de matar 60 pessoas em 2021 e 2022. 
+
+Dentre os demais batalhões 3 atuam na zona sul (19º BPM/M, 28º BPM/M e 38º BPM/M), 3 atuam na zona norte (5º BPM/M, 18º BPM/M e 43º BPM/M), 2 na zona oeste (16º BPM/M, 23º BPM/M), e um na zona leste (4º BAEP).
+
 
 ROTA
 Dos 276 registros de MDIPs cometidos pelo 1o BPChoque(Rota) no período, 147 concentraram-se na Capital, 46 na Grande São Paulo e 43 no Interior. 
