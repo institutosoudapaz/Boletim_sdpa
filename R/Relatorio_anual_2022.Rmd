@@ -1069,47 +1069,6 @@ Além da redução das mortes cometidas por policiais entre os anos de 2018 a 20
 \newpage
 
 ::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial em São Paulo
-:::
-
-```{r mapa MDIP antes e depois COP, echo=FALSE, fig.width=8, fig.height=4.5}
-
-# Letalidade policial por ano
-
-tab_ssp |> 
-  filter(!is.na(ano_bo)) |> 
-  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
-  mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
-         ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
-  group_by(dp_circunscricao_limpo, cop ) |> 
-  mutate(total_vit = n())  |>
-   mutate(total_vit_agregado = case_when(
-     NA ~ "Nenhuma vítima",
-     total_vit = 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
-     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
-     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit > 10 ~ "10 ou mais vítimas")) |> 
-  ggplot() +
-  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
-  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
-    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
-                                   "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 2 vítimas", 
-                             "Entre 3 e 4 vítimas", "Entre 5 e 6 vítimas",
-                             "Entre 7 e 9 vítimas", "Mais de 10 vítimas"))+
-  theme_sdpa_maps + 
-  facet_wrap(~cop)
-
-```
-
-Somadas as mortes cometidas pelas polícias na cidade de São Paulo nos anos de 2018 e 2019, dois distritos policiais registraram 7 vítimas cada um: 054 DP - Cidade Tiradentes e 089 DP - Portal do Morumbi, respectivamente na zona leste e sul da cidade. Outros 7 distritos policiais registraram 5 ou 6 vítimas nestes dois anos. 
-
-Nos anos de 2021 e 2022, após a implementação das medidas de controle do uso da força pela PMSP, nenhum distrito policial de São Paulo registrou 5 ou mais vítimas de letalidade policial no agregado destes dois anos. Dois DPs registraram 4 vítimas nestes dois anos: 047 DP - Capão Redondo, na zona sul e 064 DP - Cidade A. E. Carvalho, na zona leste. Outros 3 distritos policiais registraram 3 nestes dois anos:  050 DP - Itaim Paulista e 055 DP - Parque São Rafael, ambos na zona leste, e 092 DP - Parque Santo Antônio, na zona sul da capital.
-
-\newpage
-
-::: {custom-style="Estilo1"}
 Mapas das ocorrências de letalidade policial por ano em serviço e fora de serviço na cidade de São Paulo - 2018 a 2022
 :::
 
@@ -1184,51 +1143,57 @@ tab_ssp |>
 No intervalo de 5 anos, entre 2018 e 2022, policiais de  folga mataram em São Paulo 316 pessoas, cerca de 19% de todas as mortes cometidas pelas polícias no período. As mortes cometidas por policiais de folga possuem uma concentração ainda maior do que a totalidade das mortes cometidas por policiais na capital: dos 93 distritos policiais da cidade de São Paulo, nove concentram 85 vítimas de letalidade policial em folga, ou seja, cerca de 27% de todas as mortes cometidas por policiais de folga no período. 
 Os distritos policiais com mais vítimas de policiais de folga no período são 049 DP - São Mateus e 050 DP - Itaim Paulista, ambos na zona leste e com 12 vítimas cada, e 037 DP - Campo Limpo na zona sul e  053 DP - Parque do Carmo na zona leste, com 10 vítimas cada.  Visivelmente uma parte considerável dos distritos policiais com mais mortes cometidas por policiais de folga se concentra na zona leste da capital. 
 
+
 \newpage
 
 
 ::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial em serviço antes e depois do Programa Olho Vivo
+Mapas das ocorrências de letalidade policial em São Paulo
 :::
 
-```{r mapa mdip em serviço, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r mapa MDIP antes e depois COP, echo=FALSE, fig.width=8, fig.height=4.5}
 
-# Letalidade policial por serviço antes e depois das COPS
+# Letalidade policial por ano
+
 tab_ssp |> 
   filter(!is.na(ano_bo)) |> 
-  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
-  filter(servico == "SIM") |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
   mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
          ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
   group_by(dp_circunscricao_limpo, cop ) |> 
   mutate(total_vit = n())  |>
    mutate(total_vit_agregado = case_when(
      NA ~ "Nenhuma vítima",
-     total_vit = 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
-     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
-     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit > 10 ~ "10 ou mais vítimas")) |> 
+     total_vit = 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
+     total_vit >= 4 & total_vit <= 7 ~ "Entre 4 e 7 vítimas",
+     total_vit >= 8 & total_vit <= 11 ~ "Entre 8 e 11 vítimas",
+     total_vit >= 12 & total_vit <= 15 ~ "Entre 12 e 15 vítimas",
+     total_vit >= 16 & total_vit <= 19 ~ "Entre 16 e 19 vítimas",
+     total_vit > 19 ~ "Mais de 20 vítimas")) |> 
   ggplot() +
   geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
   geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
     scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
                                    "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 2 vítimas", 
-                             "Entre 3 e 4 vítimas", "Entre 5 e 6 vítimas",
-                             "Entre 7 e 9 vítimas", "Mais de 10 vítimas"))+
+                    breaks=c("Entre 1 e 3 vítimas", "Entre 4 e 7 vítimas", 
+                             "Entre 8 e 11 vítimas", "Entre 12 e 15 vítimas",
+                             "Entre 16 e 19 vítimas", "Mais de 20 vítimas"))+
   theme_sdpa_maps + 
   facet_wrap(~cop)
+
 ```
 
-ANALISE
+Somadas as mortes cometidas pelas polícias na cidade de São Paulo nos anos de 2018 e 2019, foram registradas 817 vítimas letais. Já nos anos de 2021 e 2022 foram 480 pessoas mortas, uma redução de 41% vítimas.
+
+No período antes da implementação do programa Olho Vivo, 10 dos 93 DPs da capital foram responsáveis por 188 vítimas (23% do total do período). Quatro DPs registraram mais de 20 vítimas em 2018 e 2019: 037 DP - Campo Limpo, e 089 DP - Portal do Morumbi, ambos na zona sul, com, respectivamente 24 e 22 mortos, 055 DP - Parque São Rafael, na zona leste, com 075 DP - Jardim Arpoador, na zona oeste, ambos com 21 vítimas. 
+
+Nos anos de 2021 e 2022, após a implementação das medidas de controle do uso da força pela PMESP, nenhum distrito policial de São Paulo registrou 20 ou mais vítimas de letalidade policial no agregado destes dois anos. 10 dos 93 DPs da capital foram responsáveis por 101 vítimas (21% do total do período), ou seja, mesmo com a forte redução da letalidade policial, ainda se manteve praticamente a mesma concentração espacial. Três DPs registraram mais de 10 vítimas em 2021 e 2022: 047 DP - Capão Redondo com 16 vítimas, 089 DP - Portal do Morumbi com 15 mortos, ambos na zona leste, e o 044 DP - Guaianazes, na zona leste da capital, com 10 vítimas fatais. 
+
 \newpage
 
 :::{custom-style="Estilo1"}
 Perfil etário das vitímas de MDIP
 :::
-
-
 
 \newpage
 
@@ -1245,7 +1210,12 @@ Perfil etário das vitímas de MDIP
 
 ```
 
-Dentre as 3.405 Mortes Decorrente de Intervenção Policial registradas no estado entre 2018 e 2022, é evidente a proeminência de mortes decorrentes da ação de policiais entre pessoas com idades entre 15 e 34 anos, compreendendo um total de 2.166 casos (63,6% do total de mortes cometidas por policiais), destas sendo 1.372 de pessoas negras e 794 brancas — uma variação de 72,8% entre os dois grupos. 
+Das 3.603 pessoas mortas em Mortes Decorrente de Intervenção Policial (MDIP) no período entre 2018 e 2022, foram disponibilizados dados de raça de 3.321 destas vítimas. Destas, 2. 147 (64,6%) eram pessoas negras, de acordo  com a aglutinação das classificações raciais e de faixa etária do IBGE, e 1.174 (35,4%) das vítimas foram consideradas brancas.
+
+De acordo com o Censo de 2010, 63,9% dos habitantes paulistas se declararam brancos, 34,6% negros (pretos e pardos). Com isso, nota-se que existe uma inversão entre a proporção da população negra do estado, e sua sobrerrepresentação dentre as vítimas de mortes decorrentes de intervenção policial.
+
+A população jovem (15 a 29 anos) é também a maior vitimada nos casos de MDIP. O perfil racial e etário das vítimas segue a mesma dinâmica nacional, conforme podemos observar na segunda edição do  relatório Violência Armada e Racismo, do Instituto Sou da Paz.
+
 
 \newpage
 
@@ -1271,47 +1241,14 @@ base_ssp |>
 
 ```
 
-Ao analisar o perfil etário das mortes cometidas por policiais em serviço e de folga no período de 2018 a 2022, é possível identificar padrões distintos na idade das vítimas. Dentre as pessoas vitimadas por policiais em serviço, 21,5% tinham até 19 anos de idade, e 45,8% tinham idades entre 20 e 29 anos. 
+Do total de 3.603 vítimas de letalidade policial no período entre 2018 e 2022, foram disponibilizados os dados etários de 2.257 vítimas. E ao analisar o perfil etário das mortes cometidas por policiais em serviço e de folga no período, é possível identificar padrões distintos na idade das vítimas. 
 
-Já entre as pessoas mortas por policiais em folga, 31,8% tinham entre 10 e 19 anos, e 47,1% tinham entre 20 e 29 anos de idade. Ou seja, ainda que as polícias matem mais durante o exercício de suas funções, uma maior proporção de adolescentes e jovens até 19 anos tende a ser morta por policiais de folga. 
+Dentre as 1.775 pessoas vitimadas por policiais em serviço, 382 vítimas (21,5%) tinham até 19 anos de idade, e 816 mortos (45,8%) tinham idades entre 20 e 29 anos.
+
+Já entre as 482 pessoas mortas por policiais em folga, 154 (31,9%) tinham entre 10 e 19 anos, e 228 vítimas (47,3%) tinham entre 20 e 29 anos de idade. Ou seja, ainda que o número absoluto de jovens mortos por policiais em serviço seja maior, uma maior proporção de adolescentes e jovens tende a ser morta por policiais de folga.
 
 
-```{r piramide idade e serviço e folga antes e depois das COPs, echo=FALSE, fig.height=4.5, fig.width=8}
-
-# ANTES DAS COPS
-base_ssp |>
-  filter(servico %in% c("SIM", "NÃO")) |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
-  filter(idade_pessoa_agregada != "65+") |> 
-  filter(idade_pessoa_agregada != "55-59") |> 
-  filter(ano_bo >= 2018 & ano_bo <= 2019) |> 
-      mutate(servico = case_when(
-      servico == "SIM" ~ "Em Serviço",
-      servico == "NÃO" ~ "De Folga",
-      T ~ as.character (servico))) |> 
-  group_by(servico, idade_pessoa_agregada) %>%
-   summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "",
-                           title = "2018 & 2019")
-
-# DEPOIS DAS COPS
-base_ssp |>
-  filter(servico %in% c("SIM", "NÃO")) |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
-  filter(idade_pessoa_agregada != "60-64") |> 
-  filter(idade_pessoa_agregada != "65+") |> 
-  filter(ano_bo >= 2021 & ano_bo <= 2022) |> 
-        mutate(servico = case_when(
-      servico == "SIM" ~ "Em Serviço",
-      servico == "NÃO" ~ "De Folga",
-      T ~ as.character (servico))) |> 
-  group_by(servico, idade_pessoa_agregada) %>%
-   summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "",
-                           title = "2021 & 2022")
-
-```
-
+\newpage
 
 Analisamos o perfil etário das mortes cometidas por policiais de folga e em serviço nos períodos antes da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (em 2018 e 2019), e nos dois anos imediatamente após o início destas medidas (2021 e 2022).
 
@@ -1321,11 +1258,60 @@ Já em 2021 e 2022, período posterior a implementação das medidas de controle
 
 Na comparação da composição percentual das vítimas de letalidade policial de acordo com sua faixa etária, foi perceptível no período após a implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (2021 e 2022), uma redução mais concentrada da vitimização de adolescentes e jovens até 19 anos – uma redução percentual de 7,8% na participação destas vítimas no total dos mortos por policiais em serviço após a implementação do programa Olho Vivo. Mas em relação as vítimas de 10 a 19 anos nas ocorrências de letalidade por policiais de folga, esta redução proporcional foi muito menor, de apenas 1,4% na comparação entre os períodos antes e depois da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP.
 
-```{r faixa etaria agrupada, echo=FALSE, fig.height=4.5, fig.width=8}
+
+
+```{r faixa etaria agrupada 2, echo=FALSE, fig.height=4.5, fig.width=8}
+# Número absoluto
+
+base_ssp |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
+  filter(!is.na(ano_bo)) |> 
+       mutate(periodo_cop = case_when(
+         ano_bo %in% c(2018, 2019) ~ "Antes",
+         ano_bo%in% c(2021, 2022) ~ "Após")) |>
+   filter(!is.na(idade_pessoa_agregada)) |> 
+  group_by(periodo_cop, idade_pessoa_agregada) |> 
+  summarise(count=n()) |> 
+  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
+    geom_bar(position="dodge", stat="identity", width = 1.1)+
+  geom_text(aes(label = count), 
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.6) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
+  theme_void()+
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=10),
+        legend.title = element_text(size = 10, face = "bold"),
+        axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+```
+
+
+O gráfico apresenta uma análise do perfil etário das vítimas de letalidade policial (em serviço e de folga) no estado de São Paulo.
+
+Nos dois anos (2018 e 2019) antes da implementação das medidas de controle do uso da força, sobretudo o Programa Olho Vivo, pela PMESP, era pequena a diferença do número de mortos das duas faixas etárias mais vitimadas: de 15 a 19 anos, e de 20 a 24 anos. Ao todo foram 1.325 vítimas em 2 anos.
+
+No período de dois anos (2021 e 2022) após a implementação do programa Olho Vivo, houveram 745 vítimas de letalidade policial, uma significativa redução de -44% na comparação com o período anterior.  Todas as faixas etárias tiveram redução no número de vítimas, a maior se concentrando na faixa etária de 15 a 19 anos, com 197 vítimas a menos (-58%). 
+
+No total, foram 407 mortes de adolescentes e jovens de 0 a 29 anos pelas polícias do estado a menos na comparação com o período anterior às medidas de controle do uso da força pela PMESP.
+
+
+```{r faixa etaria agrupada 1, echo=FALSE, fig.height=4.5, fig.width=8}
 # Participação percentual por Faixa etaria agrupada
 
 base_ssp |> 
-  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
   filter(!is.na(ano_bo)) |> 
        mutate(periodo_cop = case_when(
          ano_bo %in% c(2018, 2019) ~ "Antes",
@@ -1335,107 +1321,151 @@ base_ssp |>
   summarise(count=n()) |> 
   mutate(percent = round(count / sum(count), 3)) |> 
   ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=periodo_cop)) + 
-    geom_bar(position="dodge", stat="identity")+
+    geom_bar(position="dodge", stat="identity", width = 1.1) +
   geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
-              position = position_dodge(0.65), 
-              vjust = -0.6, hjust = 3.7,
-            check_overlap = TRUE, size= 2.75) +
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
-  scale_x_discrete(breaks = c("Antes", 
-                                "Após")) + 
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.5) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
+  scale_y_continuous(labels = scales::percent) +
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
         legend.box.margin=margin(10,10,10,10),
         legend.text=element_text(size=10),
         legend.title = element_text(size = 10, face = "bold"),
         axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
         aspect.ratio=11/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+```
 
+Este gráfico apresenta os mesmos dados acerca do perfil etário das vítimas de letalidade policial (em serviço e de folga) no estado de São Paulo, mas com foco na proporção percentual de vítimas de cada faixa etária, antes e após a implementação das medidas de controle do uso da força, pela PMESP.
+
+Nos dois anos (2018 e 2019) antes da implementação das medidas de controle do uso da força, as vítimas de 10 a 19 anos representaram 26,6% de todas as vítimas de letalidade policial no estado. Ou seja,  1 a cada 4 pessoas mortas pelas polícias eram adolescentes ou jovens.
+
+No período (2021 e 2022) após a implementação do programa Olho Vivo, não só o número absoluto de vítimas caiu, mas a participação de vítimas de 10 a 19 anos cairam para 19,6% de todas as vítimas de letalidade policial no estado no período. Proporcionalmente, houve um aumento das vítimas de 20 a 34 anos após a implementação destas medidas. 
+
+```{r faixa etaria agrupada 3 COP, echo=FALSE, fig.height=4.5, fig.width=8}
 # Participação percentual por Faixa etaria agrupada APENAS BATALHÕES COP
 
 base_ssp |> 
-  filter(ano_bo == c(2018, 2022)) |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
   filter(COP == "SIM") |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
   filter(!is.na(ano_bo)) |> 
    filter(!is.na(idade_pessoa_agregada)) |> 
-  group_by(ano_bo, idade_pessoa_agregada) |> 
+  mutate(periodo_cop = case_when(
+         ano_bo %in% c(2018, 2019) ~ "Antes",
+         ano_bo%in% c(2021, 2022) ~ "Após")) |>
+  group_by(periodo_cop, idade_pessoa_agregada) |> 
   summarise(count=n()) |> 
   mutate(percent = round(count / sum(count), 3)) |> 
-  ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
-    geom_bar(position="dodge", stat="identity")+
-  geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
-              position = position_dodge(.65), 
-              vjust = -0.6, hjust = 0.4,
-            check_overlap = TRUE, size= 2.75) +
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
-  scale_x_continuous(breaks = c(2018, 2022)) + 
+  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
+    geom_bar(position="dodge", stat="identity", width = 1.1)+
+   geom_text(aes(label = count),  
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.6) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
         legend.box.margin=margin(10,10,10,10),
         legend.text=element_text(size=10),
         legend.title = element_text(size = 10, face = "bold"),
         axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
         aspect.ratio=11/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+```
 
-# Participação percentual por Faixa etaria agrupada EM SERVIÇO
+Fazer análise batalhões COP
+
+```{r faixa etaria agrupada 4, echo=FALSE, fig.height=4.5, fig.width=8}
+# Participação  por Faixa etaria agrupada EM SERVIÇO
 
 base_ssp |> 
-  filter(ano_bo == c(2018, 2022)) |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
   filter(servico == "SIM") |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
   filter(!is.na(ano_bo)) |> 
    filter(!is.na(idade_pessoa_agregada)) |> 
-  group_by(ano_bo, idade_pessoa_agregada) |> 
+  mutate(periodo_cop = case_when(
+         ano_bo %in% c(2018, 2019) ~ "Antes",
+         ano_bo%in% c(2021, 2022) ~ "Após")) |>
+  group_by(periodo_cop, idade_pessoa_agregada) |> 
   summarise(count=n()) |> 
   mutate(percent = round(count / sum(count), 3)) |> 
-  ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
-    geom_bar(position="dodge", stat="identity")+
-  geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
-              position = position_dodge(3.65), 
-              vjust = -0.6, hjust = 0.4,
-            check_overlap = TRUE, size= 2.75) +
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
-  scale_x_continuous(breaks = c(2018, 2022)) + 
+  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
+    geom_bar(position="dodge", stat="identity", width = 1.1)+
+   geom_text(aes(label = count),  
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.6) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
         legend.box.margin=margin(10,10,10,10),
         legend.text=element_text(size=10),
         legend.title = element_text(size = 10, face = "bold"),
         axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
         aspect.ratio=11/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+```
+FAZER ANALISE
 
-# Participação percentual por Faixa etaria agrupada EM FOLGA
+```{r faixa etaria agrupada 4, echo=FALSE, fig.height=4.5, fig.width=8}
+# Participação  por Faixa etaria agrupada EM SERVIÇO
+
+# Participação por Faixa etaria agrupada EM FOLGA
 
 base_ssp |> 
-  filter(ano_bo == c(2018, 2022)) |> 
-  filter(!is.na(ano_bo)) |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
   filter(servico == "NÃO") |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
+  filter(!is.na(ano_bo)) |> 
    filter(!is.na(idade_pessoa_agregada)) |> 
-  group_by(ano_bo, idade_pessoa_agregada) |> 
+  mutate(periodo_cop = case_when(
+         ano_bo %in% c(2018, 2019) ~ "Antes",
+         ano_bo%in% c(2021, 2022) ~ "Após")) |>
+  group_by(periodo_cop, idade_pessoa_agregada) |> 
   summarise(count=n()) |> 
   mutate(percent = round(count / sum(count), 3)) |> 
-  ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
-    geom_bar(position="dodge", stat="identity")+
-  geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
-              position = position_dodge(3.65), 
-              vjust = -0.6, hjust = 0.4,
-            check_overlap = TRUE, size= 2.75) +
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
-  scale_x_continuous(breaks = c(2018, 2022)) + 
+  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
+    geom_bar(position="dodge", stat="identity", width = 1.1)+
+   geom_text(aes(label = count),  
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.6) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
         legend.box.margin=margin(10,10,10,10),
         legend.text=element_text(size=10),
         legend.title = element_text(size = 10, face = "bold"),
         axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
         aspect.ratio=11/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm')) 
 
 ```
 
-ANÁLISE E PREENCHER ÁREAS EM BRANCO
+ANÁLISE
 
 
 \newpage
