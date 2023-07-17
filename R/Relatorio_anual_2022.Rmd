@@ -1280,9 +1280,10 @@ base_ssp |>
               position = position_dodge(width=1.1), 
               vjust = -0.7, hjust = 0.51,
             check_overlap = TRUE, size= 2.6) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_fill_manual(values = c("#0D6986","#00366C","#0066A5","#5295D4", 
+                               "#00B3E3","#8DCBFF", "#D8F3FF", 
+                               "#99BFEF", "#99ADC6",  "#D0E4FF"), 
+                    name = "Faixa Etária") +  
   scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
@@ -1326,9 +1327,10 @@ base_ssp |>
               position = position_dodge(width=1.1), 
               vjust = -0.7, hjust = 0.51,
             check_overlap = TRUE, size= 2.5) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_fill_manual(values = c("#0D6986","#00366C","#0066A5","#5295D4", 
+                               "#00B3E3","#8DCBFF", "#D8F3FF", 
+                               "#99BFEF", "#99ADC6",  "#D0E4FF"), 
+                    name = "Faixa Etária") + 
   scale_x_discrete(breaks = c("Antes", "Após")) + 
   scale_y_continuous(labels = scales::percent) +
   theme_void()+
@@ -1371,9 +1373,10 @@ base_ssp |>
               position = position_dodge(width=1.1), 
               vjust = -0.7, hjust = 0.51,
             check_overlap = TRUE, size= 2.6) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_fill_manual(values = c("#0D6986","#00366C","#0066A5","#5295D4", 
+                               "#00B3E3","#8DCBFF", "#D8F3FF", 
+                               "#99BFEF", "#99ADC6",  "#D0E4FF"), 
+                    name = "Faixa Etária") + 
   scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
@@ -1413,9 +1416,10 @@ base_ssp |>
               position = position_dodge(width=1.1), 
               vjust = -0.7, hjust = 0.51,
             check_overlap = TRUE, size= 2.6) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_fill_manual(values = c("#0D6986","#00366C","#0066A5","#5295D4", 
+                               "#00B3E3","#8DCBFF", "#D8F3FF", 
+                               "#99BFEF", "#99ADC6",  "#D0E4FF"), 
+                    name = "Faixa Etária") + 
   scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
@@ -1456,9 +1460,10 @@ base_ssp |>
               position = position_dodge(width=1.1), 
               vjust = -0.7, hjust = 0.51,
             check_overlap = TRUE, size= 2.6) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_fill_manual(values = c("#0D6986","#00366C","#0066A5","#5295D4", 
+                               "#00B3E3","#8DCBFF", "#D8F3FF", 
+                               "#99BFEF", "#99ADC6",  "#D0E4FF"), 
+                    name = "Faixa Etária") + 
   scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
@@ -1830,11 +1835,29 @@ O 1º batalhão de Choque da Rota, foi a unidade da PMESP com mais mortes na cid
 
 Dentre os demais batalhões 3 atuam na zona sul (19º BPM/M, 28º BPM/M e 38º BPM/M), 3 atuam na zona norte (5º BPM/M, 18º BPM/M e 43º BPM/M), 2 na zona oeste (16º BPM/M, 23º BPM/M), e um na zona leste (4º BAEP).
 
+GRANDE SÃO PAULO  
+
+Dentre os dez da PMESP que compõem o Comando de Policiamento de Área/Metropolitano (CPA/M), sete apresentaram redução na letalidade nos períodos antes e depois das medidas de controle do uso da força. Dentre estes dez BPM, a redução média na letalidade na comparação entre os períodos foi de 31%. 
+
+Novamente o 1º batalhão de Choque da Rota, foi a unidade da PMESP com mais mortes - o batalhão atua com maior flexibilidade territorial que os demais BPM. Policiais do 1º BPChoque da Rota em serviço mataram 27 pessoas em 2018 e, principalmente, em 2019 na Grande São Paulo. Nos anos de 2021 e 2022 a letalidade em serviço do batalhão foi de 7 vítimas, uma redução de 74%, similar a redução que o batalhão apresentou na Capital. 
+
+Dois BPM apresentaram aumento da letalidade em serviço no período: o 44º BPM (um dos 3 batalhões de Guarulhos), com um impressionante aumento de 157% na letalidade em serviço, e que não faz parte do Programa Olho Vivo; e o  14º BPM (um dos 2 batalhões de Osasco), que registrou um aumento de 50% na letalidade com 3 mortes a mais em 2021 e 2022, e cujos policiais usam as COP. 
+
+
+INTERIOR
+
+Dez dos 63 batalhões da PMESP que compõem o Comando de Policiamento do Interior (CPI) foram responsáveis por 359 mortes em serviço na capital entre 2018 e 2022, o que representa 39% das 922 mortes cometidas em serviço. Dentre estes dez batalhões, oito tiveram reduções na letalidade, e metade integra o Programa Olho Vivo. 
+
+A maior letalidade em serviço registrada foi no 2º BAEP, que atua em Santos e na região. A unidade teve uma redução de -39% na letalidade em serviço na comparação no período anterior (208 e 2019) e posterior (2021 e 2022) a implementação do programa Olho Vivo e demais medidas de controle do uso da força. Também registraram mais de 40 vítimas letais no período o 1º batalhão de Choque da Rota e o 48º BPM/I que atende a região de Sumaré, e registrou uma redução de 92% na letalidade na comparação entre os períodos. 
+
+É importante ressaltar que batalhões que não fazem parte do programa Olho Vivo, como o  6º BPM/I (Santos), 10º BPM/I (Piracicaba) e 7º BPM/I (Sorocaba) também tiveram reduções significativas na letalidade em serviço.
+
 
 ROTA
-Dos 276 registros de MDIPs cometidos pelo 1o BPChoque(Rota) no período, 147 concentraram-se na Capital, 46 na Grande São Paulo e 43 no Interior. 
-A redução das mortes também foi signfificativa nesse batalhão, que apresentou uma redução de 81% dos casos na comparação do período antes e depois das câmeras corporais. Essa queda se torna ainda mais significativa considerando o alto padrão de letalidade do batalhão da rota, já registrada em estudos anteriores (citar).
-Foram 82 casos em serviço registrados em 2018 e 2019 na Capital e no período pós câmeras (2021 e 2022) 22 ocorrências. Fora de serviço os casos também caem pela metade, oito casos antes das câmeras e 4 depois. Na região da Grande São Paulo e no Interior as quedas também são verificadas, somando 7 e 11 casos em serviço pós câmeras, respectivamente.  
+Dos 236 registros de mortes cometidas em serviço pelo 1º batalhão de Choque da Rota entre 2018 e 2022, 147 (62,3%) concentraram-se na Capital, 46 (19,5%) na Grande São Paulo, e 43 (18,3%) no Interior. 
+
+A redução das mortes em serviço também foi significativa nesse batalhão. Essa queda se torna ainda mais significativa considerando o alto padrão de letalidade do batalhão da rota, já registrada em estudos anteriores (citar). Em todo o estado, em 2018 e 2019 o 1º batalhão de Choque da Rota matou em serviço 129 pessoas. Após a adoção das medidas de controle do uso da força (2021 e 2022), este número caiu para 40 vítimas, uma redução de -69% das mortes em serviço pelo batalhão na comparação entre os períodos.
+
 
 BAEP 
 
