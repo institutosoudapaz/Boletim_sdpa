@@ -628,7 +628,10 @@ tab_dp |>
 
              
 ```
-Os dez distritos policiais com maior número de registros de ocorrências de roubos (total) em 2022 foram responsáveis por 25.6% de todas as ocorrências deste crime na capital do estado. Dentre os 103 distritos policiais da cidade de São Paulo, o 03 DP - Campos Elísios foi aquele que registrou o maior número de roubos, um total de 7.245 ocorrências. A região do centro também teve entre os dez distritos policiais com maior número de registros de ocorrências de roubos (total) o 01 DP - Sé, que ficou na terceira posição com 4.815 roubos registrados e o 12 DP - Pari. A região sul, por sua vez, teve, respectivamente, no 47 DP - Capão Redondo, 37 DP - Campo Limpo, 92 DP - Parque Santo Antônio seus distritos policiais com mais roubos, enquanto a zona oeste teve no 14 DP - Pinheiros, 23 DP - Perdizes e 78 DP - Jardins seus distritos com mais ocorrências de roubos. Finalmente, o 49 DP - São Mateus é o único dos dez distritos policiais com mais registros de roubos da zona leste.
+Dentre os 103 distritos policiais da cidade de São Paulo, somente 10 DPs foram responsáveis por 25,6% de todas as ocorrências de roubo (total)  na capital do estado em 2022. O 03 DP, Campos Elísios, registrou o maior número de roubos, um total de 7.245 ocorrências.
+
+A região do centro também teve outros dois DPs entre os 10 distritos policiais com maior número de registros de ocorrências de roubos (total). O 01 DP, Sé, ficou na terceira posição com 4.815 roubos registrados e o 12 DP, Pari, na oitava colocação. Na zona sul, o 47 DP, Capão Redondo, 37 DP, Campo Limpo, 92 DP, Parque Santo Antônio foram os distritos policiais com mais roubos. Na zona oeste teve o 14 DP, Pinheiros, 23 DP, Perdizes e 78 DP, Jardins foram os distritos com mais ocorrências de roubos. O 49 DP, São Mateus, é o único dos 10 distritos policiais com mais registros de roubos da zona leste.
+
 
 \newpage
 
@@ -636,8 +639,7 @@ Os dez distritos policiais com maior número de registros de ocorrências de rou
 Recomendações
 :::
 
-Considerando os dados dos chamados crimes violentos divulgados pela Secretaria da Segurança Pública de São Paulo para o ano de 2022, esta seção do Boletim Sou da Paz Analisa se encerra com as principais recomendações para que o estado de São Paulo possa lidar com o aumento registrado no número de ocorrências em praticamente todas as modalidades destes crimes violentos.
-Ainda que estas recomendações não esgotem todas as preocupações sobre as dinâmicas de violência no estado, acreditamos que elas compõem um cerne de questões prioritárias que devem ser orientadoras para o debate sobre as políticas de segurança pública em São Paulo.
+Considerando os dados divulgados pela Secretaria da Segurança Pública de São Paulo sobre crimes violentos em 2022, elencamos as principais recomendações para que o estado de São Paulo possa lidar com os aumentos nestes crimes. Ainda que estas recomendações não esgotem todas as preocupações sobre as dinâmicas de violência no estado, acreditamos que elas compõem um cerne de questões prioritárias que devem ser orientadoras para o debate das políticas de segurança pública em São Paulo.
 
 -   Os **homicídios dolosos** tiveram uma significativa alta de 7,2% na comparação com o ano anterior, concentrado nas regiões da Grande São Paulo e Interior.
     É essencial que a SSP/SP tenha um olhar atento para as dinâmicas de homicídios na região metropolitana e no interior do estado, sobretudo nas regiões dos Deinter 01 - Araçatuba e Deinter 10 - São José dos Campos, que registraram os maiores aumentos nas taxas de homicídios no interior.
@@ -645,10 +647,10 @@ Ainda que estas recomendações não esgotem todas as preocupações sobre as di
 -   Neste sentido, é importante que o estado de São Paulo intensifique os esforços para elucidação destes assassinatos.O relatório [Onde Mora a Impunidade](https://soudapaz.org/wp-content/uploads/2022/08/OndeMoraAImpunidade.pdf), publicado anualmente pelo Instituto Sou da Paz aponta uma redução do esclarecimento de homicídios no estado: apenas 34% dos assassinatos cometidos em 2019 foram elucidados, uma redução significativa em comparação ao ano anterior, no qual 46% dos homicídios cometidos em 2018 no estado foram elucidados.É preciso que estes crimes sejam solucionados, de forma tanto a levar seus autores à justiça, mas tam bém possibilitar uma real compreensão das dinâmicas criminais causadoras destes homicídios, e assim tomar medidas eficazes de prevenção.E isso só será possível por meio do investimento na Polícia Civil e na estrutura de investigação de homicídios do estado.
 
 -   O número de registros de ocorrências de **estupros** aumentou pelo segundo ano consecutivo em 2022, após uma queda nas notificações em 2020 devido à pandemia de Covid-19.
-    Novamente, este aumento das ocorrências de estupros no ano de 2022 se concentrou nas macrorregiões da Grande São Paulo e Interior, esta última responsável por 6 a cada 10 dos estupros registrados no estado.
+    Novamente, este aumento das ocorrências de estupros se concentrou nas macrorregiões da Grande São Paulo e Interior, esta última responsável por 6 a cada 10 dos estupros registrados no estado.
 
 -   O estupro no estado de São Paulo atinge majoritariamente crianças e adolescentes de até 14 anos - elas e outras categorias de vulneráveis foram as vítimas em 73% dos casos de estupros registrados no estado em 2022.
-    A violência sexual contra crianças e adolecentes em geral acontece entre pessoas com vínculos familiares, de amizade ou de vizinhança, o que torna ainda mais desafiador o enfrentamento destes crimes.
+    A violência sexual contra crianças e adolescentes em geral é cometida por pessoas com vínculos familiares, de amizade ou de vizinhança, o que torna ainda mais desafiador o enfrentamento destes crimes.
     Uma política efetiva de prevenção e combate deve envolver cooperação da Secretaria de Segurança Pública com serviços de educação, assistência e saúde, assim como investimento em atendimento e investigação adequadas.
     A violência sexual é um crime grave, violento, com possíveis consequências físicas e psicológicas difíceis de tratar, prejudicando ainda mais o desenvolvimento humano quando é cometido contra crianças e adolescentes, e é inadimissel que o estado de São Paulo conviva com aumentos seguidos nas ocorrências deste tipo de crime.
 
@@ -670,15 +672,18 @@ Ainda que estas recomendações não esgotem todas as preocupações sobre as di
 Análise Especial - Perfil da letalidade policial no estado de São Paulo 2018 - 2022
 :::
 
-A presente análise busca compreender qual foi o perfil da letalidade policial no estado de São Paulo entre os anos de 2018 e 2022. O intervalo que abarca tanto o período de maior letalidade das polícias na história recente do estado, como aquele de redução mais abrupta das mortes cometidas por policiais a partir da implementação de uma série de medidas de controle do uso da força letal pela Polícia Militar de São Paulo. Observa-se também a existência de marcadores políticos como, a nível estadual, a transição da gestão de Márcio França (PSB) para João Dória(PSDB) e Rodrigo Garcia (PSDB). 
-Outro marco relevante é a pandemia de Covid-19, iniciada no ano de 2020 impactando fortemente a capacidade de circulação da população e os esforços da gestão pública no seu enfrentamento.
+Nesta seção faremos uma análise do perfil da letalidade policial no estado de São Paulo, entre os anos de 2018 e 2022, intervalo que abarca tanto o período de maior letalidade das polícias na história recente do estado, como o período de redução mais abrupta das mortes cometidas por policiais, a partir da implementação de uma série de medidas de controle do uso da força letal pela Polícia Militar do Estado de São Paulo. 
 
-Ao mesmo tempo, uma série de políticas de mitigação do uso da força policial foram implementadas no estado de São Paulo, dentre elas, o projeto Olho Vivo, em que Cameras Operacionais Portáteis passaram a ser utilizada pela força policial. 
-Como diferentes estudos tem demonstrado ao longo dos anos, a letalidade policial tem uma participação relevante na composição dos crimes violentos e nos altos índices de homicídios registrados no país.
-A letalidade policial tem sido justificada frente à organização de grupos paralegais e o controle territorial exercido por facções como Primeiro Comando Capital (PCC) e Comando Vermelho (CV), para fins de controle dos mercados ilegais e pelos altos índices de roubo verificados em diferentes regiões do país. Por outro lado, essa violência vêm sendo contestada juridica e socialmente por diversos atores da sociedade civil, especialmente pelos movimento negro, tendo em vista o perfil racial das vítimas e a localização geográfica de operações policiais com alta mortalidade, que impactam sistematicamente populações periféricas e de baixa renda com desigual proporcionalidade. 
-Do ponto de vista da Segurança Pública, o debate sobre a letalidade da forças policiais destaca ainda, como o uso excessivo da força e a própria forma de atuação não só falhou em apresentar resultados efetivos no combate ao narcotráfico, como também é determinante no aumento das ocorrências de confrontos letais entre policiais e criminosos, que por vezes vitima também a população que reside em áreas de conflito. 
+É importante observar a existência de dois marcos relevantes no período que devem ser considerados na análise e interpretação dos dados sobre a letalidade e vitimização policial no estado. O primeiro deles é a transição dos gestores estaduais no período, já que o governo do estado foi ocupado por Márcio França (PSB, 2018), João Dória (PSDB, 2019-2022), e por Rodrigo Garcia (PSDB, 2022). A implementação das medidas de controle do uso da força pela Polícia Militar começaram a ser implementadas em meados de 2020, no segundo ano da gestão Dória. 
 
-Esse estudo busca analisar o impacto dos esforços de controlar o uso da força policial no Estado de São Paulo a partir de quatro eixos principais: 1) o uso de câmeras corporais, 2) a atuação  dos batalhões nas mortes decorrentes de intervenção policial, 3) o perfil das vítimas da letalidade policial, 4) outras ações de mitigação do uso da força policial. Objetiva-se examinar o efeito concreto e eficaz de medidas de controle do uso da força pelas polícias, não somente no número de pessoas mortas, que certamente é a principal justificativa para a implementação destas ações, mas também na queda da vitimização policial e verificar qual o perfil das vítimas.
+O primeiro semestre de 2020 também foi o início de outro marco que afetou diretamente as dinâmicas letais no estado: a pandemia de Covid-19, cujas medidas de isolamento social foram decretadas ainda em março de 2020, impactando fortemente a capacidade de circulação da população, as dinâmicas criminais e, especificamente em São Paulo, marcando um dos semestres com mais ocorrências de letalidade policial na história recente do estado.
+
+Porém, na segunda metade de 2020 começaram a ser implementadas pela Polícia Militar do Estado de São Paulo uma série de medidas para garantir o controle do uso da força e reduzir sua letalidade. Dentre estas ações, se destaca o programa Olho Vivo, em que Câmeras Operacionais Portáteis (COP) passaram a ser utilizadas pela corporação. As análises sobre a letalidade e vitimização policial apresentadas nesta seção, frequentemente apontam o ano de 2020 como um ponto de virada, não apenas para a redução das mortes cometidas e sofridas por policiais em serviço, mas também de mudanças substantivas no perfil destas ocorrências. 
+
+Como diferentes estudos têm demonstrado ao longo dos anos, a letalidade policial tem uma participação relevante na composição dos crimes violentos letais e nos altos índices de assassinatos registrados no país, e o estado de São Paulo era um dos maiores exemplos desta alta participação da letalidade policial nas mortes violentas. Tamanha letalidade no exercício do trabalho policial tem sido frequentemente justificada pelas próprias policiais e outros atores sociais, como uma espécie de resposta frente à organização de grupos criminais, ao  controle territorial exercido por facções, ou ainda, pelos altos índices de roubos verificados em diferentes regiões do país. Por outro lado, essa violência vêm sendo contestada juridica e socialmente por diversos atores da sociedade civil, especialmente pelo movimento negro, tendo em vista o perfil racial das vítimas e a localização geográfica de operações policiais com alta mortalidade, que impactam sistematicamente e de maneira desproporcional as populações periféricas e de baixa renda.
+
+Do ponto de vista da Segurança Pública, o debate sobre a letalidade da forças policiais destaca ainda, como o uso excessivo da força e a própria forma de atuação não só falhou em apresentar resultados efetivos no combate à criminalidade violenta e ao narcotráfico, como também é determinante no aumento das ocorrências de confrontos letais entre policiais e criminosos, que por vezes vítima também a população que reside em áreas de conflito.
+
 
 \newpage
 ::: {custom-style="Estilo1"}
@@ -689,27 +694,19 @@ O programa Olho Vivo e as medidas de controle do uso da força pela PMSP
 ::: {custom-style="Estilo1"}
 Metodologia
 :::
-As análises sobre letalidade policial que se seguem neste relatório foram elaboradas a partir de três fontes distintas de dados.
-A primeira delas, com dado fornecidos pela Corregedoria do Estado de São Paulo.
+As análises sobre os perfis da letalidade e vitimização policial que se seguem neste relatório foram elaboradas a partir de dados sobre mortes que envolvem policiais no estado produzidos por três órgãos distintos. São eles, as corregedorias das polícias do Estado de São Paulo, a própria Secretaria da Segurança Pública de São Paulo, e finalmente, o Ministério Público de São Paulo.
 
-A utilização desses dados dá continuidade ao histórico do presente relatório, e se justifica tendo em vista o grau de confiabilidade que estes apresenta.(fazer nota de rodapé falando da diferença dos números para o período) 
+Historicamente, as análises sobre a letalidade e vitimização policial produzidas pelo Instituto Sou da Paz utilizam os dados produzidos pelas Corregedorias da Polícia Civil e da Polícia Militar do Estado de São Paulo, e divulgados mensalmente no Diário Oficial. A prioridade para a utilização destes dados se dá pelo alto grau de confiabilidade e pelo processo de validação que estes passam. No entanto, as Corregedorias divulgam somente números agregados, ou seja, não disponibilizam os microdados, de forma que não é possível analisar elementos do perfil das ocorrências de letalidade e vitimização policial (como por exemplo, idade e raça/cor das vítimas, local, etc.) a partir exclusivamente desta fonte.
 
-A título de ilustração, para o período de análise, os dados disponibilizados pela SSP contabilizam 3521 casos de MDIP. Os números da Corregedoria, para o mesmo período, registram 3603.
-O segundo banco de dado utilizado foram os microdados de Morte em decorrência de intervenção policial fornecidos pela SSP/SP em sua plataforma de Estatísticas Criminais.
-Foi solicitado junto à secretaria, via Lei de Acesso à Informação, a complementação destes dados com informações que possibilitassem a desagregação da análise por batalhões e em quais deles havia sido implementado (e em qual período) o uso de cameras operacionais portáteis (COP), em concordância com o programa Olho Vivo.
-Sugeriu-se, assim, a inclusão da variável "batalhão" na base de dados.
-A disponibilização dos dados foi indeferida, sendo consideradas de caráter estratégico para as políticas de segurança pública.
-Sendo informações essenciais para a realização do estudo e para uma análise mais aprofundada sobre o efeito do uso das câmeras corporais na atuação policial no estado, as seguintes informações foram incorporadas a partir da base de dados disponibilizada pelo Grupo de Atuação Especial da Segurança Pública e Controle Externo da Atividade Policial (GAESP) do Ministério Público de São Paulo.
-O processo de adequação das bases se deu em duas etapas: inicialmente, foi utilizado o registro de dados de ocorrências (RDO) para a identificação das observações semelhantes.
-No entanto, após a identificação de casos em que o RDO contido na base do MP correspondia ao número do processo interno, não ao número do boletim de ocorrência, foi construída uma variável de identificação a partir da data, hora e do município.
-A análise exploratória dos bancos revelou também discrepância entre as ocorrências registradas neles.
-Em 2022, a base do MP apresenta 447 casos de MDIP, já a base da SSP registrou 419 casos no mesmo ano.
-Em 2021 a base do MP registrou 555 casos, já a da SSP, 570.
-Em 2020, os números registradoss pelo MP contabilizam 732 casos, contra 814 presentes na base da SSP.
-Assim, o banco final, utilizado nesta pesquisa, delimita as ocorrências para o período analisado (2018- 2022), contendo 7570 casos de mortes em decorrência de intervenção policial.
+Por sua vez, as informações do perfil das ocorrências e das vítimas foram adquiridas através dos microdados de Morte em Decorrência de Intervenção Policial fornecidos em transparência ativa pela SSP/SP em sua plataforma de Estatísticas Criminais. Também foi solicitado junto à secretaria, via Lei de Acesso à Informação, a complementação destes dados com informações que: (i) possibilitasse identificar o batalhão da PMESP no qual os policiais militares estavam lotados no momento da ocorrência, e (ii) uma listagem de quais batalhões da Polícia Militar do Estado de São Paulo haviam implementado as câmeras operacionais portáteis (COP) no contexto do programa Olho Vivo, e quando esta implementação ocorreu. No entanto, a disponibilização destes dados adicionais foi indeferida pela SSP/SP, sob o argumento que estas informações eram de “caráter estratégico para as políticas de segurança pública” do estado.
 
-#1 Dizer das medidas de controle da força implementadas pela PMESP de forma ampla
-#2 Dizer dos Deinter que não tem COP
+Foi somente através da base de dados disponibilizada pelo Grupo de Atuação Especial da Segurança Pública e Controle Externo da Atividade Policial (GAESP) do Ministério Público de São Paulo, que foi possível identificar quais os batalhões dos policiais militares envolvidos em ocorrências de letalidade policial, informação essencial para a realização de uma análise mais aprofundada sobre o efeito do uso das câmeras corporais na atuação policial no estado. Ao verificarmos que a base de dados da SSP/SP possuía uma maior variedade de dados sobre o perfil da ocorrência (ainda que sem o batalhão dos policiais envolvidos), optamos por mesclar estes dois bancos com os microdados de letalidade policial: inicialmente, foi utilizado o registro de dados de ocorrências (RDO) para a identificação das observações sobre uma mesma ocorrência de letalidade policial. 
+No entanto, após a identificação de casos em que o RDO contido na base do MP correspondia ao número do processo interno, não ao número do boletim de ocorrência, foi construída uma variável de identificação a partir mesclagem da data, hora e do município da ocorrência. A partir destas duas variáveis-chave foi possível unificar os bancos de dados da SSP/SP e do GAESP.
+
+Finalmente, por meio da revisão bibliográfica e o acompanhamento da produção recente sobre os impactos do Programa Olho Vivo e das demais medidas de controle do uso da força empregadas pela PMESP a partir de 2020, encontramos uma página do Programa Olho Vivo produzida pela própria Polícia Militar do Estado de São Paulo, voltada para os policiais da ponta, com normativas e materiais educacionais sobre o uso das COP, assim como uma listagem dos  64 dentre os 135 batalhões da PMESP que implementaram as câmeras corporais entre 2020 e 2022. A partir desta listagem, foi possível atribuir no banco de dados quais ocorrências de letalidade policial foram cometidas por batalhões com ou sem câmeras.
+
+Assim, o banco final, utilizado na maior parte das análises do perfil das ocorrências, possui dados sobre 3.437 ocorrências de letalidade policial no período entre 2018 e 2022. Já nas análises macro, ou seja, sobre o número de mortes cometidas e sofridas por policiais por ano e por macrorregião do estado, foi utilizado o banco agregado das corregedorias, que contabiliza 3.603 vítimas para o período. 
+
 
 
 \newpage
@@ -1072,52 +1069,11 @@ Além da redução das mortes cometidas por policiais entre os anos de 2018 a 20
 \newpage
 
 ::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial em São Paulo
-:::
-
-```{r mapa MDIP antes e depois COP, echo=FALSE, fig.width=8, fig.height=4.5}
-
-# Letalidade policial por ano
-
-tab_ssp |> 
-  filter(!is.na(ano_bo)) |> 
-  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
-  mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
-         ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
-  group_by(dp_circunscricao_limpo, cop ) |> 
-  mutate(total_vit = n())  |>
-   mutate(total_vit_agregado = case_when(
-     NA ~ "Nenhuma vítima",
-     total_vit = 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
-     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
-     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit > 10 ~ "10 ou mais vítimas")) |> 
-  ggplot() +
-  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
-  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
-    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
-                                   "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 2 vítimas", 
-                             "Entre 3 e 4 vítimas", "Entre 5 e 6 vítimas",
-                             "Entre 7 e 9 vítimas", "Mais de 10 vítimas"))+
-  theme_sdpa_maps + 
-  facet_wrap(~cop)
-
-```
-
-Somadas as mortes cometidas pelas polícias na cidade de São Paulo nos anos de 2018 e 2019, dois distritos policiais registraram 7 vítimas cada um: 054 DP - Cidade Tiradentes e 089 DP - Portal do Morumbi, respectivamente na zona leste e sul da cidade. Outros 7 distritos policiais registraram 5 ou 6 vítimas nestes dois anos. 
-
-Nos anos de 2021 e 2022, após a implementação das medidas de controle do uso da força pela PMSP, nenhum distrito policial de São Paulo registrou 5 ou mais vítimas de letalidade policial no agregado destes dois anos. Dois DPs registraram 4 vítimas nestes dois anos: 047 DP - Capão Redondo, na zona sul e 064 DP - Cidade A. E. Carvalho, na zona leste. Outros 3 distritos policiais registraram 3 nestes dois anos:  050 DP - Itaim Paulista e 055 DP - Parque São Rafael, ambos na zona leste, e 092 DP - Parque Santo Antônio, na zona sul da capital.
-
-\newpage
-
-::: {custom-style="Estilo1"}
 Mapas das ocorrências de letalidade policial por ano em serviço e fora de serviço na cidade de São Paulo - 2018 a 2022
 :::
 
 
-```{r mapa mdip em serviço e folga, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r mapa mdip sp, echo=FALSE, fig.width=8, fig.height=4.5}
 
 servico_names <- as_labeller(
      c(`SIM` = "Em Serviço", `NÃO` = "Folga"))
@@ -1127,175 +1083,117 @@ tab_ssp |>
   filter(!is.na(ano_bo)) %>%
   filter(servico %in% c("SIM", "NÃO")) |> 
   filter(ano_bo < 2023) %>%
-  group_by(dp_circunscricao_limpo, ano) |> 
+  group_by(dp_circunscricao_limpo) |> 
   mutate(total_vit = n())  |>
    mutate(total_vit_agregado = case_when(
-     NA ~ "Nenhuma vítima",
-     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
-     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
-     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
+     total_vit >= 1 & total_vit <= 5 ~ "Entre 1 e 5 vítimas",
+     total_vit >= 5 & total_vit <= 10 ~ "Entre 6 e 10 vítimas",
+     total_vit >= 11 & total_vit <= 15 ~ "Entre 11 e 15 vítimas",
+     total_vit >= 16 & total_vit <= 20 ~ "Entre 16 e 20 vítimas",
+     total_vit >= 21 & total_vit <= 25 ~ "Entre 21 e 25 vítimas",
+     total_vit > 25 ~ "Mais de 25 vítimas")) |> 
   ggplot() +
   geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
-  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.6, color = "light gray") +
     scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
                                    "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
-                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
-                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
+                    breaks=c("Entre 1 e 5 vítimas", 
+                             "Entre 6 e 10 vítimas", "Entre 11 e 15 vítimas",
+                             "Entre 16 e 20 vítimas", "Entre 21 e 25 vítimas",
+                             "Mais de 25 vítimas"))+
   theme_sdpa_maps + 
-  theme(legend.title= element_blank()) + 
-  facet_wrap(~servico, labeller = servico_names)
+  theme(legend.title= element_blank()) 
+# + facet_wrap(~servico, labeller = servico_names)
+```
 
-# Vitimização policial por ano
+No intervalo de 5 anos, entre 2018 e 2022, as polícias de São Paulo mataram na capital um total de 1.701 pessoas. No entanto, como o mapa demonstra, estas mortes não se distribuíram de forma uniforme pela capital paulista. Dos 93 distritos policiais da cidade de São Paulo, dez concentram 316 mortes, ou seja, cerca de 19% das mortes cometidas pelas polícias no período. Os distritos policiais com mais vítimas no período são 089 DP - Portal do Morumbi com 44 vítimas, na zona sul e que abarca a favela de Paraisópolis, 075 DP - Jardim Arpoador (zona oeste) com 34 vítimas, 049 DP - São Mateus (zona leste) com 33 vítimas e 037 DP - Campo Limpo (zona sul) e 054 DP - Cidade Tiradentes (zona leste) ambos com 31 vítimas cada. Tanto estes distritos policiais, como uma parte significativa daqueles que tiveram 25 ou mais pessoas mortas pelas polícias entre 2018 e 2022 se localizam nas extremidades de São Paulo, em regiões limítrofes com outros municípios.
+
+
+```{r mapa mdip folga, echo=FALSE, fig.width=8, fig.height=4.5}
+
+servico_names <- as_labeller(
+     c(`SIM` = "Em Serviço", `NÃO` = "Folga"))
+
+# Letalidade policial por serviço e folga
 tab_ssp |> 
   filter(!is.na(ano_bo)) %>%
+  filter(servico == "NÃO") |> 
   filter(ano_bo < 2023) %>%
-  group_by(dp_circunscricao_limpo, ano) |> 
+  group_by(dp_circunscricao_limpo) |> 
   mutate(total_vit = n())  |>
    mutate(total_vit_agregado = case_when(
-     NA ~ "Nenhuma vítima",
-     total_vit >= 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
-     total_vit >= 4 & total_vit <= 6 ~ "Entre 4 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit >= 10 & total_vit <= 14 ~ "Entre 10 e 14 vítimas",
-     total_vit > 15 ~ "Mais de 15 vítimas")) |> 
+     total_vit >= 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
+     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
+     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
+     total_vit >= 7 & total_vit <= 8 ~ "Entre 7 e 8 vítimas",
+     total_vit >= 9 & total_vit <= 10 ~ "Entre 9 e 10 vítimas",
+     total_vit > 10 ~ "Mais de 10 vítimas")) |> 
   ggplot() +
   geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
-  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
+  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.6, color = "light gray") +
     scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
                                    "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 3 vítimas", 
-                             "Entre 4 e 6 vítimas", "Entre 7 e 9 vítimas",
-                             "Entre 10 e 14 vítimas", "Mais de 15 vítimas"))+
+                    breaks=c("Entre 1 e 2 vítimas", "Entre 3 e 4 vítimas",
+                             "Entre 5 e 6 vítimas", "Entre 7 e 8 vítimas",
+                             "Entre 9 e 10 vítimas", "Mais de 10 vítimas"))+
   theme_sdpa_maps + 
-  facet_wrap(~ano_bo)
+  theme(legend.title= element_blank()) 
 ```
       
-ANALISE
+No intervalo de 5 anos, entre 2018 e 2022, policiais de  folga mataram em São Paulo 316 pessoas, cerca de 19% de todas as mortes cometidas pelas polícias no período. As mortes cometidas por policiais de folga possuem uma concentração ainda maior do que a totalidade das mortes cometidas por policiais na capital: dos 93 distritos policiais da cidade de São Paulo, nove concentram 85 vítimas de letalidade policial em folga, ou seja, cerca de 27% de todas as mortes cometidas por policiais de folga no período. 
+Os distritos policiais com mais vítimas de policiais de folga no período são 049 DP - São Mateus e 050 DP - Itaim Paulista, ambos na zona leste e com 12 vítimas cada, e 037 DP - Campo Limpo na zona sul e  053 DP - Parque do Carmo na zona leste, com 10 vítimas cada.  Visivelmente uma parte considerável dos distritos policiais com mais mortes cometidas por policiais de folga se concentra na zona leste da capital. 
+
 
 \newpage
 
+
 ::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial por ano em serviço antes e depois do Programa Olho Vivo
+Mapas das ocorrências de letalidade policial em São Paulo
 :::
 
-```{r mapa mdip em serviço antes e depois cops, echo=FALSE, fig.width=8, fig.height=4.5}
+```{r mapa MDIP antes e depois COP, echo=FALSE, fig.width=8, fig.height=4.5}
 
-# Letalidade policial por serviço antes e depois das COPS
+# Letalidade policial por ano
+
 tab_ssp |> 
   filter(!is.na(ano_bo)) |> 
-  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
-  filter(servico == "SIM") |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
   mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
          ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
   group_by(dp_circunscricao_limpo, cop ) |> 
   mutate(total_vit = n())  |>
    mutate(total_vit_agregado = case_when(
      NA ~ "Nenhuma vítima",
-     total_vit = 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
-     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
-     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit > 10 ~ "10 ou mais vítimas")) |> 
+     total_vit = 1 & total_vit <= 3 ~ "Entre 1 e 3 vítimas",
+     total_vit >= 4 & total_vit <= 7 ~ "Entre 4 e 7 vítimas",
+     total_vit >= 8 & total_vit <= 11 ~ "Entre 8 e 11 vítimas",
+     total_vit >= 12 & total_vit <= 15 ~ "Entre 12 e 15 vítimas",
+     total_vit >= 16 & total_vit <= 19 ~ "Entre 16 e 19 vítimas",
+     total_vit > 19 ~ "Mais de 20 vítimas")) |> 
   ggplot() +
   geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
   geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
     scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
                                    "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 2 vítimas", 
-                             "Entre 3 e 4 vítimas", "Entre 5 e 6 vítimas",
-                             "Entre 7 e 9 vítimas", "Mais de 10 vítimas"))+
+                    breaks=c("Entre 1 e 3 vítimas", "Entre 4 e 7 vítimas", 
+                             "Entre 8 e 11 vítimas", "Entre 12 e 15 vítimas",
+                             "Entre 16 e 19 vítimas", "Mais de 20 vítimas"))+
   theme_sdpa_maps + 
   facet_wrap(~cop)
+
 ```
 
-ANALISE
-\newpage
+Somadas as mortes cometidas pelas polícias na cidade de São Paulo nos anos de 2018 e 2019, foram registradas 817 vítimas letais. Já nos anos de 2021 e 2022 foram 480 pessoas mortas, uma redução de 41% vítimas.
 
-::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial em serviço antes e depois do Programa Olho Vivo
-:::
+No período antes da implementação do programa Olho Vivo, 10 dos 93 DPs da capital foram responsáveis por 188 vítimas (23% do total do período). Quatro DPs registraram mais de 20 vítimas em 2018 e 2019: 037 DP - Campo Limpo, e 089 DP - Portal do Morumbi, ambos na zona sul, com, respectivamente 24 e 22 mortos, 055 DP - Parque São Rafael, na zona leste, com 075 DP - Jardim Arpoador, na zona oeste, ambos com 21 vítimas. 
 
-```{r mapa mdip em serviço, echo=FALSE, fig.width=8, fig.height=4.5}
-
-# Letalidade policial por serviço antes e depois das COPS
-tab_ssp |> 
-  filter(!is.na(ano_bo)) |> 
-  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
-  filter(servico == "SIM") |> 
-  mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
-         ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
-  group_by(dp_circunscricao_limpo, cop ) |> 
-  mutate(total_vit = n())  |>
-   mutate(total_vit_agregado = case_when(
-     NA ~ "Nenhuma vítima",
-     total_vit = 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
-     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
-     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit > 10 ~ "10 ou mais vítimas")) |> 
-  ggplot() +
-  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
-  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
-    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
-                                   "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 2 vítimas", 
-                             "Entre 3 e 4 vítimas", "Entre 5 e 6 vítimas",
-                             "Entre 7 e 9 vítimas", "Mais de 10 vítimas"))+
-  theme_sdpa_maps + 
-  facet_wrap(~cop)
-```
-
-ANALISE
-\newpage
-
-::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial de folga antes e depois do Programa Olho Vivo
-:::
-
-```{r mapa mdip em serviço2, echo=FALSE, fig.width=8, fig.height=4.5}
-
-# Letalidade policial por serviço antes e depois das COPS
-tab_ssp |> 
-  filter(!is.na(ano_bo)) |> 
-  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
-  filter(servico == "SIM") |> 
-  mutate(cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes_COPs",
-         ano_bo %in% c(2021, 2022) ~ "Depois_COPs")) |>
-  group_by(dp_circunscricao_limpo, cop) |> 
-  mutate(total_vit = n())  |>
-   mutate(total_vit_agregado = case_when(
-     NA ~ "Nenhuma vítima",
-     total_vit = 1 & total_vit <= 2 ~ "Entre 1 e 2 vítimas",
-     total_vit >= 3 & total_vit <= 4 ~ "Entre 3 e 4 vítimas",
-     total_vit >= 5 & total_vit <= 6 ~ "Entre 5 e 6 vítimas",
-     total_vit >= 7 & total_vit <= 9 ~ "Entre 7 e 9 vítimas",
-     total_vit > 10 ~ "10 ou mais vítimas")) |> 
-  ggplot() +
-  geom_sf(aes(geometry = geometry)) +
-  geom_sf(aes(geometry = geometry, fill = total_vit_agregado))+
-  geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1.5, color = "white") +
-    scale_fill_manual(values = c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", 
-                                   "#0066A5", "#00366C"),  
-                    breaks=c("Nenhuma vítima", "Entre 1 e 2 vítimas", 
-                             "Entre 3 e 4 vítimas", "Entre 5 e 6 vítimas",
-                             "Entre 7 e 9 vítimas", "Mais de 10 vítimas"))+
-  theme_sdpa_maps + 
-  facet_wrap(~cop)
-```
-
-ANALISE
-
-
+Nos anos de 2021 e 2022, após a implementação das medidas de controle do uso da força pela PMESP, nenhum distrito policial de São Paulo registrou 20 ou mais vítimas de letalidade policial no agregado destes dois anos. 10 dos 93 DPs da capital foram responsáveis por 101 vítimas (21% do total do período), ou seja, mesmo com a forte redução da letalidade policial, ainda se manteve praticamente a mesma concentração espacial. Três DPs registraram mais de 10 vítimas em 2021 e 2022: 047 DP - Capão Redondo com 16 vítimas, 089 DP - Portal do Morumbi com 15 mortos, ambos na zona leste, e o 044 DP - Guaianazes, na zona leste da capital, com 10 vítimas fatais. 
 
 \newpage
+
 :::{custom-style="Estilo1"}
 Perfil etário das vitímas de MDIP
 :::
-
-
 
 \newpage
 
@@ -1312,7 +1210,12 @@ Perfil etário das vitímas de MDIP
 
 ```
 
-Dentre as 3.405 Mortes Decorrente de Intervenção Policial registradas no estado entre 2018 e 2022, é evidente a proeminência de mortes decorrentes da ação de policiais entre pessoas com idades entre 15 e 34 anos, compreendendo um total de 2.166 casos (63,6% do total de mortes cometidas por policiais), destas sendo 1.372 de pessoas negras e 794 brancas — uma variação de 72,8% entre os dois grupos. 
+Das 3.603 pessoas mortas em Mortes Decorrente de Intervenção Policial (MDIP) no período entre 2018 e 2022, foram disponibilizados dados de raça de 3.321 destas vítimas. Destas, 2. 147 (64,6%) eram pessoas negras, de acordo  com a aglutinação das classificações raciais e de faixa etária do IBGE, e 1.174 (35,4%) das vítimas foram consideradas brancas.
+
+De acordo com o Censo de 2010, 63,9% dos habitantes paulistas se declararam brancos, 34,6% negros (pretos e pardos). Com isso, nota-se que existe uma inversão entre a proporção da população negra do estado, e sua sobrerrepresentação dentre as vítimas de mortes decorrentes de intervenção policial.
+
+A população jovem (15 a 29 anos) é também a maior vitimada nos casos de MDIP. O perfil racial e etário das vítimas segue a mesma dinâmica nacional, conforme podemos observar na segunda edição do  relatório Violência Armada e Racismo, do Instituto Sou da Paz.
+
 
 \newpage
 
@@ -1338,47 +1241,14 @@ base_ssp |>
 
 ```
 
-Ao analisar o perfil etário das mortes cometidas por policiais em serviço e de folga no período de 2018 a 2022, é possível identificar padrões distintos na idade das vítimas. Dentre as pessoas vitimadas por policiais em serviço, 21,5% tinham até 19 anos de idade, e 45,8% tinham idades entre 20 e 29 anos. 
+Do total de 3.603 vítimas de letalidade policial no período entre 2018 e 2022, foram disponibilizados os dados etários de 2.257 vítimas. E ao analisar o perfil etário das mortes cometidas por policiais em serviço e de folga no período, é possível identificar padrões distintos na idade das vítimas. 
 
-Já entre as pessoas mortas por policiais em folga, 31,8% tinham entre 10 e 19 anos, e 47,1% tinham entre 20 e 29 anos de idade. Ou seja, ainda que as polícias matem mais durante o exercício de suas funções, uma maior proporção de adolescentes e jovens até 19 anos tende a ser morta por policiais de folga. 
+Dentre as 1.775 pessoas vitimadas por policiais em serviço, 382 vítimas (21,5%) tinham até 19 anos de idade, e 816 mortos (45,8%) tinham idades entre 20 e 29 anos.
+
+Já entre as 482 pessoas mortas por policiais em folga, 154 (31,9%) tinham entre 10 e 19 anos, e 228 vítimas (47,3%) tinham entre 20 e 29 anos de idade. Ou seja, ainda que o número absoluto de jovens mortos por policiais em serviço seja maior, uma maior proporção de adolescentes e jovens tende a ser morta por policiais de folga.
 
 
-```{r piramide idade e serviço e folga antes e depois das COPs, echo=FALSE, fig.height=4.5, fig.width=8}
-
-# ANTES DAS COPS
-base_ssp |>
-  filter(servico %in% c("SIM", "NÃO")) |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
-  filter(idade_pessoa_agregada != "65+") |> 
-  filter(idade_pessoa_agregada != "55-59") |> 
-  filter(ano_bo >= 2018 & ano_bo <= 2019) |> 
-      mutate(servico = case_when(
-      servico == "SIM" ~ "Em Serviço",
-      servico == "NÃO" ~ "De Folga",
-      T ~ as.character (servico))) |> 
-  group_by(servico, idade_pessoa_agregada) %>%
-   summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "",
-                           title = "2018 & 2019")
-
-# DEPOIS DAS COPS
-base_ssp |>
-  filter(servico %in% c("SIM", "NÃO")) |> 
-  filter(!is.na(idade_pessoa_agregada)) |> 
-  filter(idade_pessoa_agregada != "60-64") |> 
-  filter(idade_pessoa_agregada != "65+") |> 
-  filter(ano_bo >= 2021 & ano_bo <= 2022) |> 
-        mutate(servico = case_when(
-      servico == "SIM" ~ "Em Serviço",
-      servico == "NÃO" ~ "De Folga",
-      T ~ as.character (servico))) |> 
-  group_by(servico, idade_pessoa_agregada) %>%
-   summarise(cnt= n()) %>%
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = servico, xlab = "",
-                           title = "2021 & 2022")
-
-```
-
+\newpage
 
 Analisamos o perfil etário das mortes cometidas por policiais de folga e em serviço nos períodos antes da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (em 2018 e 2019), e nos dois anos imediatamente após o início destas medidas (2021 e 2022).
 
@@ -1388,11 +1258,60 @@ Já em 2021 e 2022, período posterior a implementação das medidas de controle
 
 Na comparação da composição percentual das vítimas de letalidade policial de acordo com sua faixa etária, foi perceptível no período após a implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP (2021 e 2022), uma redução mais concentrada da vitimização de adolescentes e jovens até 19 anos – uma redução percentual de 7,8% na participação destas vítimas no total dos mortos por policiais em serviço após a implementação do programa Olho Vivo. Mas em relação as vítimas de 10 a 19 anos nas ocorrências de letalidade por policiais de folga, esta redução proporcional foi muito menor, de apenas 1,4% na comparação entre os períodos antes e depois da implementação das medidas de controle do uso da força e do programa Olho Vivo pela PMSP.
 
-```{r faixa etaria agrupada, echo=FALSE, fig.height=4.5, fig.width=8}
+
+
+```{r faixa etaria agrupada 2, echo=FALSE, fig.height=4.5, fig.width=8}
+# Número absoluto
+
+base_ssp |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
+  filter(!is.na(ano_bo)) |> 
+       mutate(periodo_cop = case_when(
+         ano_bo %in% c(2018, 2019) ~ "Antes",
+         ano_bo%in% c(2021, 2022) ~ "Após")) |>
+   filter(!is.na(idade_pessoa_agregada)) |> 
+  group_by(periodo_cop, idade_pessoa_agregada) |> 
+  summarise(count=n()) |> 
+  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
+    geom_bar(position="dodge", stat="identity", width = 1.1)+
+  geom_text(aes(label = count), 
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.6) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
+  theme_void()+
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=10),
+        legend.title = element_text(size = 10, face = "bold"),
+        axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+```
+
+
+O gráfico apresenta uma análise do perfil etário das vítimas de letalidade policial (em serviço e de folga) no estado de São Paulo.
+
+Nos dois anos (2018 e 2019) antes da implementação das medidas de controle do uso da força, sobretudo o Programa Olho Vivo, pela PMESP, era pequena a diferença do número de mortos das duas faixas etárias mais vitimadas: de 15 a 19 anos, e de 20 a 24 anos. Ao todo foram 1.325 vítimas em 2 anos.
+
+No período de dois anos (2021 e 2022) após a implementação do programa Olho Vivo, houveram 745 vítimas de letalidade policial, uma significativa redução de -44% na comparação com o período anterior.  Todas as faixas etárias tiveram redução no número de vítimas, a maior se concentrando na faixa etária de 15 a 19 anos, com 197 vítimas a menos (-58%). 
+
+No total, foram 407 mortes de adolescentes e jovens de 0 a 29 anos pelas polícias do estado a menos na comparação com o período anterior às medidas de controle do uso da força pela PMESP.
+
+
+```{r faixa etaria agrupada 1, echo=FALSE, fig.height=4.5, fig.width=8}
 # Participação percentual por Faixa etaria agrupada
 
 base_ssp |> 
-  filter(ano_bo == c(2018, 2019, 2021, 2022)) |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
   filter(!is.na(ano_bo)) |> 
        mutate(periodo_cop = case_when(
          ano_bo %in% c(2018, 2019) ~ "Antes",
@@ -1402,108 +1321,161 @@ base_ssp |>
   summarise(count=n()) |> 
   mutate(percent = round(count / sum(count), 3)) |> 
   ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=periodo_cop)) + 
-    geom_bar(position="dodge", stat="identity")+
+    geom_bar(position="dodge", stat="identity", width = 1.1) +
   geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
-              position = position_dodge(0.65), 
-              vjust = -0.6, hjust = 3.7,
-            check_overlap = TRUE, size= 2.75) +
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
-  scale_x_discrete(breaks = c("Antes", 
-                                "Após")) + 
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.5) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
+  scale_y_continuous(labels = scales::percent) +
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
         legend.box.margin=margin(10,10,10,10),
         legend.text=element_text(size=10),
         legend.title = element_text(size = 10, face = "bold"),
         axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
         aspect.ratio=11/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+```
 
-# Participação percentual por Faixa etaria agrupada APENAS BATALHÕES COP
+Este gráfico apresenta os mesmos dados acerca do perfil etário das vítimas de letalidade policial (em serviço e de folga) no estado de São Paulo, mas com foco na proporção percentual de vítimas de cada faixa etária, antes e após a implementação das medidas de controle do uso da força, pela PMESP.
 
-base_ssp |> 
-  filter(ano_bo == c(2018, 2022)) |> 
-  filter(COP == "SIM") |> 
-  filter(!is.na(ano_bo)) |> 
-   filter(!is.na(idade_pessoa_agregada)) |> 
-  group_by(ano_bo, idade_pessoa_agregada) |> 
-  summarise(count=n()) |> 
-  mutate(percent = round(count / sum(count), 3)) |> 
-  ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
-    geom_bar(position="dodge", stat="identity")+
-  geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
-              position = position_dodge(.65), 
-              vjust = -0.6, hjust = 0.4,
-            check_overlap = TRUE, size= 2.75) +
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
-  scale_x_continuous(breaks = c(2018, 2022)) + 
-  theme_void()+
-  theme(legend.margin=margin(0,0,0,0),
-        legend.box.margin=margin(10,10,10,10),
-        legend.text=element_text(size=10),
-        legend.title = element_text(size = 10, face = "bold"),
-        axis.text.x=element_text(size=12),
-        aspect.ratio=11/20,
-        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+Nos dois anos (2018 e 2019) antes da implementação das medidas de controle do uso da força, as vítimas de 10 a 19 anos representaram 26,6% de todas as vítimas de letalidade policial no estado. Ou seja,  1 a cada 4 pessoas mortas pelas polícias eram adolescentes ou jovens.
 
-# Participação percentual por Faixa etaria agrupada EM SERVIÇO
+No período (2021 e 2022) após a implementação do programa Olho Vivo, não só o número absoluto de vítimas caiu, mas a participação de vítimas de 10 a 19 anos cairam para 19,6% de todas as vítimas de letalidade policial no estado no período. Proporcionalmente, houve um aumento das vítimas de 20 a 34 anos após a implementação destas medidas. 
+
+
+```{r faixa etaria agrupada 5, echo=FALSE, fig.height=4.5, fig.width=8}
+# Participação  por Faixa etaria agrupada EM SERVIÇO
 
 base_ssp |> 
-  filter(ano_bo == c(2018, 2022)) |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
   filter(servico == "SIM") |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
   filter(!is.na(ano_bo)) |> 
    filter(!is.na(idade_pessoa_agregada)) |> 
-  group_by(ano_bo, idade_pessoa_agregada) |> 
+  mutate(periodo_cop = case_when(
+         ano_bo %in% c(2018, 2019) ~ "Antes",
+         ano_bo%in% c(2021, 2022) ~ "Após")) |>
+  group_by(periodo_cop, idade_pessoa_agregada) |> 
   summarise(count=n()) |> 
   mutate(percent = round(count / sum(count), 3)) |> 
-  ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
-    geom_bar(position="dodge", stat="identity")+
-  geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
-              position = position_dodge(3.65), 
-              vjust = -0.6, hjust = 0.4,
-            check_overlap = TRUE, size= 2.75) +
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
-  scale_x_continuous(breaks = c(2018, 2022)) + 
+  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
+    geom_bar(position="dodge", stat="identity", width = 1.1)+
+   geom_text(aes(label = count),  
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.6) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
         legend.box.margin=margin(10,10,10,10),
         legend.text=element_text(size=10),
         legend.title = element_text(size = 10, face = "bold"),
         axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
         aspect.ratio=11/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+```
+Também nos interessa comparar o efeito da implementação das medidas de controle do uso da força pela PMESP no perfil etário das vítimas de policiais em serviço e em folga. Como esperado, houve uma grande redução no número de vítimas de letalidade policial em serviço em todas as faixas etárias, sobretudo entre jovens.
 
-# Participação percentual por Faixa etaria agrupada EM FOLGA
+Foram 212 vítimas com idade entre 15 e 19 anos no período anterior (2018 e 2019) a implementação das medidas de controle da força. Já no período de dois anos após a implementação foram 78 vítimas de 15 a 19 anos, uma intensa redução de -63,2%. Entre as vítimas com idades entre 20 e 24 anos, o número de mortes caiu de 244 vítimas para 145 vítimas na comparação entre os períodos, uma redução de -40,5%. 
+
+No total, considerados apenas as mortes com informações sobre a faixa etária, foram 880 mortes cometidas por policiais em serviço em 2018 e 2019, e 478 vítimas nos anos de 2021 e 2022, uma queda na letalidade em serviço de -45,6%
+
+```{r faixa etaria agrupada 4, echo=FALSE, fig.height=4.5, fig.width=8}
+
+# Participação por Faixa etaria agrupada EM FOLGA
 
 base_ssp |> 
-  filter(ano_bo == c(2018, 2022)) |> 
-  filter(!is.na(ano_bo)) |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
   filter(servico == "NÃO") |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
    filter(!is.na(idade_pessoa_agregada)) |> 
-  group_by(ano_bo, idade_pessoa_agregada) |> 
+  mutate(periodo_cop = case_when(
+         ano_bo %in% c(2018, 2019) ~ "Antes",
+         ano_bo%in% c(2021, 2022) ~ "Após")) |>
+  group_by(periodo_cop, idade_pessoa_agregada) |> 
   summarise(count=n()) |> 
   mutate(percent = round(count / sum(count), 3)) |> 
-  ggplot(aes(fill=idade_pessoa_agregada, y=percent, x=ano_bo)) + 
-    geom_bar(position="dodge", stat="identity")+
-  geom_text(aes(label = scales::percent(percent, big.mark = ".")), 
-              position = position_dodge(3.65), 
-              vjust = -0.6, hjust = 0.4,
-            check_overlap = TRUE, size= 2.75) +
-  viridis::scale_fill_viridis(discrete=TRUE, option="cividis", name = "Faixa etária") +
-  scale_x_continuous(breaks = c(2018, 2022)) + 
+  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
+    geom_bar(position="dodge", stat="identity", width = 1.1)+
+   geom_text(aes(label = count),  
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.6) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
         legend.box.margin=margin(10,10,10,10),
         legend.text=element_text(size=10),
         legend.title = element_text(size = 10, face = "bold"),
         axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
         aspect.ratio=11/20,
         plot.margin=unit(c(0.2,0,0,0), 'cm')) 
 
 ```
 
-ANÁLISE E PREENCHER ÁREAS EM BRANCO
+O efeito da implementação das medidas de controle do uso da força pela PMESP no perfil etário das vítimas de policiais em folga foi muito baixo. O que faz sentido, já que estas ocorrências se relacionam mais com a dinâmica de roubos, conflitos interpessoais e trabalhos pontuais realizados por policiais.
 
+Foram 62 vítimas com idade entre 15 e 19 anos no período anterior (2018 e 2019) a implementação das medidas de controle da força. Já no período de dois anos após a implementação foram 55 vítimas adolescentes, uma queda de -11,2%. Entre as vítimas com idades entre 20 e 24 anos, o número de mortes aumentou de 55 vítimas para 63 mortes na comparação entre os períodos, um crescimento de 14,5% na letalidade de pessoas nesta faixa etária. 
+
+
+```{r faixa etaria agrupada 3 COP, echo=FALSE, fig.height=4.5, fig.width=8}
+# Participação percentual por Faixa etaria agrupada APENAS BATALHÕES COP
+
+base_ssp |> 
+  filter(ano_bo %in% c(2018, 2019, 2021, 2022)) |> 
+  filter(COP == "SIM") |> 
+  filter(idade_pessoa_agregada != "60-64") |> 
+  filter(idade_pessoa_agregada != "65+") |> 
+  filter(!is.na(ano_bo)) |> 
+   filter(!is.na(idade_pessoa_agregada)) |> 
+  mutate(periodo_cop = case_when(
+         ano_bo %in% c(2018, 2019) ~ "Antes",
+         ano_bo%in% c(2021, 2022) ~ "Após")) |>
+  group_by(periodo_cop, idade_pessoa_agregada) |> 
+  summarise(count=n()) |> 
+  mutate(percent = round(count / sum(count), 3)) |> 
+  ggplot(aes(fill=idade_pessoa_agregada, y=count, x=periodo_cop)) + 
+    geom_bar(position="dodge", stat="identity", width = 1.1)+
+   geom_text(aes(label = count),  
+              position = position_dodge(width=1.1), 
+              vjust = -0.7, hjust = 0.51,
+            check_overlap = TRUE, size= 2.6) +
+  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
+                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
+                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_x_discrete(breaks = c("Antes", "Após")) + 
+  theme_void()+
+  theme(legend.margin=margin(0,0,0,0),
+        legend.box.margin=margin(10,10,10,10),
+        legend.text=element_text(size=10),
+        legend.title = element_text(size = 10, face = "bold"),
+        axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=8),
+        aspect.ratio=11/20,
+        plot.margin=unit(c(0.2,0,0,0), 'cm')) 
+```
+
+Finalmente nos interessa recortar somente dos batalhões da PMESP que integram o Programa Olho Vivo, ou seja, cujos policiais utilizam as Câmeras Operacionais Portáteis (COP) em serviço.  Como mencionado anteriormente, o Programa Olho Vivo foi implementado, sobretudo nos batalhões da Capital e Grande São Paulo, em unidades com elevada letalidade em serviço. Desta forma, o gráfico compara o perfil etário das vítimas de letalidade destes batalhões antes e depois da implementação das COP.
+
+Novamente a maior redução da letalidade se deu entre as vítimas com idade entre 10 e 19 anos. Nos dois anos (2018 e 2019) antes da implementação das medidas de controle do uso da força, estes batalhões foram responsáveis pela morte de 205 crianças e adolescentes de 0 a 19 anos.
+
+No período de dois anos após a implementação do programa Olho Vivo, os mesmos batalhões foram responsáveis por  69 vítimas letais entre 0 e 19 anos, uma redução de -66,3% na letalidade de crianças e adolescentes. 
 
 \newpage
 
@@ -1511,14 +1483,16 @@ ANÁLISE E PREENCHER ÁREAS EM BRANCO
 Perfil racial e etário das vítimas de letalidade policial em São Paulo
 :::
 
-```{r perfil racial,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
+```{r perfil racial 1 ,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
 
 ##tabela proporção de raça 
 prop_raca <- base_ssp |> 
   filter(between(ano_bo, 2018, 2022)) |> 
   mutate(cor_pele_todas = case_when(
       cor_pele %in% c("Parda","Preta") ~ "Negra",
-      cor_pele %in% c("Ignorada","REGISTRADO NA PF","Policia Federal", "NULL", "Outros") ~ "NA",T ~ as.character (cor_pele))) |>
+      cor_pele %in% c("Ignorada","REGISTRADO NA PF",
+                      "Policia Federal", "NULL", "Outros") ~ "NA",
+      T ~ as.character (cor_pele))) |>
   group_by(cor_pele_todas) |> 
   summarise(total = n()) |> 
   mutate(freq = round(total / sum(total)*100, 2)) |> 
@@ -1532,8 +1506,15 @@ prop_raca <- base_ssp |>
   opt_align_table_header(align = "left")
 prop_raca
 
-#gtsave(prop_raca, filename = "tabela_raca_prop.png")
 
+#gtsave(prop_raca, filename = "tabela_raca_prop.png")
+```
+
+Diversos estudos têm observado ao longos dos anos como o perfil de quem mais sofre com a letalidade policial é o mesmo da violência letal no Brasil: jovens homens negros. Dentre o total de 3.387 vítimas de MDIP no período analisado, observa-se que 2.147 são de pessoas negras — 63,4% —, enquanto pessoas brancas contabilizam 1.174 das vitimizações pela polícia no período, equivalente a 34,7% do total.
+
+Em 63 casos não houve preenchimento da categoria de raça e, houve três casos em que a cor/raça das vítimas foram identificadas como amarelas, representando menos de 0,1%  dos casos. 
+
+```{r perfil racial 2 ,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
 # perfil racial total
 #base_ssp |>
  #  filter(cor_pele_agregada %in% c( "Branca", "Negra")) |>
@@ -1581,9 +1562,9 @@ prop_raca
     scale_y_continuous(labels = scales::percent)+
     theme_void()+
     theme(legend.position = "right",
-          axis.text.y = element_text(size = 8.5), 
-          legend.text=element_text(size=12),
-          axis.text.x=element_text(size=12),
+          axis.text.y = element_text(size = 10), 
+          legend.text=element_text(size=10),
+          axis.text.x=element_text(size=10),
           legend.title = element_blank()) +
   labs(title = "Perfil Racial das Vítimas por uso de Câmeras Operacionais Portáteis",
        subtitle = "2018 a 2022",
@@ -1592,8 +1573,16 @@ prop_raca
        fill= "") +
   facet_wrap(~COP)+
     coord_flip()
+```
 
+A proporção de casos se manteve estável ao longo dos anos analisados, destacando-se 2021 em que 68,37% das MDIPs foram contra pessoas negras. Entre os batalhões que receberam as COP, houve uma pequena redução da proporção de negros vitimados, sendo 2021 o ano com a maior proporção (75%) dos casos e 2020 e 2021 com a menor (66,7%). Em nenhum ano a proporção de vítimas negras se aproxima do percentual de negros habitantes do Estado de São Paulo, que em 2021, correspondia apenas a 37%,10 da população. (dados do Mapa da Desigualdade)
+
+
+```{r perfil racial 3, eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
+
+# COMO NÃO USAMOS ESTE PLOT, MARQUEI A OPÇÃO PARA NÃO PRODUZIR A VISUALIZAÇÃO
 #raça por macrorregião
+
   
  base_ssp |>
    filter(cor_pele_agregada %in% c("Negra", "Branca"),
@@ -1621,8 +1610,9 @@ prop_raca
   theme_sdpa_macroreg +
   guides(fill = guide_legend(reverse = TRUE))+
    facet_wrap(~macrorreg)
+```
  
- 
+```{r perfil racial 4 ,  echo=FALSE, fig.width=8, fig.height=4.5, warning=FALSE}
  
     #Raça por Bairro em SP (top 20 bairros com maior números de MDIP)
   raca_bairro <- base_ssp |> 
@@ -1662,26 +1652,14 @@ prop_raca
    # group_by(zona) |> count()
   
 
-  gtsave(raca_bairro, filename = "tabela_raca_bairro.png")
+#gtsave(raca_bairro, filename = "tabela_raca_bairro.png")
 ```
-  
-Diversos estudos tem observado ao longos dos anos como o perfil mais vitimado no Brasil têm sido também, aquele que mais sofre com a letalidade policial, que afeta desproporcionalmente a homens, negros e jovens. 
-Dentre o total de 3.405 vítimas de MDIP no período analisado, observa-se que 2.155 são de pessoas negras --- correspondente à 63,29% ---, enquanto pessoas brancas contabilizam 1.184 das vitimizações pela polícia no período, equivalente a 34,77% do total. Em 63 casos não houve preenchimento da categoria de raça e, houve também 3 casos em que a cor/raça das vítimas foram identificadas como amarelas, contabilizando 1,95% dos casos. 
-A proporção de casos se manteve estável ao longo dos anos analisados, destacando-se o ano de 2021 em que 68,37% das MDIPs foram de pessoas negras. Entre os batalhões que receberam as COPs, houve uma pequena redução da proporção de negros vitimados, sendo 2021 o ano com a maior proporção, 75,09% dos casos e 2020 e 2021 com a menor, 66,74%.
-Em nenhum ano a proporção de vítimas negras se aproxima do percentual de negros habitantes do Estado de São Paulo, que em 2021, correspondia apenas a 37%,10 da população. (dados do Mapa da Desigualdade, citar!) A média de letalidade de pessoas negras nos batalhões que participam do programa Olho Vivo é de 69,60%, já entre os batalhões sem câmera a proporção é 10% menor com 59,67% dos casos com vítimas negras.  
-
-A análise da raça das vítimas pelas macrorregiões revela que a Capital é a região com a maior proporção de pessoas negras vitimadas pela polícia, sendo 71,27% do total de casos. Seguida pela Grande São Paulo em que 68,77% dos casos são de pessoas negras . O Interior do estado é a região menos desproporcional na vitimização de negros por policiais, com 55,56% de vítimas negras.
-
-Treze mulheres foram vítimas da letalidade policial entre 2018-2022. As ocorrências concentram-se entre 2018 a 2020, em que ocorreram 12 desses casos, dos quais quatro deles com mais de uma vítima na mesma ocorrência. 
-O local da vitimização foi majoritariamente em via pública, com onze casos. Dentre as vítimas sete foram declaradas brancas e seis pardas ou pretas. 
-Quanto a faixa etária das vítimas, prevalece também o perfil jovem. Sete delas possuíam entre 15 e 24 anos.
-
 
 Bairros
 
-Dentre as ocorrências na capital, nota-se também uma concentração de casos em bairros da zona leste e zona sul da cidade. Os bairros com maior ocorrência de MDIPs na cidade de São Paulo, são também bairros com alta concentração de moradores negros, conforme os dados divulgados pelo Mapa da Desiguldade (referenciar). Grajaú, por exemplo, situado na lista como o segundo bairro com maior concentração da população negra na cidade (56,8%) é o terceiro bairro com maior número de casos de letalidade policial no período analisado. Apesar da população majoritariamente negra, há ainda uma sobrerepresentação de negros vitimados pela polícia na região, que dos 27 casos, 21 das mortes foram de homens negros, 77,7% dos casos.
-Foram contabilizados ainda, quatro casos na zona norte e um na zona oeste. Em todos os bairros entre os 20 com maiores quantidades de casos, os negros foram vitimados em maior proporção (mais de 50% dos casos) do que brancos.  
+Dentre as ocorrências na capital, nota-se uma concentração de casos em bairros da zona leste e zona sul da cidade. Os bairros com maior ocorrência de MDIPs na cidade de São Paulo, são também bairros com alta concentração de moradores negros, conforme os dados divulgados pelo Mapa da Desiguldade (referenciar). Grajaú, por exemplo, situado na lista como o segundo bairro com maior concentração da população negra na cidade (56,8%), é o terceiro bairro com maior número de casos de letalidade policial no período analisado. Apesar da população majoritariamente negra, há ainda uma sobrerepresentação de negros vitimados pela polícia na região. Dos 27 casos, 21 das mortes foram de homens negros, representando 77,7% dos casos. 
 
+Em todos os bairros, entre os 20 com maiores quantidades de casos, os negros foram vitimados em maior proporção (mais de 50% dos casos) do que brancos.
 
 ```{r batalhões macro, echo = FALSE, fig.height=4.5, fig.width=8, warning=FALSE}
 
@@ -1693,7 +1671,7 @@ batalhoes<- base_ssp |>
   pivot_wider(names_from = ano, values_from = count) |> 
   select(batalhao_limpo, COP, "2018", "2019", "2020", "2021", "2022", macrorreg, servico)|>   mutate_all(funs(ifelse(is.na(.), 0, .))) |>
   mutate(total = `2018`+`2019`+`2020`+`2021`+`2022`, 
-         variacao = (`2022`+`2021`) - (`2019`+`2018`) / (`2019`+`2018`) * 100,
+         variacao = ((`2022`+`2021`) - (`2019`+`2018`)) / (`2019`+`2018`) * 100,
          media = (`2018`+`2019`+`2020`+`2021`+`2022`)/5,
          desviop = sd(c(`2018`, `2019`,`2020`,`2021`,`2022`)),
          servico = case_when(servico == "SIM" ~"Sim",
@@ -1839,16 +1817,41 @@ tab_baep
 #gtsave(tab_baep, filename = "tabela_baep.png")
 ```
 
-Foram identificados 64 batalhões de diferentes companhias que passaram a integrar o Programa Olho Vivo. 
-O preenchimento da variável batalhão em 723 casos possibilitou analisar mais localizadamente como se distribuiem das mortes decorrentes de intervenção policial no estado. 
-Dentre eles, destaca-se 1o batalhão de Choque da Rota, sendo o batalhão com maior participação nas mortes decorrentes de intervenção policial no estado. Os Batalhões Especiais da Polícia Militar (BAEPs) também aparecem como unidades com alta letalidade.
-Na capital, outros batalhões que se destacaram foram o 16o, 38o, 28o, 23o, 05o BPM/M, 19o, 43o e 18o - todos com mais de 20 casos de letalidade policial. 
-A variação entre o período 2018 representa em todos os casos uma notável redução no número de MDIPs. 
+Até julho de 2023,  64 dos 135 batalhões da PMESP foram incluídos no Programa Olho Vivo. O preenchimento da variável batalhão em 2.585 dos casos de letalidade policial em serviço possibilitou analisar mais localizadamente como se distribuem estas mortes no estado entre 2018 e 2022. 
+
+As próximas páginas apresentam os batalhões com maior letalidade por macrorregião do estado, além de identificarem se estes batalhões fazem parte do Programa Olho Vivo, o número de vítimas em cada ano da série histórica, e a variação percentual na comparação entre o período antes da implentação do programa Olho Vivo e demais medidas de controle do uso da força (2018 e 2019) e o período de dois após a implementação destas medidas (2021 e 2022).
+
+CAPITAL
+
+Dez dos 31 batalhões da PMESP foram responsáveis por 461 mortes em serviço na capital entre 2018 e 2022, o que representa 46,7% das 983 mortes cometidas em serviço. Todos estes dez batalhões tiveram uma forte queda na letalidade nos períodos antes e depois das medidas de controle do uso da força, com uma redução média de 70,4% na letalidade dentre os batalhões mais violentos.
+
+O 1º batalhão de Choque da Rota, foi a unidade da PMESP com mais mortes na cidade de São Paulo, com 147 vítimas entre 2018 e 2022. A unidade teve uma redução de -73% na letalidade em serviço na comparação no período anterior (2018 e 2019) e posterior (2021 e 2022) a implementação do programa Olho Vivo e demais medidas de controle do uso da força. Se considerarmos que os padrões de letalidade de 2018 e 2019 teriam  se mantido, isso significa que o  1º batalhão de Choque da Rota deixou de matar 60 pessoas em 2021 e 2022. 
+
+Dentre os demais batalhões 3 atuam na zona sul (19º BPM/M, 28º BPM/M e 38º BPM/M), 3 atuam na zona norte (5º BPM/M, 18º BPM/M e 43º BPM/M), 2 na zona oeste (16º BPM/M, 23º BPM/M), e um na zona leste (4º BAEP).
+
+GRANDE SÃO PAULO  
+
+Dentre os dez da PMESP que compõem o Comando de Policiamento de Área/Metropolitano (CPA/M), sete apresentaram redução na letalidade nos períodos antes e depois das medidas de controle do uso da força. Dentre estes dez BPM, a redução média na letalidade na comparação entre os períodos foi de 31%. 
+
+Novamente o 1º batalhão de Choque da Rota, foi a unidade da PMESP com mais mortes - o batalhão atua com maior flexibilidade territorial que os demais BPM. Policiais do 1º BPChoque da Rota em serviço mataram 27 pessoas em 2018 e, principalmente, em 2019 na Grande São Paulo. Nos anos de 2021 e 2022 a letalidade em serviço do batalhão foi de 7 vítimas, uma redução de 74%, similar a redução que o batalhão apresentou na Capital. 
+
+Dois BPM apresentaram aumento da letalidade em serviço no período: o 44º BPM (um dos 3 batalhões de Guarulhos), com um impressionante aumento de 157% na letalidade em serviço, e que não faz parte do Programa Olho Vivo; e o  14º BPM (um dos 2 batalhões de Osasco), que registrou um aumento de 50% na letalidade com 3 mortes a mais em 2021 e 2022, e cujos policiais usam as COP. 
+
+
+INTERIOR
+
+Dez dos 63 batalhões da PMESP que compõem o Comando de Policiamento do Interior (CPI) foram responsáveis por 359 mortes em serviço na capital entre 2018 e 2022, o que representa 39% das 922 mortes cometidas em serviço. Dentre estes dez batalhões, oito tiveram reduções na letalidade, e metade integra o Programa Olho Vivo. 
+
+A maior letalidade em serviço registrada foi no 2º BAEP, que atua em Santos e na região. A unidade teve uma redução de -39% na letalidade em serviço na comparação no período anterior (208 e 2019) e posterior (2021 e 2022) a implementação do programa Olho Vivo e demais medidas de controle do uso da força. Também registraram mais de 40 vítimas letais no período o 1º batalhão de Choque da Rota e o 48º BPM/I que atende a região de Sumaré, e registrou uma redução de 92% na letalidade na comparação entre os períodos. 
+
+É importante ressaltar que batalhões que não fazem parte do programa Olho Vivo, como o  6º BPM/I (Santos), 10º BPM/I (Piracicaba) e 7º BPM/I (Sorocaba) também tiveram reduções significativas na letalidade em serviço.
+
 
 ROTA
-Dos 276 registros de MDIPs cometidos pelo 1o BPChoque(Rota) no período, 147 concentraram-se na Capital, 46 na Grande São Paulo e 43 no Interior. 
-A redução das mortes também foi signfificativa nesse batalhão, que apresentou uma redução de 81% dos casos na comparação do período antes e depois das câmeras corporais. Essa queda se torna ainda mais significativa considerando o alto padrão de letalidade do batalhão da rota, já registrada em estudos anteriores (citar).
-Foram 82 casos em serviço registrados em 2018 e 2019 na Capital e no período pós câmeras (2021 e 2022) 22 ocorrências. Fora de serviço os casos também caem pela metade, oito casos antes das câmeras e 4 depois. Na região da Grande São Paulo e no Interior as quedas também são verificadas, somando 7 e 11 casos em serviço pós câmeras, respectivamente.  
+Dos 236 registros de mortes cometidas em serviço pelo 1º batalhão de Choque da Rota entre 2018 e 2022, 147 (62,3%) concentraram-se na Capital, 46 (19,5%) na Grande São Paulo, e 43 (18,3%) no Interior. 
+
+A redução das mortes em serviço também foi significativa nesse batalhão. Essa queda se torna ainda mais significativa considerando o alto padrão de letalidade do batalhão da rota, já registrada em estudos anteriores (citar). Em todo o estado, em 2018 e 2019 o 1º batalhão de Choque da Rota matou em serviço 129 pessoas. Após a adoção das medidas de controle do uso da força (2021 e 2022), este número caiu para 40 vítimas, uma redução de -69% das mortes em serviço pelo batalhão na comparação entre os períodos.
+
 
 BAEP 
 
