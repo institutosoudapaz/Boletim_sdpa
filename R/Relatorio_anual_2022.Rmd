@@ -1309,9 +1309,10 @@ base_ssp |>
               position = position_dodge(width=1.1), 
               vjust = -0.7, hjust = 0.51,
             check_overlap = TRUE, size= 2.6) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_fill_manual(values = c("#0D6986","#00366C","#0066A5","#5295D4", 
+                               "#00B3E3","#8DCBFF", "#D8F3FF", 
+                               "#99BFEF", "#99ADC6",  "#D0E4FF"), 
+                    name = "Faixa Etária") +  
   scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
@@ -1355,9 +1356,10 @@ base_ssp |>
               position = position_dodge(width=1.1), 
               vjust = -0.7, hjust = 0.51,
             check_overlap = TRUE, size= 2.5) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_fill_manual(values = c("#0D6986","#00366C","#0066A5","#5295D4", 
+                               "#00B3E3","#8DCBFF", "#D8F3FF", 
+                               "#99BFEF", "#99ADC6",  "#D0E4FF"), 
+                    name = "Faixa Etária") + 
   scale_x_discrete(breaks = c("Antes", "Após")) + 
   scale_y_continuous(labels = scales::percent) +
   theme_void()+
@@ -1400,9 +1402,10 @@ base_ssp |>
               position = position_dodge(width=1.1), 
               vjust = -0.7, hjust = 0.51,
             check_overlap = TRUE, size= 2.6) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_fill_manual(values = c("#0D6986","#00366C","#0066A5","#5295D4", 
+                               "#00B3E3","#8DCBFF", "#D8F3FF", 
+                               "#99BFEF", "#99ADC6",  "#D0E4FF"), 
+                    name = "Faixa Etária") + 
   scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
@@ -1442,9 +1445,10 @@ base_ssp |>
               position = position_dodge(width=1.1), 
               vjust = -0.7, hjust = 0.51,
             check_overlap = TRUE, size= 2.6) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_fill_manual(values = c("#0D6986","#00366C","#0066A5","#5295D4", 
+                               "#00B3E3","#8DCBFF", "#D8F3FF", 
+                               "#99BFEF", "#99ADC6",  "#D0E4FF"), 
+                    name = "Faixa Etária") + 
   scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
@@ -1485,9 +1489,10 @@ base_ssp |>
               position = position_dodge(width=1.1), 
               vjust = -0.7, hjust = 0.51,
             check_overlap = TRUE, size= 2.6) +
-  scale_fill_manual(values = c("#D8F3FF",  "#99ADC6",  "#D0E4FF", "#99BFEF",
-                               "#8DCBFF", "#5295D4","#00B3E3", "#0066A5", 
-                               "#006296", "#00366C"), name = "Faixa Etária") + 
+  scale_fill_manual(values = c("#0D6986","#00366C","#0066A5","#5295D4", 
+                               "#00B3E3","#8DCBFF", "#D8F3FF", 
+                               "#99BFEF", "#99ADC6",  "#D0E4FF"), 
+                    name = "Faixa Etária") + 
   scale_x_discrete(breaks = c("Antes", "Após")) + 
   theme_void()+
   theme(legend.margin=margin(0,0,0,0),
