@@ -933,7 +933,7 @@ Não apenas o número de policiais mortos reduziu na comparação entre os anos 
 Vitimização policial antes e depois das COPs
 :::
 
-```{r vitimização policial, echo=FALSE, fig.height=4.5, fig.width=8}
+```{r vitimização policial e let policial, echo=FALSE, fig.height=4.5, fig.width=8}
 
 tabela_vit_pol <- base_cor |> 
    filter(cod_reg %in% c(10, 20, 30, 99), periodo %in% c(2018, 2019, 2021, 2022)) |>  
@@ -965,6 +965,35 @@ tabela_vit_pol <- base_cor |>
   opt_align_table_header(align = "left")
 tabela_vit_pol
 
+tabela_let_pol <- base_cor |> 
+  filter(cod_reg %in% c(10, 20, 30, 99), periodo %in% c(2018, 2019, 2021, 2022)) |>  
+  mutate(cop = case_when(periodo %in% c(2018, 2019) ~ "Antes_COPs",
+                         periodo %in% c(2021, 2022) ~ "Depois_COPs")) |>
+  group_by(cod_reg, cop) %>% 
+  summarise(let_ser= sum(let_ser),
+            let_fol= sum(let_fol)) |>
+  mutate(cop_limpo = case_when(cop == "Antes_COPs" ~ "Antes das COPs",
+                               cop == "Depois_COPs" ~ "Depois das COPs")) |>
+  mutate(cod_reg = case_when(cod_reg == "10" ~ "Capital",
+                             cod_reg == "20" ~ "Região Metropolitana",
+                             cod_reg == "30" ~ "Interior",
+                             cod_reg == "99" ~ "Estado")) |> 
+  ungroup() |>
+  group_by(cod_reg, cop_limpo) |> 
+  summarise(n= sum(c(let_ser, let_fol)), 
+            let_ser_perc = round(let_ser/n*100,2),
+            let_fol_perc = round(let_fol/n*100,2))|> 
+  gt() |>   
+  cols_label(cod_reg= md("Região"), 
+             cop_limpo= md("Cop"),
+             let_fol_perc = md("Morte em Folga"),
+             n = md("Total"),
+             let_ser_perc = md("Morte em Serviço"))|> 
+  tab_header(
+    title = md("Letalidade policial por Região"),
+    subtitle = md("Entre 2018-2022")) |>
+  opt_align_table_header(align = "left")
+tabela_let_pol
 #gtsave(tabela_vit_pol, filename = "tabela_vit_pol.png")
 ```
 
