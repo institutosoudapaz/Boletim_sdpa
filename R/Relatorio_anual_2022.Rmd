@@ -1748,8 +1748,8 @@ resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2021 
 
 #total 
 tab_batalhao <- batalhoes |> 
-  filter(total >20) |>
-  select(-media, -desviop) |> 
+  head(10) |>
+  select(-media, -desviop, -servico) |> 
                  gt(rowname_col = "batalhao_limpo",
                     groupname_col = "macrorreg") |> 
              cols_label(variacao= md("Variação"), 
@@ -1757,8 +1757,7 @@ tab_batalhao <- batalhoes |>
              macrorreg= md("Região"),
              #desviop= md("Desvio Padrão"),
              #media = md("Média"),
-             total = md("Total"),
-             servico = md("Serviço"))|> 
+             total = md("Total")) |>
    tab_header(
     title = md("Batalhões com maior número de MDIPs por Região"),
     subtitle = md("Variação entre 2018-2022")) |>
@@ -1767,8 +1766,8 @@ tab_batalhao <- batalhoes |>
 #rota
 
 tab_rota <- resultado_rota |>
-  filter (total > 2,
-          macrorreg != "NA") |>
+  filter (macrorreg != "NA") |>
+  head(10) |> 
   select(-media, -desviop, -COP) |> 
   gt(rowname_col = "batalhao_limpo", 
                      groupname_col = "macrorreg") |>
@@ -1779,17 +1778,17 @@ tab_rota <- resultado_rota |>
              #media = md("Média"),
              total = md("Total"),
              servico = md("Serviço")) |> 
-   tab_header(
-    title = md("MDIPs nos batalhões da Rota por Região"),
+   tab_header(title = md("MDIPs nos batalhões da Rota por Região"),
     subtitle = md("Variação entre 2018-2022")) |>
   opt_align_table_header(align = "left")  
 
 #baep
 
 tab_baep <- resultado_baep |> 
-  select(-ano_criacao, -media, -desviop) |> 
-  filter (total > 2,
-          macrorreg != "NA") |> 
+  filter (macrorreg != "NA",
+          servico == "Sim") |>   
+  select(-ano_criacao, -media, -desviop, -servico) |> 
+  #head(10) |> 
   gt(rowname_col = "batalhao_limpo", 
                      groupname_col = "macrorreg") |>
             cols_label( X2018 = md("2018"),
@@ -1802,17 +1801,17 @@ tab_baep <- resultado_baep |>
              macrorreg= md("Região"),
              #desviop= md("Desvio Padrão"),
              #media = md("Média"),
-             total = md("Total"),
-             servico = md("Serviço")) |> 
+             total = md("Total")) |> 
+             #servico = md("Serviço") |> 
   tab_header(
     title = md("MDIPs nos BAEPs por Região"),
     subtitle = md("Variação entre 2018-2022")) |>
   opt_align_table_header(align = "left") |> 
   tab_footnote(
     footnote = "Para os Baep's implementados após 2018 os valores foram recalculados a partir do seu respectivo ano de criação.",
-    locations = cells_stub(rows = c("6° BAEP", "7° BAEP" ,"8° BAEP",
-                                    "9° BAEP","10° BAEP","11° BAEP",
-                                    "12° BAEP","13° BAEP","14° BAEP"))) |> 
+    locations = cells_stub(rows = c("6° BAEP", "7° BAEP" ,
+                                    "10° BAEP","11° BAEP",
+                                    "13° BAEP"))) |> 
     opt_footnote_marks(marks = "standard")
 tab_batalhao
 tab_rota
