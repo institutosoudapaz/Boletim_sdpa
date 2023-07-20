@@ -1777,7 +1777,8 @@ resultado_baep <- transform(resultado_baep, desviop = ifelse(ano_criacao >=2021 
 
 #total 
 tab_batalhao <- batalhoes |> 
-  head(10) |>
+  filter (total > 18) |> 
+  #head(10) |>
   select(-media, -desviop, -servico) |> 
                  gt(rowname_col = "batalhao_limpo",
                     groupname_col = "macrorreg") |> 
@@ -1907,12 +1908,11 @@ Há de se considerar ainda, a implementação recente dos BAPEs, o que dificulta
    summarise(total= n()) |>
     arrange(desc(total)) |> 
     pivot_wider( names_from = periodo_cop, values_from = total ) |> 
-     filter( between(`Antes das COPs`, 10,200),
-             between(`Depois das COPs`, 10, 200)) |>
+     filter( between(`Antes das COPs`, 9,200),
+             between(`Depois das COPs`, 9, 200)) |>
     mutate(var = (`Depois das COPs` - `Antes das COPs`)/`Antes das COPs`*100 )|> 
       pivot_longer(cols = c("Antes das COPs", "Depois das COPs"), values_to = "total") |>
     ungroup() |> 
-    select(-var) |> 
     group_by(cidade, name)|> 
     ggplot((aes(x =total , y = reorder(cidade,total), label = total )))  +
   geom_bar(position="stack", stat="identity", size=.4)+
@@ -1934,6 +1934,45 @@ Há de se considerar ainda, a implementação recente dos BAPEs, o que dificulta
   guides(color = "none")+
   #theme_sdpa_maps +
   guides(fill = guide_legend(reverse = TRUE))
+
+
+base_ssp |>
+    filter(!is.na(cidade),
+           cidade != "São Paulo") |> 
+     mutate(periodo_cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes das COPs",
+         ano_bo%in% c(2021, 2022) ~ "Depois das COPs")) |>
+    filter(periodo_cop %in% c("Antes das COPs", "Depois das COPs")) |>
+      group_by(cidade, periodo_cop) |> 
+   summarise(total= n()) |>
+    arrange(desc(total)) |> 
+    pivot_wider(names_from = periodo_cop, values_from = total ) |> 
+     filter( between(`Antes das COPs`, 9,200),
+             between(`Depois das COPs`, 9, 200)) |>
+    mutate(var = (`Depois das COPs` - `Antes das COPs`)/`Antes das COPs`*100 )|> 
+      pivot_longer(cols = c("Antes das COPs", "Depois das COPs"), values_to = "total") |>
+    ungroup() |> 
+    group_by(cidade, name) |> 
+    ggplot(aes(fill=name, y= total, x= reorder(cidade,total))) + 
+    geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+    geom_text(aes(label = format(total, big.mark = ",", scientific = FALSE)), 
+              position = position_dodge(0.94), 
+              vjust = 0.43, hjust = -0.1, check_overlap = TRUE, size= 2.9) +
+    geom_text(aes(y = 57, 
+                  label = scales::percent(round((var/100),3)),
+                  #colour = "#03A9F4",
+                  vjust = 0.7, hjust = 1, check_overlap = FALSE), size= 2.7) +
+    scale_fill_manual(values = azul_2) +
+    scale_color_identity() + 
+    guides(color = "none")+
+        theme_void()+
+    theme(legend.position = "bottom",
+          axis.text.y = element_text(size = 9), 
+          legend.text=element_text(size=10),
+          axis.text.x=element_text(size=10),
+          legend.title = element_blank()) +
+    # ajustar manualmente, os valores limites são maiores nos relatórios anuais
+    coord_flip()
+
 
 
 #Bairros
