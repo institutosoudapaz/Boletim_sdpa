@@ -1797,8 +1797,10 @@ tab_batalhao <- batalhoes |>
 
 tab_rota <- resultado_rota |>
   filter (macrorreg != "NA") |>
+  filter (servico == "Sim") |>
+  filter (batalhao_limpo != "1° BPChoque(Rota) e 16º BPM/M") |> 
   head(10) |> 
-  select(-media, -desviop, -COP) |> 
+  select(-media, -desviop, -COP, -servico) |> 
   gt(rowname_col = "batalhao_limpo", 
                      groupname_col = "macrorreg") |>
             cols_label(variacao= md("Variação"),
@@ -1806,21 +1808,19 @@ tab_rota <- resultado_rota |>
              macrorreg= md("Região"),
              #desviop= md("Desvio Padrão"),
              #media = md("Média"),
-             total = md("Total"),
-             servico = md("Serviço")) |> 
-   tab_header(title = md("MDIPs nos batalhões da Rota por Região"),
+             total = md("Total")) |> 
+   tab_header(title = md("Letalidade em serviço dos batalhões da Rota por Região"),
     subtitle = md("Variação entre 2018-2022")) |>
   opt_align_table_header(align = "left")  
 
 #baep
 
 tab_baep <- resultado_baep |> 
-  filter (macrorreg != "NA",
-          servico == "Sim") |>   
-  select(-ano_criacao, -media, -desviop, -servico) |> 
+  filter (servico == "Sim") |> 
+  filter (total > 10) |> 
+  select(-ano_criacao, -media, -desviop, -servico, -macrorreg) |> 
   #head(10) |> 
-  gt(rowname_col = "batalhao_limpo", 
-                     groupname_col = "macrorreg") |>
+  gt(rowname_col = "batalhao_limpo") |>
             cols_label( X2018 = md("2018"),
                         X2019 = md("2019"),
                         X2020 = md("2020"),
@@ -1828,20 +1828,18 @@ tab_baep <- resultado_baep |>
                         X2022 = md("2022"),
               variacao= md("Variação"),
              COP= md("Cop"),
-             macrorreg= md("Região"),
              #desviop= md("Desvio Padrão"),
              #media = md("Média"),
              total = md("Total")) |> 
              #servico = md("Serviço") |> 
   tab_header(
-    title = md("MDIPs nos BAEPs por Região"),
+    title = md("Baep com maiores índices de letalidade em serviço"),
     subtitle = md("Variação entre 2018-2022")) |>
   opt_align_table_header(align = "left") |> 
   tab_footnote(
     footnote = "Para os Baep's implementados após 2018 os valores foram recalculados a partir do seu respectivo ano de criação.",
     locations = cells_stub(rows = c("6° BAEP", "7° BAEP" ,
-                                    "10° BAEP","11° BAEP",
-                                    "13° BAEP"))) |> 
+                                    "10° BAEP"))) |> 
     opt_footnote_marks(marks = "standard")
 tab_batalhao
 tab_rota
@@ -1890,51 +1888,14 @@ A redução das mortes em serviço também foi significativa nesse batalhão. Es
 
 BAEP 
 
-Os Baeps também tiveram uma partipacção relevante na quantidade de mortes decorrentes de intervenção policial entre 2018 e 2022. Com destaque para 2020, ano em que foi verificada queda de vários indicadores de criminalidade. Neste ano, foram registradas 62 ocorrências entre os cinco BAEPs com maior letalidade no estado( 2o,1o, 10o, 4o e 5o) fenômeno que vai de encontro as dinâmicas
-de redução da violência policial registrada no período. 
-Contudo, apartir de 2021, nota-se uma redução significativa dos casos, observando-se por exemplo, que os mesmos BAEPs com maior número de vítimas em 2020, em 2022 registraram quatro mortes.
-Há de se considerar ainda, a implementação recente dos BAPEs, o que dificulta a comparação no período da análise deste relatório. Com exceção do 10o Batalhão de Operações Especiais, que atua no Interior do estado, houve queda na comparação do período antes das câmeras e depois das camêras em todos os batalhões analisados. Apesar disso, este batalhão apresentou uma redução no número de MDIPs entre 2021 e 2022, de oito para três casos. 
+A primeira unidade do Baep (Batalhão de Ações Especiais de Polícia), foi criada em 2014 para ser uma espécie de Rota do Interior, mas hoje estas unidades estão presentes em quase todo Estado de São Paulo, e tiveram uma participação relevante na letalidade policial no período entre 2018 e 2022. Destacamos, sobretudo, a letalidade nos Baep em 2020, ano em que foi verificada queda de vários indicadores de criminalidade.
+
+Dentre os oito Baep que tiveram letalidade mataram mais de dez pessoas no período, apenas um, o 10º BAEP, que atua na região de Piracicaba e demais municípios do Deinter 9, não faz parte do programa Olho Vivo. No entanto é importante observar que este batalhão, tal como o 7° BAEP e o 6° BAEP*, foi criado em meados de 2019, o que pode prejudicar a análise da variação percentual.
+
+O 2º BAEP , que atua na região de Santos, ainda que com uma redução de 39% na letalidade após a implementação do Olho Vivo, segue como o Baep de maior letalidade em serviço. Os outros dois batalhões de maior letalidade, o 1º BAEP (Campinas) e o 4º BAEP (Capital), tiveram respectivamente, expressivas reduções de 79% e 80% no número de mortes.
+ 
 
 ```{r municípios antes/depois cops, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE, }
-
-# perfil do local pós COP
-  base_ssp |>
-    filter(!is.na(cidade),
-           cidade != "São Paulo") |> 
-     mutate(periodo_cop = case_when(ano_bo %in% c(2018, 2019) ~ "Antes das COPs",
-         ano_bo%in% c(2021, 2022) ~ "Depois das COPs")) |>
-    filter(periodo_cop %in% c("Antes das COPs", "Depois das COPs")) |>
-      group_by(cidade, periodo_cop) |> 
-   summarise(total= n()) |>
-    arrange(desc(total)) |> 
-    pivot_wider( names_from = periodo_cop, values_from = total ) |> 
-     filter( between(`Antes das COPs`, 9,200),
-             between(`Depois das COPs`, 9, 200)) |>
-    mutate(var = (`Depois das COPs` - `Antes das COPs`)/`Antes das COPs`*100 )|> 
-      pivot_longer(cols = c("Antes das COPs", "Depois das COPs"), values_to = "total") |>
-    ungroup() |> 
-    group_by(cidade, name)|> 
-    ggplot((aes(x =total , y = reorder(cidade,total), label = total )))  +
-  geom_bar(position="stack", stat="identity", size=.4)+
-  geom_col(show.legend = F , fill = "#134a86")+
-  geom_label(fill = "white", nudge_y = .0)+
-    #scale_fill_manual(values = "darkblue") +
-  hrbrthemes::theme_ipsum() +
-  theme(
-    legend.position = "right",
-    axis.text.y = element_text(size = 8.5) 
-  ) +
-  labs(title = "Top 11 municípios com mais MDIPs",
-       subtitle = "Antes e depois das COPs",
-       x = "Total",
-       y = "",
-       fill= "") +
-    facet_wrap(~ name)+
-    scale_fill_manual(values = teste_2) +
-  guides(color = "none")+
-  #theme_sdpa_maps +
-  guides(fill = guide_legend(reverse = TRUE))
-
 
 base_ssp |>
     filter(!is.na(cidade),
@@ -1953,15 +1914,15 @@ base_ssp |>
     ungroup() |> 
     group_by(cidade, name) |> 
     ggplot(aes(fill=name, y= total, x= reorder(cidade,total))) + 
-    geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
+    geom_bar(position=position_dodge2(reverse = TRUE), stat="identity", size=.4, colour="light grey") +
     geom_text(aes(label = format(total, big.mark = ",", scientific = FALSE)), 
-              position = position_dodge(0.94), 
+              position=position_dodge2(reverse = TRUE, 0.94), 
               vjust = 0.43, hjust = -0.1, check_overlap = TRUE, size= 2.9) +
     geom_text(aes(y = 57, 
                   label = scales::percent(round((var/100),3)),
                   #colour = "#03A9F4",
                   vjust = 0.7, hjust = 1, check_overlap = FALSE), size= 2.7) +
-    scale_fill_manual(values = azul_2) +
+    scale_fill_manual(values = cores_sdp) +
     scale_color_identity() + 
     guides(color = "none")+
         theme_void()+
@@ -1984,85 +1945,19 @@ base_ssp |>
 #base_ssp |> filter(cidade == "São Vicente") |>  group_by(bairro) |>summarise(n = n()) |>  arrange(desc(n)) |> view()
 ```
 
+Com exceção da cidade de São Paulo, cuja situação já foi analisada, estes são os 15 municípios com maior letalidade policial (sem serviço e de folga) na comparação dos períodos de 2018 e 2019 (antes da implementação das COP e demais medidas de controle do uso da força pela PMESP), e a letalidade de 2021 e 2022 (após a implementação destas medidas).
 
+Apenas um dos 15 municípios registrou aumento da letalidade no período de 2021 e 2022: Ribeirão Preto, que registrou um aumento de 30% no número de pessoas mortas pelas polícias. É importante ressaltar que o município fica no Comando de Policiamento do Interior de Área Região 3, no qual nenhum batalhão faz parte do Programa Olho Vivo. 
 
-```{r batalhões com e sem câmera, eval=FALSE, fig.height=4.5, fig.width=8, warning=FALSE, include=FALSE}
-#VER O QUE VAI SER JOGADO FORA AQUI E APAGAR ESSA BAGUNCINHA!!!
-#total de ocorrências
+Dentre os municípios com maior redução da letalidade policial se destacam Sorocaba, com queda de 66%, Piracicaba, com redução de 64%, São Vicente, com menos 58% mortos, e São José dos Campos, com uma redução de 55% no número de vítimas de letalidade policial. 
 
-base_ssp |> group_by(COP) |>filter(!is.na(batalhao),
-                                   ano_bo >= 2021 & ano_bo <= 2022 ) |>  summarise(total = n()) |>arrange(desc(total)) 
+```{r outros crimes de municipios de maior letalidade, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE}
 
-#Número de ocorrências em serviço e fora 
-base_ssp |> group_by(COP,situacao) |>filter(!is.na(situacao)) |> 
-   filter(ano_bo >= 2018 & ano_bo <= 2022) |>
-  summarise(total = n()) |>arrange(desc(total)) 
+source("../isdp_scraper/R/funcoes/mensal/funcoes_sp_mensal.R")
 
-#perfil etário das vitimas
+base_mensal <- readRDS("../data-raw/base_mensal_dp.rds")
 
-   base_ssp |>
-  filter(!is.na(idade_pessoa_agregada)) |>
-  filter(idade_pessoa_agregada >= "05-09", idade_pessoa_agregada <= "65+",  situacao == "serviço",coorporacao =="PM") |> 
-    filter(ano_bo >= 2020 & ano_bo <= 2022) |> 
-   group_by(COP, idade_pessoa_agregada) |> 
-   summarise(cnt= n()) |> 
-   ggcharts::pyramid_chart(x = idade_pessoa_agregada, y= cnt, group = COP) 
-  
-  
-#Comparar antes e depois (2018 e 2019 x 2021 e 2022)
- #tabela para escrever 
-  base_ssp |>
-   filter(!is.na(idade_pessoa)) |>
-   filter(idade_pessoa >= "05-09", idade_pessoa <= "65+",
-          situacao == "serviço",
-          coorporacao =="PM") |> 
-    filter(ano_bo >= 2020 & ano_bo <= 2022) |> 
-   group_by(COP, idade_pessoa) |> 
-   summarise(cnt= n())
-  
-  #Raça por Local 
-  base_ssp |> 
-    filter( local_limpo %in% c("Via Pública","Residência"),
-            cor_pele_agregada %in% c("Negra", "Branca")) |>
-    group_by(MMlocal_limpo, cor_pele_agregada)|>
-    summarise(total= n()) |>
-    mutate(freq = paste0(round(total/sum(total)*100,2))) |>
-    arrange(desc(total)) 
-  
-  
-  anova<- base_ssp |> mutate(cod_COP = case_when(COP == "SIM" ~1, 
-                                     COP == "NÃO"~ 0))
-  anova<- anova |> group_by(batalhao, cod_COP) |> summarise(total = n()) |>  mutate(total = total)
-  car::leveneTest(cod_COP~batalhao , anova, center=mean)
-  
 ```
 
 
-
-::: {custom-style="Estilo1"}
-Ranking dos municípios em relação a letalidade 2018 a 2022 
-:::
-
-AQUI PODEMOS FAZER POR FACETS, UMA LISTA DE TOP 20 (POR NUMERO ABSOLUTO E POR TAXA PRA GENTE VER COMO FICA). A IDEIA É VER SE OS MUNICIPIOS QUE "SOBEM" NO RANKING DE LETALIDADE SÃO AQUELES SEM CAMERAS NOS BATALHOES.
-
-Caso hajam destaques de variações muito intensas de municípios, tentar cruzar com apreensão de drogas, e armas da base completa
-
-
-\newpage
-
-
-::: {custom-style="Estilo1"}
-Comparar entre batalhões com e sem câmera
-:::
-
-FAZER DUAS ANÁLISES, APONTANDO QUE A TENDENCIA DE QUEDA MAIOR NOS BATALHOES COM COP E REDUÇÃO MAIS CONTIDA NOS DEMAIS.
-
-TAMBÉM FAZER ANÁLISE DO Número de ocorrências em serviço e fora
-
-APONTAR Destaques de variações muito intensas de batalhões
-
-\newpage
-
-::: {custom-style="Estilo1"}
-Mapas das ocorrências de letalidade policial na cidade de São Paulo antes e depois do Programa Olho Vivo
-:::
+```
