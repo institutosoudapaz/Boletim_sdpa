@@ -1972,7 +1972,7 @@ base_media |>
 # FAZER GRÁFICO DE COLUNAS MOSTRANDO COMO CAI A LETALIDADE COM COP
 # INSERIR TABELA DA VARIAÇÃO PERCENTUAL DO GOOGLE SHEETS
 ```
-```{r 6 meses let policial, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE, }
+```{r 6 meses let policial macro, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE, }
 
 let_reg <- readxl::read_xlsx("../data-raw/let_pol_2018_2023.xlsx", sheet = 1)
 let_ser_folga <- readxl::read_xlsx("../data-raw/let_pol_2018_2023.xlsx", sheet = 2)
@@ -2008,7 +2008,34 @@ let_ser_folga |>
   scale_fill_manual(values = cores_sdp) +
   guides(color = "none")+
   theme_sdpa_macroreg +
-  guides(fill = guide_legend(reverse = FALSE)) +
-  ggtitle("Letalidade Policial em serviço e de folga no Estado de São Paulo - 2019 a 2023") 
+    theme(axis.text.x = element_text(size = 11)) +
+  guides(fill = guide_legend(reverse = FALSE)) 
 
 ```
+
+Nos primeiros seis meses do governo Tarcísio as mortes cometidas por policiais voltaram a aumentar após dois anos de intensa queda. O número de vítimas fatais das polícias do Estado de São Paulo foi 10% maior nos primeiros seis meses de 2023 em comparação com o mesmo período do ano anterior: 
+Este aumento da letalidade policial em serviço se concentrou sobretudo na Capital do estado. Houve um aumento de 60% das mortes cometidas por policiais em serviço na cidade de São Paulo, justamente onde há a maior concentração das câmeras operacionais portáteis (COP) do Programa Olha Vivo da PMESP. Ao todo, 72 pessoas foram mortas por policiais em serviço nos primeiros seis meses na capital, contra 45 vítimas fatais de policiais em serviço entre janeiro e junho de 2022. 
+
+
+```{r 6 meses let policial ser folga, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE, }
+
+let_ser_folga |>
+  ggplot(aes(fill=crime, y= total, x= periodo)) + 
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(total, big.mark = ".", scientific = FALSE),
+                colour =ifelse(crime=="Pessoas Mortas pelas Polícias em Serviço", 
+                               "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.4) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = periodo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+  scale_fill_manual(values = cores_sdp) +
+  guides(color = "none")+
+  theme_sdpa_macroreg +
+    theme(axis.text.x = element_text(size = 11)) +
+  guides(fill = guide_legend(reverse = FALSE)) 
+
+```
+
+foram 222 pessoas mortas no período. No entanto, enquanto as mortes cometidas por policiais de folga caíram cerca de 26%, houve um expressivo aumento na letalidade de policiais em serviço: foram 171 pessoas mortas pelas forças policiais durante o serviço, 38 vítimas fatais a mais que o mesmo período de 2022, e um crescimento de 28,6% no estado em relação ao primeiro semestre de 2023.
