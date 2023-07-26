@@ -54,7 +54,7 @@ ano_referencia <- 2022
 # Cores
 
 azuis_sdp <- c("#134a86", "#4a8ecc","#c1cddb") #contrastes em tons de azul
-azuis_claros <- c("#134a86","#5e7da2"," #7a94b2"," #91a7bf", "#b4c3d3", "#a4b6ca", "#c1cddb")
+azuis_claros <- c("#134a86","#5e7da2","#7a94b2","#91a7bf", "#b4c3d3", "#a4b6ca", "#c1cddb")
 azul_2 <- c("#134a86","#A4B6CA")
 cores_op <- c("#F57923","#4a8ecc") #laranja e azul claro sdp, para criar contrastes
 cores_2 <- c("#cec8c4", "#be9068","#042e3f")
@@ -1951,13 +1951,64 @@ Apenas um dos 15 municípios registrou aumento da letalidade no período de 2021
 
 Dentre os municípios com maior redução da letalidade policial se destacam Sorocaba, com queda de 66%, Piracicaba, com redução de 64%, São Vicente, com menos 58% mortos, e São José dos Campos, com uma redução de 55% no número de vítimas de letalidade policial. 
 
-```{r outros crimes de municipios de maior letalidade, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE}
+```{r  batalhoes com e sem cop letalidade, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE}
 
-source("../isdp_scraper/R/funcoes/mensal/funcoes_sp_mensal.R")
+base_ssp |> 
+  group_by(ano, COP) |> 
+  filter(servico == "SIM") |> 
+  count()
 
-base_mensal <- readRDS("../data-raw/base_mensal_dp.rds")
+# CALCULO DA BASE MÉDIA SEMANAL DE MORTES 
+base_media <- base_ssp |> 
+  group_by(ano, mes, COP) |> 
+  filter(servico == "SIM") |> 
+  count()
 
+base_media |> 
+  group_by(ano, COP) |> 
+  summarise(total = sum(n)) |> 
+  mutate(media = total/52)
+
+# FAZER GRÁFICO DE COLUNAS MOSTRANDO COMO CAI A LETALIDADE COM COP
+# INSERIR TABELA DA VARIAÇÃO PERCENTUAL DO GOOGLE SHEETS
 ```
+```{r 6 meses let policial, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE, }
 
+let_reg <- readxl::read_xlsx("../data-raw/let_pol_2018_2023.xlsx", sheet = 1)
+let_ser_folga <- readxl::read_xlsx("../data-raw/let_pol_2018_2023.xlsx", sheet = 2)
+
+let_reg |>
+  filter(regiao != "Estado") |> 
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
+             y= let_total, x= periodo)) + 
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(let_total, big.mark = ".", scientific = FALSE), 
+                colour =ifelse(regiao=="Capital", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.4) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = periodo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+  scale_fill_manual(values = teste_2) +
+  guides(color = "none")+
+  theme_sdpa_macroreg +
+  guides(fill = guide_legend(reverse = TRUE))
+
+let_ser_folga |>
+  ggplot(aes(fill=crime, y= total, x= periodo)) + 
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(total, big.mark = ".", scientific = FALSE),
+                colour =ifelse(crime=="Pessoas Mortas pelas Polícias em Serviço", 
+                               "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.4) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = periodo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+  scale_fill_manual(values = cores_sdp) +
+  guides(color = "none")+
+  theme_sdpa_macroreg +
+  guides(fill = guide_legend(reverse = FALSE)) +
+  ggtitle("Letalidade Policial em serviço e de folga no Estado de São Paulo - 2019 a 2023") 
 
 ```
