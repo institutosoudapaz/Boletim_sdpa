@@ -1974,8 +1974,10 @@ base_media |>
 ```
 ```{r 6 meses let policial macro, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE, }
 
-let_reg <- readxl::read_xlsx("../data-raw/let_pol_2018_2023.xlsx", sheet = 1)
-let_ser_folga <- readxl::read_xlsx("../data-raw/let_pol_2018_2023.xlsx", sheet = 2)
+let_reg <- readxl::read_xlsx("../data-raw/let_vit_pol_2018_2023.xlsx", sheet = 1)
+let_ser_folga <- readxl::read_xlsx("../data-raw/let_vit_pol_2018_2023.xlsx", sheet = 2)
+vit_reg <- readxl::read_xlsx("../data-raw/let_vit_pol_2018_2023.xlsx", sheet = 3)
+vit_ser_folga <- readxl::read_xlsx("../data-raw/let_vit_pol_2018_2023.xlsx", sheet = 4)
 
 let_reg |>
   filter(regiao != "Estado") |> 
@@ -1992,24 +1994,8 @@ let_reg |>
   scale_fill_manual(values = teste_2) +
   guides(color = "none")+
   theme_sdpa_macroreg +
-  guides(fill = guide_legend(reverse = TRUE))
-
-let_ser_folga |>
-  ggplot(aes(fill=crime, y= total, x= periodo)) + 
-  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
-  geom_text(aes(label = format(total, big.mark = ".", scientific = FALSE),
-                colour =ifelse(crime=="Pessoas Mortas pelas Polícias em Serviço", 
-                               "white", "black")), 
-            position=position_stack(vjust=0.5), size=3.4) +
-  scale_colour_manual(values=c("white"="white", "black"="black")) +
-    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
-                               group = periodo), 
-               geom = "text",size=3.4, vjust = -0.5) +
-  scale_fill_manual(values = cores_sdp) +
-  guides(color = "none")+
-  theme_sdpa_macroreg +
     theme(axis.text.x = element_text(size = 11)) +
-  guides(fill = guide_legend(reverse = FALSE)) 
+  guides(fill = guide_legend(reverse = TRUE))
 
 ```
 
@@ -2038,4 +2024,53 @@ let_ser_folga |>
 
 ```
 
-foram 222 pessoas mortas no período. No entanto, enquanto as mortes cometidas por policiais de folga caíram cerca de 26%, houve um expressivo aumento na letalidade de policiais em serviço: foram 171 pessoas mortas pelas forças policiais durante o serviço, 38 vítimas fatais a mais que o mesmo período de 2022, e um crescimento de 28,6% no estado em relação ao primeiro semestre de 2023.
+No 1° semestre de 2023 as polícias de São Paulo mataram um total de 222 pessoas: 171 vítimas de policiais em serviço, e 51 pessoas mortas por policiais de folga. Na comparação com o mesmo período do ano anterior, enquanto as mortes cometidas por policiais de folga caíram cerca de 26%, houve um expressivo aumento na letalidade de policiais em serviço:foram 38 vítimas fatais a mais que o mesmo período de 2022, e um crescimento de 28,6% no estado em relação ao primeiro semestre de 2023.
+
+Desta forma, é possível dizer que a letalidade policial no primeiro semestre de 2023 aumentou significativamente, e se concentrou justamente dentre os policiais em serviço e na capital, o que evidencia uma redução da capacidade de redução da letalidade dos mecanismos implementados pela PMESP a partir de meados de 2020.
+
+```{r 6 meses vit policial macro, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE, }
+
+vit_reg |>
+  filter(regiao != "Estado") |> 
+  ggplot(aes(fill=factor(regiao, levels=c("Interior", "Grande São Paulo","Capital")),
+             y= vit_total, x= periodo)) + 
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(vit_total, big.mark = ".", scientific = FALSE), 
+                colour =ifelse(regiao=="Capital", "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.4) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = periodo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+  scale_fill_manual(values = teste_2) +
+  guides(color = "none")+
+  theme_sdpa_macroreg +
+    theme(axis.text.x = element_text(size = 11)) +
+  guides(fill = guide_legend(reverse = TRUE))
+
+```
+
+Entre os meses de janeiro e junho de 2023, 15 policiais foram mortos, em serviço e de folga, no estado de São Paulo. Isso significa uma redução de 11,7% em relação à vitimização policial no 1° semestre de 2023. 
+
+Esta redução se deu na Capital do estado, onde morreram 6 policiais nos primeiros seis meses deste ano, enquanto nas regiões da Grande São Paulo e do Interior o número de policiais mortos se manteve exatamente o mesmo do que no mesmo período de 2022. 
+
+```{r 6 meses vit policial ser folga, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE, }
+
+vit_ser_folga |>
+  ggplot(aes(fill=crime, y= total, x= periodo)) + 
+  geom_bar(position="stack", stat="identity", size=.4, colour="light grey") +
+  geom_text(aes(label = format(total, big.mark = ".", scientific = FALSE),
+                colour =ifelse(crime=="Policiais mortos em Serviço", 
+                               "white", "black")), 
+            position=position_stack(vjust=0.5), size=3.4) +
+  scale_colour_manual(values=c("white"="white", "black"="black")) +
+    stat_summary(fun = sum,  aes(label = format(as.numeric(..y..), nsmall=0, big.mark="."), 
+                               group = periodo), 
+               geom = "text",size=3.4, vjust = -0.5) +
+  scale_fill_manual(values = cores_sdp) +
+  guides(color = "none")+
+  theme_sdpa_macroreg +
+    theme(axis.text.x = element_text(size = 11)) +
+  guides(fill = guide_legend(reverse = FALSE)) 
+
+```
