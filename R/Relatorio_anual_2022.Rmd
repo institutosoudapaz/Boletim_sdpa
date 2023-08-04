@@ -1078,19 +1078,20 @@ Ocorrências de letalidade policial com 2 ou mais vítimas
 ```{r ocorrências com mais de uma vítima por ano, fig.height=4.5, fig.width=8, echo=FALSE}
 
 base_mp_total|> 
-  filter( between(ano, 2018,2022), vitimas >2) |>
-  group_by(ano) |>  
-  count() |>
-  ungroup()|> 
-  gt() |> 
-             cols_label(ano= md("Ano"), 
-             n= md("Casos"))|> 
-   tab_header(
-    title = md("Ocorrências com mais de uma vítima"),
-    subtitle = md("Entre 2018-2022")) |>
-  opt_align_table_header(align = "left") 
+  filter(between(ano, 2018,2022), vitimas >2) |>
+  group_by(ano) |> 
+  count() |> 
+  ggplot(aes(x=ano, y=n)) +
+   geom_bar(stat = "identity", fill = "#134a86") +
+  geom_text(aes(label=n), vjust=-0.4) +
+  theme_void()+
+  theme(legend.position = "bottom",
+        legend.text=element_text(size=12),
+        axis.text.x=element_text(size=12),
+        axis.text.y=element_blank(),
+        axis.title = element_blank(),
+        legend.title = element_blank())
 
-#gtsave(ocorrencias, filename = "tabela_ocorrencias.png")
 ```
 
 Além da redução das mortes cometidas por policiais entre os anos de 2018 a 2022, também é possível identificar uma forte queda no número de ocorrências em que mais de uma pessoa foi vitimizada em decorrência de intervenção policial. Nos anos de 2018 e 2019 somados, o estado registrou 36 ocorrências de morte decorrente de intervenção policial com 2 ou mais vítimas. Já em 2021 e 2022, após a implementação das câmeras corporais e das demais medidas de controle do uso da força policial, foram registrados 11 casos de mortes cometidas por policiais com mais de uma vítima, uma redução expressiva de -69,4% nas ocorrências com mais de uma vítima fatal.
@@ -1972,6 +1973,8 @@ base_media |>
 # FAZER GRÁFICO DE COLUNAS MOSTRANDO COMO CAI A LETALIDADE COM COP
 # INSERIR TABELA DA VARIAÇÃO PERCENTUAL DO GOOGLE SHEETS
 ```
+
+
 ```{r 6 meses let policial macro, fig.height=4.5, echo = FALSE,  fig.width=8, warning=FALSE, }
 
 let_reg <- readxl::read_xlsx("../data-raw/let_vit_pol_2018_2023.xlsx", sheet = 1)
