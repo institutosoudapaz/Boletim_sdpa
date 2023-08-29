@@ -66,6 +66,7 @@ estupros_sp_sinan <- estupros_sp_sinan |>
           -DT_TRANSSE, -TPUNINOT)
 
 writexl::write_xlsx(estupros_sp_sinan, "estupros_sp_sinan.xlsx")
+saveRDS(estupros_sp_sinan, "estupros_sp_sinan.rds")
 
 # Exploração da base --------------------------------------------------------------------------
 
