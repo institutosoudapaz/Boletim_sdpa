@@ -1,5 +1,6 @@
 library(read.dbc)
 library(tidyverse)
+library(stringr)     
 
 # Abrir arquivos do Sinan ---------------------------------------------------------------------
 
@@ -55,6 +56,7 @@ estupros_sp_sinan <- bind_rows(viol_2013, viol_2014, viol_2015, viol_2016, viol_
 
 # Modifica e limpa a base ---------------------------------------------------------------------
 
+# Remove colunas que não serão usadas
 estupros_sp_sinan <- estupros_sp_sinan |>  
   select (-TP_NOT, -ID_AGRAVO, -SEM_NOT, -ID_UNIDADE, -SEM_PRI, -CS_GESTANT, -ID_PAIS,
           -NDUPLIC, -DT_INVEST, -LES_AUTOP, -PEN_ORAL, -PEN_ANAL, -PEN_VAGINA, -PROC_DST,
@@ -65,10 +67,11 @@ estupros_sp_sinan <- estupros_sp_sinan |>
           -DT_DIGITA, -DT_TRANSUS, -DT_TRANSDM, -DT_TRANSSM, -DT_TRANSRM, -DT_TRANSRS,
           -DT_TRANSSE, -TPUNINOT)
 
+# Cria coluna com idade da vítima em anos
+estupros_sp_sinan <- estupros_sp_sinan |> 
+  mutate(idade_anos = str_sub(NU_IDADE_N, - 2, - 1))
+
 writexl::write_xlsx(estupros_sp_sinan, "estupros_sp_sinan.xlsx")
-saveRDS(estupros_sp_sinan, "estupros_sp_sinan.rds")
+saveRDS(estupros_sp_sinan, "./data-raw/datasus_estupros/estupros_sp_sinan.rds")
 
-# Exploração da base --------------------------------------------------------------------------
-
-estupros_sp_sinan |> group_by(CS_RACA) |> count()
 
