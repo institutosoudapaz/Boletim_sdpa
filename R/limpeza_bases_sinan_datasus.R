@@ -74,4 +74,6 @@ estupros_sp_sinan <- estupros_sp_sinan |>
 writexl::write_xlsx(estupros_sp_sinan, "estupros_sp_sinan.xlsx")
 saveRDS(estupros_sp_sinan, "./data-raw/datasus_estupros/estupros_sp_sinan.rds")
 
+estupros_sp_sinan |> group_by(CS_RACA) |> count()
+estupros_sp_sinan |> group_by(NU_ANO) |> count()
 

@@ -10,11 +10,11 @@ library(tidyverse)
 #Abre a base trimestral
 
 base_trimestral <- read.csv2(
-  "../isdp_scraper/output/base_trimestral/base_trimestral_v4_1996-2022.csv")
+  "../isdp_scraper/output/base_trimestral/base_trimestral_v4_1996-2023.csv")
 
 # Modela a base de acordo com o tipo de relatório (trimestral, semestral ou anual) ------------
 
-ano_referencia <- 2022
+ano_referencia <- 2023
 
 base_trimestral <- base_trimestral %>% 
   mutate(
@@ -26,7 +26,7 @@ base_trimestral <- base_trimestral %>%
 # Escolha o modelo adequado:
 # 1 para tri01; 2 para Semestre; 3 para tri03 e 4 para Anual
 
-modelo <- 4
+modelo <- 2
 
 # Trata a base trimestral a partir do modelo selecionado
 if (modelo == 1){
@@ -303,7 +303,7 @@ saveRDS(base_completa, "./data-raw/base_completa.rds")
 
 # Preparar a base mensal (tem dados dos DPs) --------------------------------------------------
 
-base_mensal <- read.csv2("../isdp_scraper/output/base_mensal/base_mensal_v7_2022.csv")
+base_mensal <- read.csv2("../isdp_scraper/output/base_mensal/base_mensal_v7_2023.csv")
 
 # Modelagem base mensal 
 
@@ -478,4 +478,3 @@ base_viol_mulher_excel <- readRDS("./data-raw/base_viol_mul.rds") %>%
                      "HOMICÍDIO DOLOSO - TOTAL",
                      "LESÃO CORPORAL DOLOSA")) %>% 
   writexl::write_xlsx("./data-raw/base_viol_mulher.xlsx")
-

@@ -5,10 +5,6 @@ date: "`r Sys.Date()`"
 output:
     html_document:
       df_print: paged
-    word_document: 
-     reference_docx: "../template_doc.docx"
-  #powerpoint_presentation:
-    #reference_doc: "../template_doc.pptx"
 editor_options: 
   markdown: 
     wrap: sentence
@@ -25,16 +21,14 @@ library(gt)
 
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
-source("../R/limpeza_dp.R")
+source("../R/funcoes/limpeza_dp.R")
 
 base_completa <- readRDS("../data-raw/base_completa.rds")
-base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds")
-base_cor <- readRDS("../data-raw/base_corregedoria.rds")
-base_ssp <- readRDS("../data-raw/mdip_total.rds")
+base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds") #desatualizada
+base_cor <- readRDS("../data-raw/base_corregedoria.rds") #desatualizada
 base_mensal_dp <- readRDS("../data-raw/base_mensal_dp.rds")
-base_mp_total <- readRDS("../data-raw/mdip_mp_vitimas.rds")
 
-ano_referencia <- 2022
+ano_referencia <- 2023
 ```
 
 ```{r graficos e temas, include=FALSE}
@@ -51,7 +45,7 @@ ano_referencia <- 2022
 
 # DEFINIÇÕES DAS VISUALIZAÇÕES
 
-# Cores
+# Cores (LIMPAR AS PALETAS QUE NÃO USAMOS)
 
 azuis_sdp <- c("#134a86", "#4a8ecc","#c1cddb") #contrastes em tons de azul
 azuis_claros <- c("#134a86","#5e7da2","#7a94b2","#91a7bf", "#b4c3d3", "#a4b6ca", "#c1cddb")
@@ -66,13 +60,14 @@ tons_pasteis <- c("#f9aa74","#fcdbc5", "#c1cddb", "#4e7099","#7eba75")
 
 cor_stack <- c("#97bb77","#fed685","#7c9885")
 
-teste_1<- c ("#ffad72","#76a7dc","#b3ee98")
+teste_1<- c ("#ffad72","#76a7dc","#b3ee98") #não usamos
 
 teste_2 <- c("#ECBB5F","#E9842C", "#46667A")
 
-teste_3 <- c("#00798C","#D1495B","#EDAE49")
+teste_3 <- c("#00798C","#D1495B","#EDAE49") #não usamos
 
-teste_4 <- c("#264653","#2A9D8F","#E9C46A")
+teste_4 <- c("#264653","#2A9D8F","#E9C46A") #não usamos
+
 # Temas
 
 theme_sdpa_let <- theme_void()+
@@ -137,8 +132,6 @@ base_completa %>%
   guides(color = "none")+
   theme_sdpa_macroreg +
   guides(fill = guide_legend(reverse = TRUE))
-
-
 }
 
 # Criar gráficos de violência contra mulheres por macroregião
@@ -278,7 +271,6 @@ shp_capital$DpGeoDes <- c("010 DP - Penha de França",
                                   "014 DP - Pinheiros",                                    
                                   "001 DP - Sé")
 
-
 # Mesclar base_mensal e o shape pela coluna de nome dos DPs
 
 tab_dp <- base_mensal_dp %>% 
@@ -286,18 +278,6 @@ tab_dp <- base_mensal_dp %>%
   filter(cod_reg == 10) %>% 
   right_join(shp_capital, by = c("nom_del" = "DpGeoDes")) %>% 
   mutate(legenda = stringr::str_extract(nom_del,"^.{3}"))
-
-# Limpar entradas de DP na base_ssp
-
-base_ssp_sp <- base_ssp |> 
-  filter(municipio_limpo.y == "São Paulo") |> 
-  mutate(dp_circunscricao_limpo = limpeza_dp(dp_circunscricao))   
-
-# Mesclar base_ssp_sp e o shape pela coluna de nome dos DPs
-
-tab_ssp <- base_ssp_sp %>% 
-  left_join(shp_capital, by = c("dp_circunscricao_limpo" = "DpGeoDes")) %>% 
-  mutate(legenda = stringr::str_extract(dp_circunscricao_limpo,"^.{3}"))
 
 # Mapa para crimes da base mensal
 
@@ -316,7 +296,6 @@ tab_dp %>%
     theme_sdpa_maps
 
 }
-
 
 ```
 
@@ -348,7 +327,7 @@ Criminalidade Violenta
 # Gráfico crimes violentos
 
 base_completa %>% 
-    filter(ano %in% 2021:2022) |> 
+    filter(periodo %in% c("2023/1º Semestre","2022/1º Semestre")) |> 
     filter(cod_reg == 99) %>%
     group_by(periodo) %>%
     summarise(tot_estupro = sum(tot_estupro),
@@ -362,14 +341,14 @@ base_completa %>%
     group_by(crime) %>%
     arrange(crime) %>%
     mutate(variacao = 100 * (count - lag(count))/lag(count)) |> 
-    ggplot(aes(fill=factor(periodo, levels=c("2022","2021")), y= count, 
+    ggplot(aes(fill=factor(periodo, levels=c("2023/1º Semestre","2022/1º Semestre")), y= count, 
                x= factor(crime, levels = c(
                    "total", "roubo_outros", "roubo_veic","extor_seq","lat_ocorr", "tot_estupro", "hd_ocorr")))) + 
     geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
     geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
               position = position_dodge(0.94), 
-              vjust = 0.43, hjust = -0.1, check_overlap = FALSE, size= 3.2) +
-    geom_text(aes(y = 385000, 
+              vjust = 0.43, hjust = -0.1, size= 3.2) +
+    geom_text(aes(y = 185000, 
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
                   vjust = 0.1, hjust = 1, check_overlap = FALSE), size= 2.6) +
@@ -381,7 +360,7 @@ base_completa %>%
           "Homicídio doloso"), width = 24))+
     theme_sdpa_let +
     # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-    coord_flip(ylim=c(0, 390000))
+    coord_flip(ylim=c(0, 200000))
 
 ggsave("../imgs/crimes_violentos.jpg", width = 40, height = 20, units = "cm")
 
