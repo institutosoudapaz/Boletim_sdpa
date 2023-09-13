@@ -8,9 +8,17 @@ library(tidyverse)
 # Baixar os dados trimestrais da SSP  ---------------------------------------------------------
 
 #Abre a base trimestral
+# GAMBIARRA ENQUANTO O ISDP_SCRAPER TRIMESTRAL NÃO É AJUSTADO
 
-base_trimestral <- read.csv2(
-  "../isdp_scraper/output/base_trimestral/base_trimestral_v4_1996-2023.csv")
+base_trimestral_1 <- read.csv2(
+  "../isdp_scraper/output/base_trimestral/base_trimestral_v4_1996-2022.csv") |> 
+  select (-t83)
+
+base_trimestral_2 <- read.csv2(
+  "../isdp_scraper/output/base_trimestral/base_trimestral_v4_1996-2023.csv") |> 
+  filter(ano == 2023)
+
+base_trimestral <- rbind (base_trimestral_1, base_trimestral_2)
 
 # Modela a base de acordo com o tipo de relatório (trimestral, semestral ou anual) ------------
 
