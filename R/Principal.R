@@ -196,7 +196,7 @@ base_crimes <- left_join(base_crimes, base_pop, by = "reg_ano")
 
 # Tratar dados da corregedoria a partir do modelo selecionado ---------------------------------
 
-base_corregedoria <- read.csv2("../Boletim_sdpa/data-raw/base_corregedoria.csv") %>% 
+base_corregedoria <- read.csv("../Boletim_sdpa/data-raw/base_corregedoria.csv") %>% 
   mutate(
     let_ser = c1+c3,
     let_fol = c2+c4,
@@ -284,12 +284,11 @@ if (modelo == 1){
 
 base_corregedoria <- base_corregedoria %>% 
   group_by(cod_reg, periodo) %>% 
-  summarise(let_ser = sum(let_ser),
-            let_fol = sum(let_fol),
-            mort_ser = sum(mort_ser),
-            mort_fol =sum(mort_fol)
-  )
-
+  summarise(let_ser = sum(let_ser, na.rm = TRUE),
+            let_fol = sum(let_fol, na.rm = TRUE),
+            mort_ser = sum(mort_ser, na.rm = TRUE),
+            mort_fol =sum(mort_fol, na.rm = TRUE)
+  ) |> filter (periodo != "2023/2º Semestre") # Remove segundo semestre de 2023 que é parcial
 
 #Salva base corregedoria
 saveRDS(base_corregedoria, "./data-raw/base_corregedoria.rds")
