@@ -366,8 +366,7 @@ ggsave("../imgs/crimes_violentos.jpg", width = 40, height = 20, units = "cm")
 
 ```
 
-Em 2022, a criminalidade violenta no estado de São Paulo apresentou aumento em todos os tipos criminais analisados, porém a extorsão mediante sequestro é, entre todos, o crime que teve o maior acréscimo, dobrando o número de casos na comparação entre os anos de 2021 e 2022.
-Esta elevação pode ter como um dos principais fatores uma nova dinâmica, chamada de "sequestros do pix", modalidade de crime que surgiu com o advento e popularização desta tecnologia de transferências monetárias de forma imediata, lançada pelo Banco Central em 2020.
+No primeiro semestre de 2023, a criminalidade violenta no estado de São Paulo apresentou redução em quase todos os tipos criminais analisados, com excessão do estupro na comparação entre os anos de 2023 e 2022.
 Por sua vez, as ocorrências de outros crimes graves contra a vida e a dignidade, os homicídios dolosos, latrocínios e estupros, tiveram aumentos de cerca de 7% em 2022, o que evidencia a piora substantiva do cenários dos crimes violentos no estado de São Paulo no ano passado.
 Os crimes patrimoniais violentos tiveram aumentos ainda mais substantivos em 2022 em comparação com 2021, sobretudo os roubos de veículos, com um intenso aumento de 23% no último ano -- foram 40.673 ocorrências de roubos de veículos registradas no estado em 2022, o que significa uma média de cerca de 111 veículos roubados por dia durante o ano.
 
@@ -382,7 +381,7 @@ Letalidade Violenta
 # Gráfico letalidade violenta
 
 base_completa %>% 
-  filter(periodo > (ano_referencia-2)) %>% 
+  filter(periodo %in% c("2023/1º Semestre","2022/1º Semestre")) %>% 
   filter(cod_reg != 99 & cod_reg != 30) %>% 
   group_by(periodo) %>%
   summarise(hd_vitima = sum(hd_vitima),
@@ -437,9 +436,10 @@ grafico_geral(hd_ocorr)
 
 ```
 
-O ano de 2022 registrou 2.909 ocorrências de homicídio doloso, um número muito próximo daquele registrado quatro anos antes em 2018.No entanto, na comparação com o ano anterior, em 2022, o estado de São Paulo registrou um aumento de 7,2% nas ocorrências de homicídios.
-Os municípios da Grande São Paulo registraram um aumento de 21,2% nas ocorrências de homicídios dolosos entre 2022 e 2021, enquanto o Interior do estado apresentou um crescimento de 5,6% nas ocorrências desses crimes.
-É importante destacar que o Interior do estado de São Paulo registrou no último ano um total de 1.742 ocorrências de homicídios dolosos, isso significa que o Interior de São Paulo concentrou 59,8% das 2.909 ocorrências de homicídios dolosos no estado neste ano, ainda que estes municípios concentrem aproximadamente 12,1 milhões de habitantes, ou seja, cerca de um quarto da população do estado de São Paulo.
+O primeiro semestre de 2023 registrou 1.327 ocorrências de homicídio doloso. Na comparação com o mesmo período no ano anterior, em 2022, o estado de São Paulo registrou uma redução de 04,87% nas ocorrências de homicídios. Em média, foram aproximadamente 10 homicídios por dia.
+Com excessão da Capital, que registrou a mesma quantidade de homicídios no ano passado, todas as regiões tiveram redução de casos. 
+Os municípios da Grande São Paulo registraram uma redução de 09,64% nas ocorrências de homicídios dolosos entre 2023 e 2022, enquanto o Interior do estado apresentou uma diminuição de 04,72% das ocorrências desses crimes.
+É importante destacar que o Interior do estado de São Paulo registrou no último ano um total de 1.742 ocorrências de homicídios dolosos, isso significa que o Interior de São Paulo concentrou 62,32% das 1.327 ocorrências de homicídios dolosos no estado neste ano, ainda que estes municípios concentrem aproximadamente 12,1 milhões de habitantes, ou seja, cerca de um quarto da população do estado de São Paulo.
 
 \newpage
 ::: {custom-style="Estilo1"}
@@ -457,7 +457,7 @@ base_taxa <- base_completa %>%
     pivot_wider(names_from = periodo, values_from = hd_taxa) |> 
   mutate(var = `2022` - `2021`) |> 
   mutate(trend = ifelse(var < 0, "queda", "aumento")) |> 
-  pivot_longer(cols = c(`2021`, `2022`), names_to = "periodo", values_to = "hd_taxa") 
+  pivot_longer(cols = c(`2021`, `2023`), names_to = "periodo", values_to = "hd_taxa") 
   
 base_taxa |> 
   ggplot(aes(factor(periodo), hd_taxa, group = deinter, color = trend)) +
@@ -523,14 +523,22 @@ Lesão corporal de mulheres
 vio_mulher("LESÃOCORPORALDOLOSA")
 ```
 
-Foram registrados em 2022 no estado de São Paulo 52.672 ocorrências de lesão corporal de mulheres, um aumento residual de 1,3% no número de registros em comparação com o ano de 2021.
-Este montante significa que, em média, foram registradas cerca de 144 ocorrências de lesão corporal de mulheres por dia no estado durante 2022.
-Dentre as macrorregiões analisadas, somente a Capital apresentou aumento em relação ao ano anterior.
-O município de São Paulo registrou 14.389 ocorrências de lesão corporal de mulheres, 3.909 registros a mais que em 2021, um aumento de 37,2% neste período.
-Por sua vez, tanto o Interior, quanto a Grande São Paulo tiveram queda nas notificações deste crime em 2022.
+Foram registrados no primeiro semestre de 2023 no estado de São Paulo 28.117 ocorrências de lesão corporal de mulheres,  3.483 casos a mais do que o registrado no primeiro semestre do ano anterior. O aumento de 14,13 % em relação a 2022. 
+Este montante significa que, em média, foram registradas cerca de 212 ocorrências de lesão corporal de mulheres por dia no estado no primeiro semestre de 2023.
+Dentre as macrorregiões analisadas, somente o Interior apresentou reduziu em relação ao mesmo período do ano anterior.
+O município de São Paulo registrou 10.314 ocorrências de lesão corporal de mulheres, 5.158 registros a mais que em 2021, um aumento de 100,03% neste período.
+Também houve registro de alta na Grande São Paulo em relação aos dados de 2022. Com 4.335 ocorrências, a região apresentou 542 casos a mais, 14,28% casos a mais. 
+Já no Interior, única região que apresentou queda no registro de lesão corporal, 13.468 casos foram registrados. A redução contou com 2.217 casos a menos, uma diminuição de 14,13% em relação a 2022.  
 Ainda assim, o aumento progressivo que vem sendo observado neste tipo de crime no estado, especialmente na Capital, denota a urgência de se pensar políticas públicas para a redução efetiva dos casos de lesão corporal contra a mulher.
 
 \newpage
+::: {custom-style="Estilo1"}
+Homicídio Doloso Total (Mulheres)
+:::
+
+```{r homicídio doloso total mulher,echo=FALSE, fig.width=8, fig.height=4.5}
+vio_mulher("HOMICÍDIODOLOSO-TOTAL")
+```
 
 ::: {custom-style="Estilo1"}
 Feminicídio
@@ -538,12 +546,11 @@ Feminicídio
 
 ```{r feminicídio, echo=FALSE, fig.width=8, fig.height=4.5}
 vio_mulher("FEMINICÍDIO")
+
 ```
 
-Após uma redução em 2021, as ocorrências de feminicídio voltaram a aumentar 37,5% em 2022, alcançando o maior patamar dos últimos cinco anos.
-É importante destacar o aumento significativo das ocorrências de feminicídio na macrorregião da Grande São Paulo: foram 46 ocorrências deste crime em 2022, um aumento de 187% na comparação com 2021, e de 58,6% em relação ao número destes crimes cometidos em 2018.
-Das 187 ocorrências de feminicídios cometidos em 2022 no estado de São Paulo, 24,6% foram cometidos na macrorregião da Grande São Paulo, 19,7% na Capital e 55,6% nos municípios do Interior.
-Além disso, os 187 casos de feminicídio representam 45% do total de homicídios dolosos contra mulheres cometidos no estado em 2022.
+Após uma redução em 2021, o aumento dos casos observados em 2022 manteve-se estável.
+Foram registrados 111 casos no estado dos quais 66,6% são cometidos no Interior, 18,91% na Grande São Paulo e 14,41% no Interior. Além disso, os 111 casos de feminicídio representam 48,26% do total de homicídios dolosos contra mulheres cometidos no estado em 2023.
 
 \newpage
 
@@ -555,10 +562,11 @@ Estupro
 grafico_geral(tot_estupro)
 ```
 
-No ano de 2022 os registros das ocorrências de estupro aumentaram 7,3% em comparação com 2021.
-Esta tendência de crescimento nos casos de violência sexual também se confirma entre estupro de vulneráveis (contra vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual), que aumentaram 5,4% no estado para o mesmo período.
-Somente na macrorregião da Capital houve uma redução nos registros de ocorrências de estupro (de vulnerável ou não), com quedas de respectivamente, -8,1% e -4,7% na comparação com 2021.
-Por sua vez, na Grande São Paulo, o aumento foi de 9,4% no número de registros de ocorrências de estupros de vulneráveis, e de 11,1% nas ocorrências de estupros em geral, enquanto no Interior houve aumento de 6,8% nos registros de estupro, e de 12,2% nas ocorrências de estupros de vulneráveis entre 2021 e 2022.
+No primeiro semestre de 2023 os registros das ocorrências de estupro aumentaram 16,86% em comparação com o período em 2022. O aumento dos casos de estupro ocorreu em todas as regiões, sendo os casos ocorridos no Interior 59,63% dos casos, seguido pela Capital com 21,01% e a Grande São Paulo 19,35% do total de casos.
+O Interior registrou 4.286 ocorrências de estupro, 16,08% a mais que o mesmo período em 2022, aproximadamente 32 casos por dia. 
+Já a Capital, com o registro de 1.510 casos, aumentou em 20,66% os registros e teve em média 11 casos por dia. 
+Por último, a Grande São Paulo registrou 1.391 casos, um aumento de 10,39% do número de casos e uma média de 10 casos de estupro por dia no período.
+Esta tendência de crescimento nos casos de violência sexual também se confirma entre estupro de vulneráveis (contra vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual), que aumentaram x % no estado para o mesmo período.
 Os estupros de vulneráveis compõem 73% do total das ocorrências de estupros registradas no ano de 2022.
 
 \newpage
