@@ -24,8 +24,8 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 source("../R/funcoes/limpeza_dp.R")
 
 base_completa <- readRDS("../data-raw/base_completa.rds")
-base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds") #desatualizada
-base_cor <- readRDS("../data-raw/base_corregedoria.rds") #desatualizada
+base_viol_mul <- readRDS("../data-raw/base_viol_mul.rds") 
+base_cor <- readRDS("../data-raw/base_corregedoria.rds") 
 base_mensal_dp <- readRDS("../data-raw/base_mensal_dp.rds")
 
 ano_referencia <- 2023
@@ -351,7 +351,7 @@ base_completa %>%
     geom_text(aes(y = 185000, 
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
-                  vjust = 0.1, hjust = 1, check_overlap = FALSE), size= 2.6) +
+                  vjust = 0.1, hjust = 1, check_overlap = FALSE), size= 3.1) +
     scale_fill_manual(values = azul_2) +
     scale_color_identity() + 
     guides(color = "none")+
@@ -360,7 +360,7 @@ base_completa %>%
           "Homicídio doloso"), width = 24))+
     theme_sdpa_let +
     # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-    coord_flip(ylim=c(0, 200000))
+    coord_flip(ylim=c(0, 190000))
 
 ggsave("../imgs/crimes_violentos.jpg", width = 40, height = 20, units = "cm")
 
@@ -394,17 +394,18 @@ base_completa %>%
   group_by(crime) %>%
     arrange(crime) %>%
     mutate(variacao = 100 * (count - lag(count))/lag(count)) |> 
-  ggplot(aes(fill=factor(periodo, levels=c("2022", "2021")), y= count, 
+  ggplot(aes(fill=factor(periodo, levels=c("2023/1º Semestre",
+                                           "2022/1º Semestre")), y= count, 
              x= factor(crime, levels = c(
                "total", "hd_vitima", "lat_vitima", "lesao_morte", "let_ser", "let_fol"))))+ 
   geom_bar(position="dodge", stat="identity", size=.4, colour="light grey") +
      geom_text(aes(label = format(count, big.mark = ".", scientific = FALSE)), 
               position = position_dodge(0.94), 
               vjust = 0.43, hjust = -0.1, check_overlap = FALSE, size= 3.2) +
-    geom_text(aes(y = 4450, 
+    geom_text(aes(y = 2100, 
                   label = scales::percent(round((variacao/100),3)),
                   #colour = "#03A9F4",
-                  vjust = 0.1, hjust = 1, check_overlap = FALSE), size= 2.6) + 
+                  vjust = 0.1, hjust = 1, check_overlap = FALSE), size= 3.1) + 
     scale_fill_manual(values = azul_2) +
     scale_color_identity() + 
     guides(color = "none")+
@@ -415,7 +416,7 @@ base_completa %>%
       "Mortos pela Polícia Civil e Militar fora de serviço"), width = 24))+
   theme_sdpa_let +
   # ajustar manualmente, os valores limites são maiores nos relatórios anuais
-  coord_flip(ylim=c(100, 4550))
+  coord_flip(ylim=c(100, 2150))
 
 ```
 
@@ -450,14 +451,15 @@ Homicídios no Interior do estado
 
 # Trata base
 base_taxa <- base_completa %>% 
-  filter(periodo > (ano_referencia-2)) %>% 
+  filter(periodo %in% c("2023/1º Semestre","2022/1º Semestre")) %>% 
   filter(cod_reg != 99 & cod_reg > 30) %>% 
   group_by(periodo, deinter) %>%
   summarise(hd_taxa = (hd_ocorr/pop) * 100000) |> 
     pivot_wider(names_from = periodo, values_from = hd_taxa) |> 
-  mutate(var = `2022` - `2021`) |> 
+  mutate(var = `2023/1º Semestre` - `2022/1º Semestre`) |> 
   mutate(trend = ifelse(var < 0, "queda", "aumento")) |> 
-  pivot_longer(cols = c(`2021`, `2023`), names_to = "periodo", values_to = "hd_taxa") 
+  pivot_longer(cols = c(`2022/1º Semestre`, `2023/1º Semestre`), 
+               names_to = "periodo", values_to = "hd_taxa") 
   
 base_taxa |> 
   ggplot(aes(factor(periodo), hd_taxa, group = deinter, color = trend)) +
@@ -466,7 +468,7 @@ base_taxa |>
   geom_line(size = 0.5) +
   geom_point(aes(color = trend), size = 3) + 
   geom_text_repel(data = base_taxa, 
-        aes(x = ifelse(periodo == 2021, 1 - 0.2, 2 + 0.2),
+        aes(x = ifelse(periodo == "2022/1º Semestre", 1 - 0.2, 2 + 0.2),
           label = glue::glue("{deinter} ({scales::number(hd_taxa, accuracy = 0.1)})")), 
     size = 3.7, nudge_x = 0, direction = "y",
     segment.size = 0)+
@@ -764,22 +766,23 @@ Letalidade Policial no Interior
 
 # Trata base
 base_taxa <- base_completa %>% 
-  filter(periodo != c(2019, 2020, 2021)) %>% 
+  filter(periodo %in% c("2023/1º Semestre","2022/1º Semestre")) %>%  
   filter(cod_reg != 99 & cod_reg > 30) %>% 
   group_by(periodo, deinter) %>%
    summarise(let_pol = sum(let_ser + let_fol)) |> 
     pivot_wider(names_from = periodo, values_from = let_pol) |> 
-  mutate(var = `2022` - `2018`) |> 
+  mutate(var = `2023/1º Semestre` - `2022/1º Semestre`) |> 
   mutate(trend = ifelse(var <= 0, "queda", "aumento")) |> 
-  pivot_longer(cols = c(`2018`, `2022`), names_to = "periodo", values_to = "let_pol") 
-  
+  pivot_longer(cols = c(`2022/1º Semestre`, `2023/1º Semestre`),
+               names_to = "periodo", values_to = "let_pol") 
+
 base_taxa |> 
   ggplot(aes(factor(periodo), let_pol, group = deinter, color = trend)) +
   # altera espessura da linha
   geom_line(size = 0.4) +
   geom_point(aes(color = trend), size = 3) + 
   geom_text_repel(data = base_taxa, 
-        aes(x = ifelse(periodo == 2018, 1 - 0.3, 2 + 0.3),
+        aes(x = ifelse(periodo == "2022/1º Semestre", 1 - 0.3, 2 + 0.3),
           label = glue::glue("{deinter} ({scales::number(let_pol)} mortes)")), 
     size = 3.7, nudge_x = 0, direction = "y",
     segment.size = 0)+
