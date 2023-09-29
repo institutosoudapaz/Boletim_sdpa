@@ -310,12 +310,13 @@ APRESENTAÇÃO
 O Instituto Sou da Paz acompanha as estatísticas criminais divulgadas pela Secretaria da Segurança Pública de São Paulo (SSP/SP) desde 2012, a fim de contribuir para a melhor compreensão das dinâmicas criminais e atividades policiais no estado de São Paulo e em suas grandes regiões - Capital, Grande São Paulo e Interior.
 Além dos dados mensalmente divulgados pela SSP/SP, são consideradas informações produzidas pelas Corregedorias das Polícias Civil e Militar do Estado de São Paulo publicadas no Diário Oficial e dados obtidos via Lei de Acesso à Informação (LAI), fornecidos pela Coordenadoria de Análise e Planejamento (CAP) da SSP/SP e pela Polícia Civil.
 
-Desde 2022 o Boletim Sou da Paz Analisa tem uma periodicidade semestral e, nesta edição referente ao ano de 2022, aborda os principais indicadores de crimes violentos, especificamente os homicídios dolosos, latrocínios, estupros, roubos, além dos homicídios e agressões contra mulheres no estado no último ano.
+Desde 2022 o Boletim Sou da Paz Analisa tem uma periodicidade semestral e, nesta edição referente ao ano de 2023, aborda os principais indicadores de crimes violentos, especificamente os homicídios dolosos, latrocínios, estupros, roubos, além dos homicídios e agressões contra mulheres no estado no último ano.
 
-Essa edição do Boletim traz uma análise especial sobre o perfil da letalidade policial no estado de São Paulo entre os anos de 2018 e 2022, ou seja, intervalo que abarca tanto o período de maior letalidade das polícias na história recente do estado, como aquele de redução mais abrupta das mortes cometidas por policiais a partir da implementação de uma série de medidas de controle do uso da força letal pela Polícia Militar de São Paulo.
-Exploramos nesta análise especial dados das corregedorias das polícias paulistas, da SSP/SP e do Ministério Público de São Paulo para traçar o perfil etário e racial das vítimas de letalidade policial, assim como comparações entre as dinâmicas de letalidade policial e perfis das vítimas em uma perspectiva comparada entre batalhões da polícia militar que utilizam as Câmeras Operacionais Portáteis (COP) e aqueles que ainda não adotaram esta ferramenta de controle das atividades dos policiais.
+Em 2023 foi divulgado pela secretaria de segurança pública que foi encontrada uma inconsistência nos dados relativos a 2022, sendo necessária uma revisão das estatísticas criminais referentes a este ano. 
+Foi criado um grupo de trabalho interno para acompanhar a conferência e retificação dos dados, que afetaram principalmente os indicadores referentes a crimes patrimoniais.
+As principais variações observadas na nota técnica (Resolução 35/2023) divulgada pela SSP, ocorreram nos crimes de 
 
-O objetivo é demonstrar o efeito concreto e eficaz de medidas de controle do uso da força pelas polícias, não somente no número de pessoas mortas, que certamente é a principal justificativa para a implementação destas ações, mas também na queda da vitimização policial e na mudança substantiva do perfil das demais vítimas.
+parágrafo de encerramento
 
 \pagebreak
 
@@ -367,7 +368,8 @@ ggsave("../imgs/crimes_violentos.jpg", width = 40, height = 20, units = "cm")
 ```
 
 No primeiro semestre de 2023, a criminalidade violenta no estado de São Paulo apresentou redução em quase todos os tipos criminais analisados, com excessão do estupro na comparação entre os anos de 2023 e 2022.
-Por sua vez, as ocorrências de outros crimes graves contra a vida e a dignidade, os homicídios dolosos, latrocínios e estupros, tiveram aumentos de cerca de 7% em 2022, o que evidencia a piora substantiva do cenários dos crimes violentos no estado de São Paulo no ano passado.
+Por sua vez, as ocorrências de outros crimes graves contra a vida e a dignidade, os homicídios dolosos, latrocínios e estupros, tiveram quedas de cerca de 7% em 2022, o que evidencia a piora substantiva do cenários dos crimes violentos no estado de São Paulo no ano passado.
+
 Os crimes patrimoniais violentos tiveram aumentos ainda mais substantivos em 2022 em comparação com 2021, sobretudo os roubos de veículos, com um intenso aumento de 23% no último ano -- foram 40.673 ocorrências de roubos de veículos registradas no estado em 2022, o que significa uma média de cerca de 111 veículos roubados por dia durante o ano.
 
 \newpage
