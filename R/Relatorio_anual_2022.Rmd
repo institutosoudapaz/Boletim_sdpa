@@ -314,7 +314,9 @@ Desde 2022 o Boletim Sou da Paz Analisa tem uma periodicidade semestral e, nesta
 
 Em 2023 foi divulgado pela Secretaria da Segurança Pública de São Paulo que foi encontrada uma inconsistência nos dados criminais relativos a 2022, sendo necessária uma revisão das estatísticas criminais referentes a este ano.
 Foi criado um grupo de trabalho interno para acompanhar a conferência e retificação dos dados, que afetaram principalmente os indicadores referentes a crimes patrimoniais.
+
 As principais variações observadas na [nota técnica (Resolução 035/2023) divulgada pela SSP](https://www.ssp.sp.gov.br/Estatistica/download/NotaTecnica_Resolucao35-2023.pdf), ocorreram nos crimes de Furto de Veículos, com um aumento retroativo de 4% nas ocorrências de 2022), Roubo de Veículos (aumento retroativo de 2,6%) e Roubo - Outros, com uma queda retroativa de -1,2% das ocorrências do ano anterior. É importante levar em consideração estas mudanças na série histórica, sobretudo ao comparar os números apresentados neste relatório (já com a revisão promovida pela SSP/SP) com os dados publicados em publicações anteriores com dados referentes ao ano de 2022.
+
 
 
 \pagebreak
@@ -366,6 +368,7 @@ ggsave("../imgs/crimes_violentos.jpg", width = 40, height = 20, units = "cm")
 
 ```
 
+
 No 1º semestre de 2023, a criminalidade violenta no estado de São Paulo apresentou redução em quase todos os tipos criminais analisados, na comparação com o mesmo período de 2022, com a excessão do crime de estupro.
 A redução de crimes graves contra a vida como os homicídios dolosos e latrocínios segue a tendência de queda observada entre estes crimes no ano anterior.
 Foram registrados 1.327 homicídios no primeiro semestre de 2023, 4.9% a menos que em 2022, o que representa uma média de 7 homicídios por dia.
@@ -374,6 +377,7 @@ O crime de latrocínio apresentou queda de 8.2% no mesmo período, com 78 casos 
 Os crimes patrimoniais violentos tiveram uma pequena redução no 1º semestre 2023 na comparação com o mesmo intervalo de 2022: Os roubos de veículos reduziram 1.4%, enquanto os roubos (outros) tiveram queda de 2.2% - foram 18.567 ocorrências de roubos de veículos registradas no estado no primeiro semestre de 2023, o que significa uma média de cerca de 101 veículos roubados por dia até o final de junho.
 
 O único aumento observado se deu nos crimes de estupro, com um grande aumento de 16.9% na comparação com o mesmo período do ano anterior: No 1º semestre de 2023 foram registrados 7.187 casos de estupro, uma média 40 ocorrências de estupro registradas por dia.
+
 
 \newpage
 
@@ -428,6 +432,7 @@ base_completa %>%
 Nos primeiros seis meses de 2023, o estado de São Paulo registrou 1.741 vítimas de letalidade violenta, uma redução de 3.4% em comparação com o mesmo período do ano anterior. Isso representa uma média de 9,6 pessoas assassinadas por dia entre janeiro e junho deste ano. 
 No entanto, quando observamos cada uma das seis modalidades de letalidade violenta divulgadas pela SSP/SP, vemos que as dinâmicas e variações são bastante diversas.
 O maior aumento da letalidade violenta se deu em relação às mortes cometidas por policiais em serviço, com um expressivo aumento de 25% na comparação com o mesmo período de 2022: foram 170 vítimas de policiais em serviço entre janeiro e junho de 2023, quase uma morte por dia. Já em relação às mortes cometidas por policiais de folga, houve uma redução de 17.3% no primeiro semestre deste ano. Somadas as mortes em serviço e de folga, as polícias de São Paulo mataram 232 pessoas no 1º semestre de 2023, o que representa 13.3% do total de 1.741 vítimas da letalidade violenta em todo o estado no período. 
+
 
 \newpage
 
@@ -933,6 +938,7 @@ Enquanto a letalidade policial no estado tem se reduzido desde o ano de 2020, a 
 De forma geral, o estado teve uma redução de -44% nas vitimização policial entre 2018 e 2022, com 26 policiais mortos a menos no último ano.
 Já na comparação entre os anos de 2021 e 2022, o estado de São Paulo registrou um aumento de 32% na vitimização policial, aumento que se deu de forma localizada na Capital, que saltou de 7 policiais vitimados em 2021 para 17 no ano de 2022.
 
+
 \newpage
 
 ::: {custom-style="Estilo1"}
@@ -963,6 +969,8 @@ base_completa %>%
 
 ```
 
+
 Com a queda da letalidade policial, há uma significativa redução da participação policial no total de ocorrências letais no estado.
 No ano de 2018 a letalidade policial era responsável por 20,7% das mortes violentas intencionais (soma de latrocínios, homicídios dolosos, lesões seguidas de mortes e das próprias mortes cometidas por policiais) do estado de São Paulo.
 Em 2022, após a intensa redução das mortes em decorrência de intervenção policial, as mortes cometidas por policiais passaram a representar 11,8% do total de mortes violentas intencionais no estado.
+
