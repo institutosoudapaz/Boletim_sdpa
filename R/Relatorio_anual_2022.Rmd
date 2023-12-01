@@ -139,6 +139,7 @@ base_completa %>%
 vio_mulher <- function(crime) { #selecionar o tipo de crime e titulo # do gráfico
               # as opções são "LESÃOCORPORALDOLOSA" e "HOMICÍDIODOLOSO-TOTAL" (com aspas mesmo)
 base_viol_mul %>% 
+    filter(periodo != "2023/2º Semestre") |> 
   mutate(across(where(is.character), str_remove_all, pattern = fixed(" "))) %>% 
   mutate(regiao = case_when(cod_reg == 10 ~ "Capital", 
                             cod_reg == 20 ~ "Grande São Paulo",
@@ -274,7 +275,7 @@ shp_capital$DpGeoDes <- c("010 DP - Penha de França",
 # Mesclar base_mensal e o shape pela coluna de nome dos DPs
 
 tab_dp <- base_mensal_dp %>% 
-  filter(periodo == ano_referencia) %>% 
+  filter(periodo == "2023/1º Semestre") %>% 
   filter(cod_reg == 10) %>% 
   right_join(shp_capital, by = c("nom_del" = "DpGeoDes")) %>% 
   mutate(legenda = stringr::str_extract(nom_del,"^.{3}"))
@@ -537,16 +538,12 @@ Lesão corporal de mulheres
 vio_mulher("LESÃOCORPORALDOLOSA")
 ```
 
-Foram registrados no primeiro semestre de 2023 no estado de São Paulo 28.117 ocorrências de lesão corporal de mulheres, 3.483 casos a mais do que o registrado no primeiro semestre do ano anterior.
-O aumento de 14,13 % em relação a 2022.
-Este montante significa que, em média, foram registradas cerca de 212 ocorrências de lesão corporal de mulheres por dia no estado no primeiro semestre de 2023.
-Dentre as macrorregiões analisadas, somente o Interior apresentou reduziu em relação ao mesmo período do ano anterior.
-O município de São Paulo registrou 10.314 ocorrências de lesão corporal de mulheres, 5.158 registros a mais que em 2021, um aumento de 100,03% neste período.
-Também houve registro de alta na Grande São Paulo em relação aos dados de 2022.
-Com 4.335 ocorrências, a região apresentou 542 casos a mais, 14,28% casos a mais.
-Já no Interior, única região que apresentou queda no registro de lesão corporal, 13.468 casos foram registrados.
-A redução contou com 2.217 casos a menos, uma diminuição de 14,13% em relação a 2022.\
+Foram registrados no primeiro semestre de 2023 no estado de São Paulo 28.117 ocorrências de lesão corporal de mulheres, 3.483 casos a mais do que o registrado no primeiro semestre do ano anterior, um aumento de 14,1 % no número de ocorrências. Este montante significa que, em média, foram registradas cerca de 212 ocorrências de lesão corporal de mulheres por dia no estado no primeiro semestre de 2023. 
+
+A Capital registrou 10.314 ocorrências de lesão corporal de mulheres nos primeiros seis meses do ano, 5.158 registros a mais que em 2021, um aumento de 100% neste período. Também houve registro de alta nos municípios da Grande São Paulo em relação aos dados de 2022: Com 4.335 ocorrências, a região apresentou 542 casos a mais, um aumento de 14,3% na comparação com o primeiro semestre de 2022. O Interior foi a única região que apresentou queda no registro de lesão corporal, com 2.217 casos a menos, uma diminuição de 14,1% em relação a 2022.
+
 Ainda assim, o aumento progressivo que vem sendo observado neste tipo de crime no estado, especialmente na Capital, denota a urgência de se pensar políticas públicas para a redução efetiva dos casos de lesão corporal contra a mulher.
+
 
 \newpage
 
@@ -567,9 +564,9 @@ vio_mulher("FEMINICÍDIO")
 
 ```
 
-Após uma redução em 2021, o aumento dos casos observados em 2022 manteve-se estável.
-Foram registrados 111 casos no estado dos quais 66,6% são cometidos no Interior, 18,91% na Grande São Paulo e 14,41% no Interior.
-Além disso, os 111 casos de feminicídio representam 48,26% do total de homicídios dolosos contra mulheres cometidos no estado em 2023.
+Tanto os homicídios dolosos de mulheres, como os feminicídios, crimes de ódio baseados no gênero da vítima, aumentaram significativamente no 1º semestre de 2023 em comparação com o mesmo período de 2022. Foram 230 homicídios de mulheres, um aumento de 14,4% em relação aos 201 assassinatos de mulheres nos primeiros seis meses do ano passado. O maior aumento se deu na macrorregião do Interior, que passou de 112 homicídios de mulheres para 142, um crescimento 24,5% no número destes assassinatos.
+
+Dentre estes homicídios dolosos de mulheres, estão contabilizados também os feminicídios, uma qualificadora do crime de homicídio. Os feminicídios aumentaram 48% no 1º semestre de 2023 em comparação com o mesmo período de 2022: foram 111 feminicídios nos primeiros seis meses de 2023. No 1º semestre de 2022, os feminicídios compunham 37% do total de homicídios dolosos de mulheres. Já nos primeiros seis meses de 2023, este percentual saltou para 48,2% no estado, o que pode significar tanto um aumento dos assassinatos motivados pelo desprezo ao gênero feminino, como também uma melhora dos registros da qualificada feminicídio pelo sistema de justiça. De qualquer forma, é alarmante o aumento dos homicídios  de mulheres no estado em 2023.
 
 \newpage
 
@@ -581,13 +578,13 @@ Estupro
 grafico_geral(tot_estupro)
 ```
 
-No primeiro semestre de 2023 os registros das ocorrências de estupro aumentaram 16,86% em comparação com o período em 2022.
-O aumento dos casos de estupro ocorreu em todas as regiões, sendo os casos ocorridos no Interior 59,63% dos casos, seguido pela Capital com 21,01% e a Grande São Paulo 19,35% do total de casos.
-O Interior registrou 4.286 ocorrências de estupro, 16,08% a mais que o mesmo período em 2022, aproximadamente 32 casos por dia.
-Já a Capital, com o registro de 1.510 casos, aumentou em 20,66% os registros e teve em média 11 casos por dia.
-Por último, a Grande São Paulo registrou 1.391 casos, um aumento de 10,39% do número de casos e uma média de 10 casos de estupro por dia no período.
-Esta tendência de crescimento nos casos de violência sexual também se confirma entre estupro de vulneráveis (contra vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual), que aumentaram x % no estado para o mesmo período.
-Os estupros de vulneráveis compõem 73% do total das ocorrências de estupros registradas no ano de 2022.
+No primeiro semestre de 2023 os registros das ocorrências de estupro aumentaram 16,9% em comparação com o mesmo período em 2022. Foram 7.187 registros de ocorrências de estupro entre janeiro e junho, uma média de 40 estupros registrados por dia este ano. 
+ 
+O aumento dos casos de estupro ocorreu em todas as regiões. A Capital registrou um aumento de 20,7% das ocorrências, enquanto o Interior registrou 4.286 ocorrências de estupro, 16% a mais que o mesmo período em 2022, uma média de aproximadamente 32 casos por dia.
+
+Esta tendência de crescimento nos casos de violência sexual também se confirma entre estupro de vulneráveis (contra vítimas menores de 14 anos ou pessoas cujas condições de saúde as impedem de discernir o ato sexual), que aumentaram 15,7% no estado para o mesmo período.
+Foram 5.468 estupros de vulneráveis no 1º semestre de 2023, ou seja, estas vítimas representam 76% do total de vítimas das ocorrências de estupros registradas nos primeiros seis meses de 2023.
+
 
 \newpage
 
@@ -600,11 +597,11 @@ grafico_geral(c(roubo_outros + roubo_veic))
                
 ```
 
-O ano de 2022 terminou com um total de 286.573 ocorrências total de roubos, ou seja, a soma dos chamados roubos (outros) e os roubos de veículos, em todo o estado de São Paulo, um volume de ocorrências 10,7% maior que o total de 258.747 ocorrências de roubo registrados em 2021.
-Isso significa que, em média, foram registrados no estado cerca de 785 ocorrências totais de roubos por dia durante o último ano.
-Ainda que o montante de roubos registrados no estado em 2022 ainda seja menor do que de anos anteriores à pandemia de Covid-19, desde 2020 os roubos têm aumentado em todas as macrorregiões do estado.
-Especificamente na comparação entre 2022 e 2021, o maior aumento foi na Capital paulista, com mais 12,4% de ocorrências de roubos registradas em 2022.
-A Grande São Paulo teve um aumento no último ano de 7,3% nas ocorrências registradas deste crime, e o Interior, um crescimento de 10,4% nas ocorrências de roubos.
+
+Entre janeiro e junho de 2023 o estado de São Paulo registrou 135.076 ocorrências de roubos, um volume 2,1% menor que o total de 137.979 de ocorrências de roubo registrados no 1º semestre de 2022. Isso significa que, em média, foram registrados no estado cerca de 750 ocorrências de roubos por dia durante os primeiros seis meses deste ano. 
+
+Todas as três macrorregiões registraram queda nos registros de roubo, sendo a maior redução nos municípios da Grande São Paulo: foram 32.040 ocorrências nos primeiros seis meses de 2023, uma queda de 3,4% em comparação com os 33.158 roubos registrados no mesmo período de 2022. E mesmo neste cenário de redução dos roubos no estado, a Capital ainda concentra 56,1% de todas as 135.076 ocorrências de roubos registradas no estado no 1º semestre de 2023.
+
 
 \newpage
 
@@ -619,139 +616,31 @@ colors_map <- c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", "#0066A5", "#00366C"
 tab_dp |> 
   mutate(total_roubos = roubo_outros + roubo_veic) |> 
   mutate(total_roubos_agregado = case_when(
-    total_roubos < 1000 ~ "Menos de 1000 roubos",
-    total_roubos > 1000 & total_roubos <= 2000 ~ "Entre 1000 e 2000 roubos",
-    total_roubos > 2000 & total_roubos <= 3000 ~ "Entre 2001 e 3000 roubos",
-    total_roubos > 3000 & total_roubos <= 4000 ~ "Entre 3001 e 4000 roubos",
-    total_roubos > 4000 & total_roubos <= 5000 ~ "Entre 4001 e 5000 roubos",
-    total_roubos > 5000 ~ "Mais de 5000 roubos")) |> 
+    total_roubos < 250 ~ "Menos de 250 roubos",
+    total_roubos > 250 & total_roubos <= 500 ~ "Entre 251 e 500 roubos",
+    total_roubos > 500 & total_roubos <= 750 ~ "Entre 501 e 750 roubos",
+    total_roubos > 750 & total_roubos <= 1250 ~ "Entre 751 e 1250 roubos",
+    total_roubos > 1250 & total_roubos <= 2000 ~ "Entre 1251 e 2000 roubos",
+    total_roubos > 2000 ~ "Mais de 2000 roubos")) |> 
   ggplot() +
   geom_sf(aes(geometry = geometry, fill = total_roubos_agregado))+
   geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1, color = "black") +
   scale_fill_manual(values = colors_map, name = NULL, 
-                    breaks=c("Menos de 1000 roubos", "Entre 1000 e 2000 roubos", 
-                             "Entre 2001 e 3000 roubos", "Entre 3001 e 4000 roubos",
-                             "Entre 4001 e 5000 roubos", "Mais de 5000 roubos"))+
+                    breaks=c("Menos de 250 roubos", "Entre 251 e 500 roubos", 
+                             "Entre 501 e 750 roubos", "Entre 751 e 1250 roubos",
+                             "Entre 1251 e 2000 roubos", "Mais de 2000 roubos"))+
   theme_sdpa_maps
-
              
 ```
 
-Dentre os 103 distritos policiais da cidade de São Paulo, somente 10 DPs foram responsáveis por 25,6% de todas as ocorrências de roubo (total) na capital do estado em 2022.
-O 03 DP, Campos Elísios, registrou o maior número de roubos, um total de 7.245 ocorrências.
 
-A região do centro também teve outros dois DPs entre os 10 distritos policiais com maior número de registros de ocorrências de roubos (total).
-O 01 DP, Sé, ficou na terceira posição com 4.815 roubos registrados e o 12 DP, Pari, na oitava colocação.
-Na zona sul, o 47 DP, Capão Redondo, 37 DP, Campo Limpo, 92 DP, Parque Santo Antônio foram os distritos policiais com mais roubos.
-Na zona oeste teve o 14 DP, Pinheiros, 23 DP, Perdizes e 78 DP, Jardins foram os distritos com mais ocorrências de roubos.
-O 49 DP, São Mateus, é o único dos 10 distritos policiais com mais registros de roubos da zona leste.
+Dentre os 103 distritos policiais da cidade de São Paulo, somente 10 DPs foram responsáveis por 20.413 registros de roubo, ou seja, 26,9% de todas as ocorrências de roubo (total) na capital do estado no primeiro semestre de 2023. O 03 DP - Campos Elísios, registrou o maior número de roubos, um total de 3.957 ocorrências.
+
+A região do centro também teve outros três DPs entre os 10 distritos policiais com maior número de registros de ocorrências de roubos (total). O 01 DP - Sé, ficou na terceira posição com 2.668 roubos registrados, o 04 DP - Consolação na sexta posição, e  o 12 DP - Pari, na oitava colocação dentre os distritos policiais com mais roubos. Na zona sul, o 47 DP - Capão Redondo, 37 DP - Campo Limpo, 92 DP - Parque Santo Antônio e 11 DP - Santo Amaro foram os distritos policiais com mais roubos. Na zona oeste, o 14 DP - Pinheiros, 23 DP - Perdizes e 78 DP, Jardins foram os distritos com mais ocorrências de roubos.
+
 
 \newpage
 
-::: {custom-style="Estilo1"}
-Recomendações
-:::
-
-Considerando os dados divulgados pela Secretaria da Segurança Pública de São Paulo sobre crimes violentos em 2022, elencamos as principais recomendações para que o estado de São Paulo possa lidar com os aumentos nestes crimes.
-Ainda que estas recomendações não esgotem todas as preocupações sobre as dinâmicas de violência no estado, acreditamos que elas compõem um cerne de questões prioritárias que devem ser orientadoras para o debate das políticas de segurança pública em São Paulo.
-
--   Os **homicídios dolosos** tiveram uma significativa alta de 7,2% na comparação com o ano anterior, concentrado nas regiões da Grande São Paulo e Interior.
-    É essencial que a SSP/SP tenha um olhar atento para as dinâmicas de homicídios na região metropolitana e no interior do estado, sobretudo nas regiões dos Deinter 01 - Araçatuba e Deinter 10 - São José dos Campos, que registraram os maiores aumentos nas taxas de homicídios no interior.
-
--   Neste sentido, é importante que o estado de São Paulo intensifique os esforços para elucidação destes assassinatos.O relatório [Onde Mora a Impunidade](https://soudapaz.org/wp-content/uploads/2022/08/OndeMoraAImpunidade.pdf), publicado anualmente pelo Instituto Sou da Paz aponta uma redução do esclarecimento de homicídios no estado: apenas 34% dos assassinatos cometidos em 2019 foram elucidados, uma redução significativa em comparação ao ano anterior, no qual 46% dos homicídios cometidos em 2018 no estado foram elucidados.É preciso que estes crimes sejam solucionados, de forma tanto a levar seus autores à justiça, mas tam bém possibilitar uma real compreensão das dinâmicas criminais causadoras destes homicídios, e assim tomar medidas eficazes de prevenção.E isso só será possível por meio do investimento na Polícia Civil e na estrutura de investigação de homicídios do estado.
-
--   O número de registros de ocorrências de **estupros** aumentou pelo segundo ano consecutivo em 2022, após uma queda nas notificações em 2020 devido à pandemia de Covid-19.
-    Novamente, este aumento das ocorrências de estupros se concentrou nas macrorregiões da Grande São Paulo e Interior, esta última responsável por 6 a cada 10 dos estupros registrados no estado.
-
--   O estupro no estado de São Paulo atinge majoritariamente crianças e adolescentes de até 14 anos - elas e outras categorias de vulneráveis foram as vítimas em 73% dos casos de estupros registrados no estado em 2022.
-    A violência sexual contra crianças e adolescentes em geral é cometida por pessoas com vínculos familiares, de amizade ou de vizinhança, o que torna ainda mais desafiador o enfrentamento destes crimes.
-    Uma política efetiva de prevenção e combate deve envolver cooperação da Secretaria de Segurança Pública com serviços de educação, assistência e saúde, assim como investimento em atendimento e investigação adequadas.
-    A violência sexual é um crime grave, violento, com possíveis consequências físicas e psicológicas difíceis de tratar, prejudicando ainda mais o desenvolvimento humano quando é cometido contra crianças e adolescentes, e é inadimissel que o estado de São Paulo conviva com aumentos seguidos nas ocorrências deste tipo de crime.
-
--   As notificações de ocorrências de violências contra mulheres também aumentaram significativamente no estado em 2022, sobretudo os **feminicídios** e as **lesões corporais contra mulheres**.
-    É necessário desenvolver e aprimorar políticas específicas para enfrentar as violências contra mulher, que integrem tanto as iniciativas em diversas frentes de prevenção, em conjunto com a Saúde e a Assistência Social, assim como ações de proteção e atendimento às vítimas, e a rápida responsabilização dos agressores, de forma que que se impeça o escalonamento de um ciclo de violência e abusos.
-
--   Tanto os **roubos de veículos** como os **roubos (outros)** - todos os roubos, exceto os de veículos, tiveram aumentos significativos no estado de São Paulo em 2022, sobretudo na Capital do estado, que concentrou 55% de todas as ocorrências de roubo (outros) em 2022.
-    Uma dinâmica que tem se proliferado, sobretudo na Capital, é a de roubos e furtos de celulares, visando não apenas a venda do aparelho, mas sobretudo, o acesso das contas bancárias das vítimas, por meio de grupos especializados em desbloquear tanto os telefones como as transações por meio do sistema Pix para realizar transferências.
-    É necessário a concentração de esforços investigativos para identificar e desmontar estas quadrilhas que atuam na dinâmica de roubos, receptação e operações fraudulentas.
-    Essa dinâmica também sinaliza para a necessidade de aprimorar as estatísticas e as ferramentas de investigação para lidar com todos os crimes cometidos no ambiente digital, que têm crescido em todo o mundo, e é central para enfrentar os também os crimes de **extorsão mediante sequestro**, cujas ocorrências mais que dobraram no estado de São Paulo em 2022.
-
--   Finalmente, o ano de 2022 registrou uma intensa redução de -39,3% no número de vítimas de **letalidade policial em serviço**.
-    A letalidade e vitimização policial são temas da análise especial na seção seguinte, mas cabe ressaltar a necessidade de manutenção e reforço das iniciativas do controle do uso da força pelas polícias paulistas, sobretudo pela Polícia Militar de São Paulo.
-    Estas medidas têm contribuído para a redução de mortes que atingem especialmente jovens, assim como tem também mostrado valor na proteção e menor vitimização dos próprios policiais.
-
-\newpage
-
-::: {custom-style="Estilo1"}
-Análise Especial - Perfil da letalidade policial no estado de São Paulo 2018 - 2022
-:::
-
-Nesta seção faremos uma análise do perfil da letalidade policial no estado de São Paulo, entre os anos de 2018 e 2022, intervalo que abarca tanto o período de maior letalidade das polícias na história recente do estado, como o período de redução mais abrupta das mortes cometidas por policiais, a partir da implementação de uma série de medidas de controle do uso da força letal pela Polícia Militar do Estado de São Paulo.
-
-É importante observar a existência de dois marcos relevantes no período que devem ser considerados na análise e interpretação dos dados sobre a letalidade e vitimização policial no estado.
-O primeiro deles é a transição dos gestores estaduais no período, já que o governo do estado foi ocupado por Márcio França (PSB, 2018), João Dória (PSDB, 2019-2022), e por Rodrigo Garcia (PSDB, 2022).
-A implementação das medidas de controle do uso da força pela Polícia Militar começaram a ser implementadas em meados de 2020, no segundo ano da gestão Dória.
-
-O primeiro semestre de 2020 também foi o início de outro marco que afetou diretamente as dinâmicas letais no estado: a pandemia de Covid-19, cujas medidas de isolamento social foram decretadas ainda em março de 2020, impactando fortemente a capacidade de circulação da população, as dinâmicas criminais e, especificamente em São Paulo, marcando um dos semestres com mais ocorrências de letalidade policial na história recente do estado.
-
-Porém, na segunda metade de 2020 começaram a ser implementadas pela Polícia Militar do Estado de São Paulo uma série de medidas para garantir o controle do uso da força e reduzir sua letalidade.
-Dentre estas ações, se destaca o programa Olho Vivo, em que Câmeras Operacionais Portáteis (COP) passaram a ser utilizadas pela corporação.
-As análises sobre a letalidade e vitimização policial apresentadas nesta seção, frequentemente apontam o ano de 2020 como um ponto de virada, não apenas para a redução das mortes cometidas e sofridas por policiais em serviço, mas também de mudanças substantivas no perfil destas ocorrências.
-
-Como diferentes estudos têm demonstrado ao longo dos anos, a letalidade policial tem uma participação relevante na composição dos crimes violentos letais e nos altos índices de assassinatos registrados no país, e o estado de São Paulo era um dos maiores exemplos desta alta participação da letalidade policial nas mortes violentas.
-Tamanha letalidade no exercício do trabalho policial tem sido frequentemente justificada pelas próprias policiais e outros atores sociais, como uma espécie de resposta frente à organização de grupos criminais, ao controle territorial exercido por facções, ou ainda, pelos altos índices de roubos verificados em diferentes regiões do país.
-Por outro lado, essa violência vêm sendo contestada juridica e socialmente por diversos atores da sociedade civil, especialmente pelo movimento negro, tendo em vista o perfil racial das vítimas e a localização geográfica de operações policiais com alta mortalidade, que impactam sistematicamente e de maneira desproporcional as populações periféricas e de baixa renda.
-
-Do ponto de vista da Segurança Pública, o debate sobre a letalidade da forças policiais destaca ainda, como o uso excessivo da força e a própria forma de atuação não só falhou em apresentar resultados efetivos no combate à criminalidade violenta e ao narcotráfico, como também é determinante no aumento das ocorrências de confrontos letais entre policiais e criminosos, que por vezes vítima também a população que reside em áreas de conflito.
-
-\newpage
-
-::: {custom-style="Estilo1"}
-O programa Olho Vivo e as medidas de controle do uso da força pela PMSP
-:::
-
-\newpage
-
-::: {custom-style="Estilo1"}
-Metodologia
-:::
-
-As análises sobre os perfis da letalidade e vitimização policial que se seguem neste relatório foram elaboradas a partir de dados sobre mortes que envolvem policiais no estado produzidos por três órgãos distintos.
-São eles, as corregedorias das polícias do Estado de São Paulo, a própria Secretaria da Segurança Pública de São Paulo, e finalmente, o Ministério Público de São Paulo.
-
-Historicamente, as análises sobre a letalidade e vitimização policial produzidas pelo Instituto Sou da Paz utilizam os dados produzidos pelas Corregedorias da Polícia Civil e da Polícia Militar do Estado de São Paulo, e divulgados mensalmente no Diário Oficial.
-A prioridade para a utilização destes dados se dá pelo alto grau de confiabilidade e pelo processo de validação que estes passam.
-No entanto, as Corregedorias divulgam somente números agregados, ou seja, não disponibilizam os microdados, de forma que não é possível analisar elementos do perfil das ocorrências de letalidade e vitimização policial (como por exemplo, idade e raça/cor das vítimas, local, etc.) a partir exclusivamente desta fonte.
-
-Por sua vez, as informações do perfil das ocorrências e das vítimas foram adquiridas através dos microdados de Morte em Decorrência de Intervenção Policial fornecidos em transparência ativa pela SSP/SP em sua plataforma de Estatísticas Criminais.
-Também foi solicitado junto à secretaria, via Lei de Acesso à Informação, a complementação destes dados com informações que: (i) possibilitasse identificar o batalhão da PMESP no qual os policiais militares estavam lotados no momento da ocorrência, e (ii) uma listagem de quais batalhões da Polícia Militar do Estado de São Paulo haviam implementado as câmeras operacionais portáteis (COP) no contexto do programa Olho Vivo, e quando esta implementação ocorreu.
-No entanto, a disponibilização destes dados adicionais foi indeferida pela SSP/SP, sob o argumento que estas informações eram de "caráter estratégico para as políticas de segurança pública" do estado.
-
-Foi somente através da base de dados disponibilizada pelo Grupo de Atuação Especial da Segurança Pública e Controle Externo da Atividade Policial (GAESP) do Ministério Público de São Paulo, que foi possível identificar quais os batalhões dos policiais militares envolvidos em ocorrências de letalidade policial, informação essencial para a realização de uma análise mais aprofundada sobre o efeito do uso das câmeras corporais na atuação policial no estado.
-Ao verificarmos que a base de dados da SSP/SP possuía uma maior variedade de dados sobre o perfil da ocorrência (ainda que sem o batalhão dos policiais envolvidos), optamos por mesclar estes dois bancos com os microdados de letalidade policial: inicialmente, foi utilizado o registro de dados de ocorrências (RDO) para a identificação das observações sobre uma mesma ocorrência de letalidade policial.
-No entanto, após a identificação de casos em que o RDO contido na base do MP correspondia ao número do processo interno, não ao número do boletim de ocorrência, foi construída uma variável de identificação a partir mesclagem da data, hora e do município da ocorrência.
-A partir destas duas variáveis-chave foi possível unificar os bancos de dados da SSP/SP e do GAESP.
-
-Finalmente, por meio da revisão bibliográfica e o acompanhamento da produção recente sobre os impactos do Programa Olho Vivo e das demais medidas de controle do uso da força empregadas pela PMESP a partir de 2020, encontramos uma página do Programa Olho Vivo produzida pela própria Polícia Militar do Estado de São Paulo, voltada para os policiais da ponta, com normativas e materiais educacionais sobre o uso das COP, assim como uma listagem dos 64 dentre os 135 batalhões da PMESP que implementaram as câmeras corporais entre 2020 e 2022.
-A partir desta listagem, foi possível atribuir no banco de dados quais ocorrências de letalidade policial foram cometidas por batalhões com ou sem câmeras.
-
-Assim, o banco final, utilizado na maior parte das análises do perfil das ocorrências, possui dados sobre 3.437 ocorrências de letalidade policial no período entre 2018 e 2022.
-Já nas análises macro, ou seja, sobre o número de mortes cometidas e sofridas por policiais por ano e por macrorregião do estado, foi utilizado o banco agregado das corregedorias, que contabiliza 3.603 vítimas para o período.
-
-\newpage
-
-::: {custom-style="Estilo1"}
-Panorama da letalidade policia no estado de São Paulo
-:::
-
-As mortes cometidas por policiais em serviço reduziram substancialmente após as políticas e novas práticas adotadas pelas polícias (como as câmeras corporais, em 2020).
-Em contrapartida, as mortes cometidas fora de serviço seguem em caráter de de estabilidade, com notável aumento de 8,4% nos casos registrados em 2022, comparado ao ano anterior.
-Os casos de vitimização de policiais em folga tiveram atenuado aumento.
-Foram 52,9% de casos a mais em 2022 comparado a 2021.
-Já durante o serviço, foram -12,5% de casos registrados.
-O aumento de mortes cometidas por policiais fora de serviço e de policiais vitimados em folga podem apresentar uma nova dinâmica que necessita de atenção.
-É necessário verificar as dinâmicas dos fatos (se houve conflito ou outro tipo de delito) e em local aquele policial ocupava no momento da morte cometida ou vitimada (se tentava conter um assalto, ou se fora vítima de assalto, por exemplo).
-Analisar tais dinâmicas e compreender como a sociedade tem se movimentado para as gestões governamentais manterem o compromisso com a redução dos homicídios no estado.
 
 \newpage
 
@@ -939,38 +828,36 @@ De forma geral, o estado teve uma redução de -44% nas vitimização policial e
 Já na comparação entre os anos de 2021 e 2022, o estado de São Paulo registrou um aumento de 32% na vitimização policial, aumento que se deu de forma localizada na Capital, que saltou de 7 policiais vitimados em 2021 para 17 no ano de 2022.
 
 
-\newpage
-
 ::: {custom-style="Estilo1"}
-Participação da letalidade policial na letalidade violenta por macrorregião
+Recomendações
 :::
 
-```{r proporção letalidade policial dentro dos homicídios no estado, echo=FALSE, fig.width=8, fig.height=4.5 }
-base_completa %>%
-    filter(ano %in% c( 2019, 2020, 2021, 2022,2023), cod_reg == 99) %>%
-    group_by(periodo) %>%
-    summarise(total = sum(hd_ocorr + lat_ocorr + lesao_morte),
-              total_let = sum(let_ser + let_fol)) %>%
-    pivot_longer(cols = c(total, total_let), names_to = "crime", values_to = "count") %>%
-    group_by(periodo) %>%
-    mutate(freq = (count/sum(count))) %>%
-    ggplot(aes(x = factor(periodo), y = count, fill = crime)) +
-    geom_bar(position = "stack", stat = "identity", size = 0.4, colour = "light grey") +
-    geom_text(aes(label = scales::percent(round((freq),3)), nsmall=0, big.mark="."),
-             colour ="white",
-                position=position_stack(vjust=0.5), size=3.4)+
-    scale_fill_manual(values = cores_sdp, name = "Tipo de Crime",
-                      labels = c("Total de ocorrências", "Total de Letalidade Polical")) +
-    scale_x_discrete(labels = c("2019", "2020", "2021", "2022", "2023"),
-                     name = "Ano") +
-    scale_y_continuous(limits = c(0, 4300), name = "Número de crimes") +
-    theme_sdpa_macroreg +
-   theme(axis.text.y=element_text(size=11))
+Considerando os dados divulgados pela Secretaria da Segurança Pública de São Paulo sobre crimes violentos em 2022, elencamos as principais recomendações para que o estado de São Paulo possa lidar com os aumentos nestes crimes.
+Ainda que estas recomendações não esgotem todas as preocupações sobre as dinâmicas de violência no estado, acreditamos que elas compõem um cerne de questões prioritárias que devem ser orientadoras para o debate das políticas de segurança pública em São Paulo.
 
-```
+-   Os **homicídios dolosos** tiveram uma significativa alta de 7,2% na comparação com o ano anterior, concentrado nas regiões da Grande São Paulo e Interior.
+    É essencial que a SSP/SP tenha um olhar atento para as dinâmicas de homicídios na região metropolitana e no interior do estado, sobretudo nas regiões dos Deinter 01 - Araçatuba e Deinter 10 - São José dos Campos, que registraram os maiores aumentos nas taxas de homicídios no interior.
 
+-   Neste sentido, é importante que o estado de São Paulo intensifique os esforços para elucidação destes assassinatos.O relatório [Onde Mora a Impunidade](https://soudapaz.org/wp-content/uploads/2022/08/OndeMoraAImpunidade.pdf), publicado anualmente pelo Instituto Sou da Paz aponta uma redução do esclarecimento de homicídios no estado: apenas 34% dos assassinatos cometidos em 2019 foram elucidados, uma redução significativa em comparação ao ano anterior, no qual 46% dos homicídios cometidos em 2018 no estado foram elucidados.É preciso que estes crimes sejam solucionados, de forma tanto a levar seus autores à justiça, mas tam bém possibilitar uma real compreensão das dinâmicas criminais causadoras destes homicídios, e assim tomar medidas eficazes de prevenção.E isso só será possível por meio do investimento na Polícia Civil e na estrutura de investigação de homicídios do estado.
 
-Com a queda da letalidade policial, há uma significativa redução da participação policial no total de ocorrências letais no estado.
-No ano de 2018 a letalidade policial era responsável por 20,7% das mortes violentas intencionais (soma de latrocínios, homicídios dolosos, lesões seguidas de mortes e das próprias mortes cometidas por policiais) do estado de São Paulo.
-Em 2022, após a intensa redução das mortes em decorrência de intervenção policial, as mortes cometidas por policiais passaram a representar 11,8% do total de mortes violentas intencionais no estado.
+-   O número de registros de ocorrências de **estupros** aumentou pelo segundo ano consecutivo em 2022, após uma queda nas notificações em 2020 devido à pandemia de Covid-19.
+    Novamente, este aumento das ocorrências de estupros se concentrou nas macrorregiões da Grande São Paulo e Interior, esta última responsável por 6 a cada 10 dos estupros registrados no estado.
 
+-   O estupro no estado de São Paulo atinge majoritariamente crianças e adolescentes de até 14 anos - elas e outras categorias de vulneráveis foram as vítimas em 73% dos casos de estupros registrados no estado em 2022.
+    A violência sexual contra crianças e adolescentes em geral é cometida por pessoas com vínculos familiares, de amizade ou de vizinhança, o que torna ainda mais desafiador o enfrentamento destes crimes.
+    Uma política efetiva de prevenção e combate deve envolver cooperação da Secretaria de Segurança Pública com serviços de educação, assistência e saúde, assim como investimento em atendimento e investigação adequadas.
+    A violência sexual é um crime grave, violento, com possíveis consequências físicas e psicológicas difíceis de tratar, prejudicando ainda mais o desenvolvimento humano quando é cometido contra crianças e adolescentes, e é inadimissel que o estado de São Paulo conviva com aumentos seguidos nas ocorrências deste tipo de crime.
+
+-   As notificações de ocorrências de violências contra mulheres também aumentaram significativamente no estado em 2022, sobretudo os **feminicídios** e as **lesões corporais contra mulheres**.
+    É necessário desenvolver e aprimorar políticas específicas para enfrentar as violências contra mulher, que integrem tanto as iniciativas em diversas frentes de prevenção, em conjunto com a Saúde e a Assistência Social, assim como ações de proteção e atendimento às vítimas, e a rápida responsabilização dos agressores, de forma que que se impeça o escalonamento de um ciclo de violência e abusos.
+
+-   Tanto os **roubos de veículos** como os **roubos (outros)** - todos os roubos, exceto os de veículos, tiveram aumentos significativos no estado de São Paulo em 2022, sobretudo na Capital do estado, que concentrou 55% de todas as ocorrências de roubo (outros) em 2022.
+    Uma dinâmica que tem se proliferado, sobretudo na Capital, é a de roubos e furtos de celulares, visando não apenas a venda do aparelho, mas sobretudo, o acesso das contas bancárias das vítimas, por meio de grupos especializados em desbloquear tanto os telefones como as transações por meio do sistema Pix para realizar transferências.
+    É necessário a concentração de esforços investigativos para identificar e desmontar estas quadrilhas que atuam na dinâmica de roubos, receptação e operações fraudulentas.
+    Essa dinâmica também sinaliza para a necessidade de aprimorar as estatísticas e as ferramentas de investigação para lidar com todos os crimes cometidos no ambiente digital, que têm crescido em todo o mundo, e é central para enfrentar os também os crimes de **extorsão mediante sequestro**, cujas ocorrências mais que dobraram no estado de São Paulo em 2022.
+
+-   Finalmente, o ano de 2022 registrou uma intensa redução de -39,3% no número de vítimas de **letalidade policial em serviço**.
+    A letalidade e vitimização policial são temas da análise especial na seção seguinte, mas cabe ressaltar a necessidade de manutenção e reforço das iniciativas do controle do uso da força pelas polícias paulistas, sobretudo pela Polícia Militar de São Paulo.
+    Estas medidas têm contribuído para a redução de mortes que atingem especialmente jovens, assim como tem também mostrado valor na proteção e menor vitimização dos próprios policiais.
+
+\newpage
