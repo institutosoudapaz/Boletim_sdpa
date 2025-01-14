@@ -9,6 +9,8 @@ base <- base %>%  janitor::clean_names()
 view(base)
 #cria o ano 
 base <- base |> mutate(ano = str_sub(data, end = 4))
+#limpa hora 
+base <- base |> mutate(hora = str_sub(hora,  start = 12))
 
 #cria periodos 
 # Criar uma nova coluna para períodos com base no ano
@@ -95,9 +97,55 @@ base_rota %>% filter(cidade =="SANTOS") %>% group_by(bairro) %>% count() %>%  vi
 #Guarujá
 base_rota %>% filter(cidade =="GUARUJÁ") %>% group_by(bairro) %>% count() %>%  view()
 
-#limpa região administrativa 
-unique(base_limpa$regiao_adm)
-
 # região administrativa (PM em Serviço)
 base_limpa %>% group_by(regiao_adm_limpa) %>% count() %>%  view()
 
+#Merge das bases *base ssp não contém os dados de dezembro
+
+#abre a base de MDIPs da SSP 
+ssp <- read_excel("./data-raw/MDIP_2024 (4).xlsx", 
+                  +     sheet = "MDIP_2013_A_NOV24", col_types = c("text", 
+                                                                            "text", "text", "text", "text", "text", 
+                                                                            "text", "numeric", "numeric", "date", 
+                                                                            "text", "numeric", "text", "text", 
+                                                                            "text", "text", "date", "date", "text", 
+                                                                            "text", "text", "numeric", "numeric", 
+                                                                            "text", "text", "text", "text", "text", 
+                                                                            "text", "text"))
+#limpa a base da ssp
+ssp <- ssp %>%  janitor::clean_names()
+
+colnames(ssp)
+
+#deixa os municipios em forma de título
+ssp$municipio_circunscricao <- str_to_title(ssp$municipio_circunscricao)
+base_limpa$cidade <- str_to_title(base_limpa$cidade)
+
+#função para limpeza de municipios (rodar função em script a parte antes)
+ssp <- ssp |>
+  mutate(municipio_limpo = limpeza_municipio(municipio_circunscricao))
+
+base_limpa<- base_limpa |>
+  mutate(municipio_limpo = limpeza_municipio(cidade))
+
+#cria o ano 
+ssp <- ssp |> mutate(ano = str_sub(data_fato, end = 4))
+#limpa hora 
+ssp <- ssp |> mutate(hora = str_sub(hora_fato,  start = 12))
+
+#filtrar base ssp pelo período analisado (2019-2024)
+ssp <- ssp %>% filter(ano_estatistica >=2019 & ano_estatistica<= 2024)
+
+#Cria coluna para join
+ssp <- ssp |> mutate(var_join = paste(data_fato, hora_fato, municipio_limpo, sep ="/" )) 
+
+base_limpa <-base_limpa|>  mutate(var_join = paste(data, hora, municipio_limpo, sep ="/" ))
+
+#junta bases - aqui não teve nenhuma conexão entre os casos, repensar as colunas pro join
+
+mdip_unificada <- merge(ssp, base_limpa, by= "var_join", all=TRUE)
+
+# Retira as linhas duplicadas
+
+mdip <- mdip_unificada |> 
+  distinct(data_nascimento_pessoa, var_join, .keep_all = TRUE)
