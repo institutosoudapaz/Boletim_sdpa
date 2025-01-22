@@ -72,14 +72,11 @@ base <- base %>%
 # região administrativa
 base %>% group_by(regiao_adm_limpa) %>% count() %>%  view()
 
-#Filtra Corporação 
-base_limpa <-  base %>%  filter(forca_limpo == "Polícia Militar")
-
-#Filtra Ocorrências em Serviço
-base_limpa <-  base %>%  filter(servico=="SIM")
+#Filtra Ocorrências em Serviço da PM
+base_limpa <-  base %>%  filter(servico == "SIM" & forca_limpo == "Polícia Militar")
 
 #Fitra anos 2019-2024
-base_limpa <- base %>%  filter(ano >= 2019 & ano <= 2024)
+base_limpa <- base_limpa %>%  filter(ano >= 2019 & ano <= 2024)
 
 #Analisa por período o total de ocorrências, batalhão, bairros 
 base_limpa %>% filter(cidade=="SÃO PAULO") %>%  group_by(batalhao,periodo) %>%  count() %>%  view()
@@ -154,17 +151,111 @@ ssp <- ssp |> mutate(var_join = paste(data_fato, hora, municipio_limpo, sep ="/"
 
 base_limpa <- base_limpa|>  mutate(var_join = paste(data, hora, municipio_limpo, sep ="/" ))
 
-#junta bases - usando left_join para priorizar a base do MPSP, que tem mais casos
+#junta bases - usando left_join para priorizar a base da SSP, que tem mais dados
 
-mdip_unificada <- left_join(base_limpa,ssp, by = join_by(var_join))
+mdip_unificada <- left_join(ssp, base_limpa, by = join_by(var_join))
 
 # Retira as linhas duplicadas
 
 mdip <- mdip_unificada |> 
-  distinct(rdo, var_join, cep, mes, num_bo, bairro, batalhao, circunscricao,
-           del_ocorrencia, datahora_registro_bo, sexo_pessoa, idade_pessoa,
-           data_nascimento_pessoa, cor_pele, .keep_all = TRUE)
+  distinct(.keep_all = TRUE)
+
+# Comparar número de casos por ano das três bases
+
+ssp |> group_by(ano) |> count() |> view()
+base_limpa |> group_by(ano) |> count() |> view()
+#base unificada
+mdip |> group_by(ano.x) |> count() |> view()
 
 # Salvar base unificada
 
 saveRDS(mdip, "./data-raw/mdip_unificada.rds")
+
+# Análises básicas --------------------------------------------------------
+
+# Total de ocorrências por ano
+# criar tabela de número de ocorrências da base mdip por ano
+
+mdip %>%
+  group_by(ano.x) %>%
+  count() 
+
+base_limpa %>%
+  group_by(periodo) %>%
+  count() 
+
+mdip %>%
+  group_by(periodo) %>%
+  count() 
+
+## Gráfico de linha por mês
+
+#faça um gráfico de linhas usando a base mdip de ocorrências por mês
+
+mdip %>%
+  group_by(mes_ano) %>%
+  count() %>%
+  ggplot(aes(x = mes_ano, y = n)) +
+  geom_line() +
+  labs(title = "Número de ocorrências por mês",
+       x = "Mês",
+       y = "Número de ocorrências")
+
+# Idade das vítimas
+
+mdip %>%
+  group_by(cor_pele) %>%
+  count() |> view()
+
+mdip <- mdip |>  
+  mutate(
+    idade_agrupado = case_when(
+      idade_pessoa < 16 ~ "12 a 15 anos",
+      idade_pessoa >= 16 & idade_pessoa < 19 ~ "16 a 18 anos",
+      idade_pessoa >= 18 & idade_pessoa < 30 ~ "18 a 29 anos",
+      idade_pessoa >= 30 & idade_pessoa < 40 ~ "30 a 39 anos",
+      idade_pessoa >= 40 & idade_pessoa < 50 ~ "40 a 49 anos",
+      idade_pessoa >= 50 & idade_pessoa < 60 ~ "50 a 59 anos",
+      idade_pessoa >= 60 & idade_pessoa < 99 ~ "60 anos ou mais",
+      TRUE ~ "Não informado"
+    )
+  )
+
+mdip_idade_ano 
+  mdip |> 
+    select(ano.x, idade_agrupado) |>
+    pivot_wider(names_from = ano.x, values_from = ano.x, values_fn = length, values_fill = 0) |>
+    writexl::write_xlsx("./data-raw/mdip_idade_ano.xlsx")
+
+  mdip_idade_ano 
+  mdip |> 
+    select(periodo, idade_agrupado) |>
+    pivot_wider(names_from = periodo, values_from = periodo, values_fn = length, values_fill = 0)
+
+# Raça das vítimas
+
+  mdip %>%
+    group_by(idade_pessoa) %>%
+    count() |> view()
+  
+  mdip <- mdip |>  
+    mutate(
+      cor_pele_limpo = case_when(
+        cor_pele %in% c("Branca", "BRANCA") ~ "Branca",
+        cor_pele %in% c("Preta", "PRETA", "Preta ", "Preta.") ~ "Preta",
+        cor_pele %in% c("Parda", "PARDA", "parda") ~ "Parda",
+        TRUE ~ "Não informado"
+      )
+    )
+  
+  mdip |> 
+    select(ano.x, cor_pele_limpo) |>
+    pivot_wider(names_from = ano.x, values_from = ano.x, values_fn = length, values_fill = 0) |>
+    writexl::write_xlsx("./data-raw/mdip_cor_ano.xlsx")
+  
+# Deinter
+# Cidades
+# Batalhões
+## Gráfico de linha por mês dos batalhões que mais matam 
+
+

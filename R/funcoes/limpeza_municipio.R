@@ -1,8 +1,5 @@
 ## Recodificação municipios 
-
 library(tidyverse)
-mdip_ssp <- readRDS("../data-raw/mdip_ssp.rds")
-mdip_mp <- readRDS("../data-raw/mdip_mp.rds")
 
 #código 
 
