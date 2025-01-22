@@ -1,18 +1,23 @@
-#bibliotecas
 library(tidyverse)
 library(janitor)
-#importa a base
-base <- read_excel("./data-raw/MPSP_2017-2025.xlsx")
+
+# Importa os dados --------------------------------------------------------
+
+base <- readxl::read_excel("./data-raw/MPSP_2017-2025.xlsx")
 
 #limpa a base 
 base <- base %>%  janitor::clean_names()
+
 view(base)
+
+# Tratamento e criação de colunas -----------------------------------------
+
 #cria o ano 
 base <- base |> mutate(ano = str_sub(data, end = 4))
+
 #limpa hora 
 base <- base |> mutate(hora = str_sub(hora,  start = 12))
 
-#cria periodos 
 # Criar uma nova coluna para períodos com base no ano
 if ("ano" %in% names(base)) {
   base <- base %>% 
@@ -25,6 +30,7 @@ if ("ano" %in% names(base)) {
 } else {
   stop("A variável 'ano' não está presente na base 'base'.")
 }
+
 # Padronizar e reclassificar as variáveis da coluna 'forca'
 base <- base %>%
   mutate(
@@ -40,6 +46,8 @@ base <- base %>%
       TRUE ~ forca  # Caso não esteja listado, mantém o valor original
     )
   ) 
+
+# Padronizar e reclassificar as variáveis da coluna 'regiao_adm'
 base <- base %>%
   mutate(
     regiao_adm_limpa = case_when(
@@ -49,7 +57,7 @@ base <- base %>%
       regiao_adm %in% c("DEINTER 2", "Deinter 2") ~ "DEINTER 2",
       regiao_adm %in% c("DEINTER 3", "Deinter 3") ~ "DEINTER 3",
       regiao_adm %in% c("DEINTER 4", "Deinter 4") ~ "DEINTER 4",
-      regiao_adm %in% c("DEINTER 5", "Deinter 5") ~ "DEINTER 5",
+      regiao_adm %in% c("DEINTER 5", "Deinter 5", "deinter 5") ~ "DEINTER 5",
       regiao_adm %in% c("DEINTER 6", "Deinter 6", "DeInter 6", "DIENTER 6", "DENTER 6") ~ "DEINTER 6",
       regiao_adm %in% c("DEINTER 7", "Deinter 7", "DEINTER  7", "DEITNER 7") ~ "DEINTER 7",
       regiao_adm %in% c("DEINTER 8", "Deinter 8") ~ "DEINTER 8",
@@ -73,7 +81,7 @@ base_limpa <-  base %>%  filter(servico=="SIM")
 #Fitra anos 2019-2024
 base_limpa <- base %>%  filter(ano >= 2019 & ano <= 2024)
 
-#analisa por período o total de ocorrências, batalhão, bairros 
+#Analisa por período o total de ocorrências, batalhão, bairros 
 base_limpa %>% filter(cidade=="SÃO PAULO") %>%  group_by(batalhao,periodo) %>%  count() %>%  view()
 base_limpa %>% group_by(batalhao) %>%  count() %>%  view()
 
@@ -100,18 +108,20 @@ base_rota %>% filter(cidade =="GUARUJÁ") %>% group_by(bairro) %>% count() %>%  
 # região administrativa (PM em Serviço)
 base_limpa %>% group_by(regiao_adm_limpa) %>% count() %>%  view()
 
+
+# Mesclar com base de MDIP da SSP-SP --------------------------------------
 #Merge das bases *base ssp não contém os dados de dezembro
 
+
 #abre a base de MDIPs da SSP 
-ssp <- read_excel("./data-raw/MDIP_2024 (4).xlsx", 
-                  +     sheet = "MDIP_2013_A_NOV24", col_types = c("text", 
-                                                                            "text", "text", "text", "text", "text", 
-                                                                            "text", "numeric", "numeric", "date", 
-                                                                            "text", "numeric", "text", "text", 
-                                                                            "text", "text", "date", "date", "text", 
-                                                                            "text", "text", "numeric", "numeric", 
-                                                                            "text", "text", "text", "text", "text", 
-                                                                            "text", "text"))
+ssp <- readxl::read_excel("./data-raw/MDIP_2024.xlsx",
+                  sheet = "MDIP_2013_A_NOV24", 
+                  col_types = c("text","text", "text", "text", "text", "text",
+                                "text", "numeric", "numeric", "date",
+                                "text", "numeric", "text", "text", "text", 
+                                "text", "date", "date", "text", "text", "text", 
+                                "numeric", "numeric", "text", "text", "text", 
+                                "text", "text", "text", "text"))
 #limpa a base da ssp
 ssp <- ssp %>%  janitor::clean_names()
 
@@ -136,16 +146,19 @@ ssp <- ssp |> mutate(hora = str_sub(hora_fato,  start = 12))
 #filtrar base ssp pelo período analisado (2019-2024)
 ssp <- ssp %>% filter(ano_estatistica >=2019 & ano_estatistica<= 2024)
 
+#filtrar base ssp por coorporação e em serviço
+ssp <- ssp %>% filter(coorporacao =="PM" & situacao == "Serviço")
+
 #Cria coluna para join
-ssp <- ssp |> mutate(var_join = paste(data_fato, hora_fato, municipio_limpo, sep ="/" )) 
+ssp <- ssp |> mutate(var_join = paste(data_fato, hora, municipio_limpo, sep ="/" )) 
 
-base_limpa <-base_limpa|>  mutate(var_join = paste(data, hora, municipio_limpo, sep ="/" ))
+base_limpa <- base_limpa|>  mutate(var_join = paste(data, hora, municipio_limpo, sep ="/" ))
 
-#junta bases - aqui não teve nenhuma conexão entre os casos, repensar as colunas pro join
+#junta bases - usando left_join para priorizar a base do MPSP, que tem mais casos
 
-mdip_unificada <- merge(ssp, base_limpa, by= "var_join", all=TRUE)
+mdip_unificada <- left_join(base_limpa,ssp, by = join_by(var_join))
 
 # Retira as linhas duplicadas
 
 mdip <- mdip_unificada |> 
-  distinct(data_nascimento_pessoa, var_join, .keep_all = TRUE)
+  distinct(data_nascimento_pessoa, var_join, cep, mes, num_bo, .keep_all = TRUE)
