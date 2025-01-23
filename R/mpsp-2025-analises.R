@@ -171,6 +171,7 @@ mdip |> group_by(ano.x) |> count() |> view()
 
 saveRDS(mdip, "./data-raw/mdip_unificada.rds")
 
+
 # Análises básicas --------------------------------------------------------
 
 # Total de ocorrências por ano
