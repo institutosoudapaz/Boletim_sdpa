@@ -171,6 +171,7 @@ mdip |> group_by(ano.x) |> count() |> view()
 
 saveRDS(mdip, "./data-raw/mdip_unificada.rds")
 
+
 # Análises básicas --------------------------------------------------------
 
 # Total de ocorrências por ano
@@ -254,8 +255,37 @@ mdip_idade_ano
     writexl::write_xlsx("./data-raw/mdip_cor_ano.xlsx")
   
 # Deinter
+
+  mdip %>%
+    select(ano.x, departamento_circunscricao) |> 
+    pivot_wider(names_from = ano.x, values_from = ano.x, values_fn = length, values_fill = 0) |>
+  writexl::write_xlsx("./data-raw/mdip_deinter_ano.xlsx")
+  
+  
 # Cidades
+
+  mdip %>%
+    select(ano.x, municipio_circunscricao) |> 
+    pivot_wider(names_from = ano.x, values_from = ano.x, values_fn = length, values_fill = 0) |>
+    writexl::write_xlsx("./data-raw/mdip_cidade_ano.xlsx")
+  
+  
+  # Distritos policiais SP
+  
+  mdip %>%
+    filter(municipio_circunscricao == "S.paulo") %>%
+    select(ano.x, dp_circunscricao) |> 
+    pivot_wider(names_from = ano.x, values_from = ano.x, values_fn = length, values_fill = 0) |>
+    writexl::write_xlsx("./data-raw/mdip_dp_sp_ano.xlsx")
+  
+  
 # Batalhões
+
+  mdip %>%
+    select(ano.x, batalhao, cor_pele) |> 
+    pivot_wider(names_from = ano.x, values_from = ano.x, values_fn = length, values_fill = 0) |>
+    writexl::write_xlsx("./data-raw/mdip_batalhao_ano.xlsx")
+  
 ## Gráfico de linha por mês dos batalhões que mais matam 
 
 
