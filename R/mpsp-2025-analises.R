@@ -289,3 +289,82 @@ mdip_idade_ano
 ## Gráfico de linha por mês dos batalhões que mais matam 
 
 
+# Mapas -------------------------------------------------------------------
+
+# Arquivo shape filtrando a capital
+  shp_capital <- sf::st_read("./data-raw/shapes/Distrito_policial_SP.shp", quiet = TRUE) |>  
+    filter(DepGeoDes == "DECAP")
+  
+  # Carrega funções de limpeza do nome dos DPs
+  source("./R/funcoes/limpeza_dp.R")
+  
+  # Tratar o shape para criação do mapa ---------------------------------------------------------
+  
+  # Limpar DPs
+  shp_capital$DpGeoDes <- limpeza_dp(shp_capital$DpGeoDes)
+  ssp$dp_circunscricao <- limpeza_dp(ssp$dp_circunscricao)
+  
+  # Mesclar base_mensal e o shape pela coluna de nome dos DPs
+  
+ssp_2024 <- ssp |> 
+    #filtra ano de interesse
+    #filter(ano == "2024") |> 
+    filter(municipio_circunscricao == "S.PAULO") %>%
+    left_join(shp_capital, by = c("dp_circunscricao" = "DpGeoDes")) %>% 
+    mutate(legenda = stringr::str_extract(dp_circunscricao,"^.{3}")) |> 
+   mutate(vitima = case_when(
+    ano == 2024 ~ 1,
+    TRUE ~ 0))
+  
+  # Temas e cores dos mapas ---------------------------------------------------------------------
+  
+  theme_sdpa_maps <- theme_void()+
+    theme(legend.text=element_text(size=10),
+          legend.title=element_blank (),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          legend.key.size = unit(0.5, 'cm'), 
+          plot.margin=unit(c(0.2,0,0,0), 'cm'))
+  
+  cores_mapa <- c("#F9F9F9", "#D0E4FF", "#99BFEF", "#5295D4", "#0066A5", "#00366C")
+  
+  # Código manual para criar os mapas -----------------------------------------------------------
+  
+  # Mapa de DP
+  mapa <- ssp_2024 |> 
+    group_by(dp_circunscricao, ano) |>
+    mutate(vitima = sum(vitima)) |> 
+    # criar niveis da categoria
+    mutate(total_mdip_agregado = case_when(
+      vitima < 1 ~ "Sem MDIP no ano",
+      vitima >= 1 & vitima < 2 ~ "1 morte no ano",
+      vitima > 1 & vitima <= 2 ~ "2 mortes no ano",
+      vitima > 2 & vitima <= 4 ~ "Entre 3 e 4 mortes no ano",
+      vitima > 4 & vitima <= 6 ~ "Entre 5 e 6 mortes no ano",
+      vitima > 6 ~ "Entre 7 e 8 mortes no ano")) |> 
+    ggplot() +
+    # fill = categoria do crime agregado
+    geom_sf(aes(geometry = geometry, fill = total_mdip_agregado))+
+    geom_sf_text(aes(geometry = geometry, label =  legenda), size = 1, color = "black") +
+    scale_fill_manual(values = cores_mapa, name = NULL, 
+                      # mudar nome das categorias crime agregado
+                      breaks=c("Sem MDIP no ano", "1 morte no ano", 
+                               "2 mortes no ano", "Entre 3 e 4 mortes no ano",
+                               "Entre 5 e 6 mortes no ano", "Entre 7 e 8 mortes no ano"))+
+    theme_sdpa_maps
+  
+  ggsave("mapa.jpeg", plot = mapa, device = "jpeg", width = 20, height = 20, units = "cm")
+  
+# faça um mapa de linha com o número de mortes por mês de 2019 a 2024 usando a base ssp
+
+ssp %>%
+  mutate(mes_ano = str_sub(data_fato, end = 7)) |> 
+  filter(ano_estatistica >=2019 & ano_estatistica<= 2024) |> 
+  group_by(mes_ano) %>%
+  count() %>%
+  ggplot(aes(x = mes_ano, y = n, group = 1)) +
+  geom_line(color="#69b3a2", linewidth=1, alpha=0.9) +
+  labs(title = "Número de mortes por mês",
+       x = "Mês",
+       y = "Número de mortes")+
+  theme(axis.text.x = element_text(angle = 90, size=7, face=3))
