@@ -1,8 +1,14 @@
 library(tidyverse)
 
+# Carrega funções de limpeza do nome dos DPs
+source("./R/funcoes/limpeza_dp.R")
+
+# Carrega funções de limpeza do nome dos municipios
+source("./R/funcoes/limpeza_municipio.R")
+
 # Importar dados ----------------------------------------------------------
 
-SIPCV_2023 <- readxl::read_excel("data-raw/SIPCV_2024.xlsx", 
+SIPCV_2024 <- readxl::read_excel("data-raw/SIPCV_2025.xlsx", sheet = 2,
                          col_types = c("text", "text", "text", 
                                        "text", "text", "numeric", "text", 
                                        "text", "date", "date", "text", "date", 
@@ -17,7 +23,7 @@ SIPCV_2023 <- readxl::read_excel("data-raw/SIPCV_2024.xlsx",
                                        "text", "text", "text")) |>
   janitor::clean_names()
 
-SIPCV_2024 <- readxl::read_excel("data-raw/SIPCV_2024.xlsx", sheet = 2,
+SIPCV_2025 <- readxl::read_excel("data-raw/SIPCV_2025.xlsx", sheet = 3,
                                  col_types = c("text", "text", "text", 
                                                "text", "text", "numeric", "text", 
                                                "text", "date", "date", "text", "date", 
@@ -29,28 +35,30 @@ SIPCV_2024 <- readxl::read_excel("data-raw/SIPCV_2024.xlsx", sheet = 2,
                                                "text", "text", "text", "text", "text", 
                                                "text", "text", "text", "text", "text", 
                                                "numeric", "date", "date", "text", 
+                                               "text", "text", "text",
                                                "text", "text", "text")) |>
   janitor::clean_names()
 
 # Filtra os casos de feminicídios tentados e consumados
 
-femi_2023 <- SIPCV_2023 |> 
-  dplyr::filter(detalhamento_do_homicidio_doloso == "FEMINICIDIO" | 
-                  detalhamento_do_homicidio_doloso == "FEMINICIDIO TENTADO")
-
 femi_2024 <- SIPCV_2024 |> 
   dplyr::filter(detalhamento_do_homicidio_doloso == "FEMINICIDIO" | 
                   detalhamento_do_homicidio_doloso == "FEMINICIDIO TENTADO")
 
+femi_2025 <- SIPCV_2025 |> 
+  dplyr::filter(detalhamento_do_homicidio_doloso == "FEMINICIDIO" | 
+                  detalhamento_do_homicidio_doloso == "FEMINICIDIO TENTADO") |> 
+  select(1:53)
+
 # junta as bases
                 
-femi_2023_2024 <- rbind(femi_2023, femi_2024)
+femi_2024_2025 <- rbind(femi_2024, femi_2025)
 
 
 # Tratar os dados para análise --------------------------------------------
 
 # Idade
-femi_2023_2024 <- femi_2023_2024 |>  
+femi_2024_2025 <- femi_2024_2025 |>  
   mutate(
     idade_agrupado = case_when(
       idade_data_ocorrencia < 16 ~ "12 a 15 anos",
@@ -66,7 +74,7 @@ femi_2023_2024 <- femi_2023_2024 |>
 
 # Raça/cor
 
-femi_2023_2024 <- femi_2023_2024 |>  
+femi_2024_2025 <- femi_2024_2025 |>  
   mutate(
     cor_limpo = case_when(
       cor_curtis %in% c("Branca", "BRANCA") ~ "Branca",
@@ -79,7 +87,7 @@ femi_2023_2024 <- femi_2023_2024 |>
 
 # Instrumento/Arma
 
-femi_2023_2024 <- femi_2023_2024 |>  
+femi_2024_2025 <- femi_2024_2025 |>  
   mutate(
     instrumento_limpo = case_when(
       possivel_meio_utilizado %in% c("MEIOS NAO ESPECIFICADOS", "NAO IDENTIFICADO",
@@ -102,7 +110,7 @@ femi_2023_2024 <- femi_2023_2024 |>
 
 # Tipo/local de ocorrência
 
-femi_2023_2024 <- femi_2023_2024 |>  
+femi_2024_2025 <- femi_2024_2025 |>  
   mutate(
   local_limpo = case_when(
     descr_tipolocal %in% c("Casa", "Residência", "Apartamento", "Casas", 
@@ -135,11 +143,11 @@ femi_2023_2024 <- femi_2023_2024 |>
 )
 
 #limpa hora 
-femi_2023_2024 <- femi_2023_2024 |> mutate(hora = str_sub(hora_ocorrencia_bo,  start = 12))
+femi_2024_2025 <- femi_2024_2025 |> mutate(hora = str_sub(hora_ocorrencia_bo,  start = 12))
 
 # criar uma nova variável para o turno (manhã, tarde, noite, madrugada) baseada na coluna "hora"
 
-femi_2023_2024 <- femi_2023_2024 |> mutate(
+femi_2024_2025 <- femi_2024_2025 |> mutate(
   periodo = case_when(
   is.na(hora) ~ NA_character_,
   hora <= "05:59" ~ "Madrugada",
@@ -149,5 +157,11 @@ femi_2023_2024 <- femi_2023_2024 |> mutate(
   )
 )
 
-saveRDS(femi_2023_2024, "data-raw/femi_2023_2024.rds")
-writexl::write_xlsx(femi_2023_2024, "data-raw/femi_2023_2024.xlsx")
+# Limpar municipios
+femi_2024_2025$nome_municipio_circ <- limpeza_municipio(femi_2024_2025$nome_municipio_circ)
+
+# Limpar DPs
+femi_2024_2025$nome_delegacia_circ <- limpeza_dp(femi_2024_2025$nome_delegacia_circ)
+
+saveRDS(femi_2024_2025, "data-raw/femi_2023_2024.rds")
+writexl::write_xlsx(femi_2024_2025, "data-raw/femi_2023_2024.xlsx")
