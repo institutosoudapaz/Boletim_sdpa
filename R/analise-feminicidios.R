@@ -163,5 +163,70 @@ femi_2024_2025$nome_municipio_circ <- limpeza_municipio(femi_2024_2025$nome_muni
 # Limpar DPs
 femi_2024_2025$nome_delegacia_circ <- limpeza_dp(femi_2024_2025$nome_delegacia_circ)
 
-saveRDS(femi_2024_2025, "data-raw/femi_2023_2024.rds")
-writexl::write_xlsx(femi_2024_2025, "data-raw/femi_2023_2024.xlsx")
+saveRDS(femi_2024_2025, "data-raw/femi_2024_2025.rds")
+writexl::write_xlsx(femi_2024_2025, "data-raw/femi_2024_2025.xlsx")
+
+
+# Análise de regressão ------------------------------------------------------------------------
+
+library(tidymodels)
+
+# Variável alvo: flag_status_crime (C consumado, T tentado)
+df <- femi_2024_2025 %>%
+  mutate(
+    status_crime = factor(flag_status_crime, levels = c("T", "C")),
+    y = if_else(status_crime == "C", 1L, 0L)
+  ) %>%
+  filter(!is.na(y))
+
+df_model <- df %>%
+  select(
+    y,
+    #status_crime,
+    #cidade,
+    #nome_departamento,
+    periodo,
+    local_limpo,
+    flag_flagrante,
+    #rubrica,
+    #descr_conduta,
+    #desdobramento,
+    cor_limpo,
+    #idade_data_ocorrencia,
+    idade_agrupado,
+    #identidade_genero,
+    #motivacao,
+    #contexto,
+    instrumento_limpo,
+    relacao_alcoolismo_ou_drogas_pelo_autor
+  )
+
+
+# 4) Regressão logística (glm)
+# Observação: glm automaticamente cria dummies para fatores
+fit <- glm(y ~ ., data = df_model, family = binomial())
+
+# 5) Resumo do modelo
+summary(fit)
+
+performance::check_collinearity(fit)
+
+# 6) Odds Ratio (OR) + IC95%
+or_table <- tidy(fit, conf.int = TRUE, exponentiate = TRUE) %>%
+  arrange(desc(abs(log(estimate))))
+
+or_table
+
+
+# AME: periodo = Manhã vs periodo = referência
+d0 <- df_model
+d1 <- df_model
+
+# "referência" aqui é o primeiro nível do fator
+ref_periodo <- levels(df_model$periodo)[1]
+
+d0$periodo <- factor(ref_periodo, levels = levels(df_model$periodo))
+d1$periodo <- factor("Manhã", levels = levels(df_model$periodo))
+
+ame_manha <- mean(p_hat(d1) - p_hat(d0), na.rm = TRUE)
+ame_manha
