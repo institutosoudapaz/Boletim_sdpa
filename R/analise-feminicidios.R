@@ -8,6 +8,21 @@ source("./R/funcoes/limpeza_municipio.R")
 
 # Importar dados ----------------------------------------------------------
 
+SIPCV_2023 <- readxl::read_excel("data-raw/SIPCV_2025.xlsx", sheet = 1,
+                                 col_types = c("text", "text", "text", 
+                                               "text", "text", "numeric", "text", 
+                                               "text", "date", "date", "text", "date", 
+                                               "text", "text", "text", "text", "text", 
+                                               "text", "text", "text", "text", "text", 
+                                               "text", "text", "text", "text", "text", 
+                                               "text", "text", "text", "text", "text", 
+                                               "text", "text", "numeric", "text", 
+                                               "text", "text", "text", "text", "text", 
+                                               "text", "text", "text", "text", "text", 
+                                               "numeric", "date", "date", "text", 
+                                               "text", "text", "text")) |>
+  janitor::clean_names()
+
 SIPCV_2024 <- readxl::read_excel("data-raw/SIPCV_2025.xlsx", sheet = 2,
                          col_types = c("text", "text", "text", 
                                        "text", "text", "numeric", "text", 
@@ -41,6 +56,10 @@ SIPCV_2025 <- readxl::read_excel("data-raw/SIPCV_2025.xlsx", sheet = 3,
 
 # Filtra os casos de feminicídios tentados e consumados
 
+femi_2023 <- SIPCV_2023 |> 
+  dplyr::filter(detalhamento_do_homicidio_doloso == "FEMINICIDIO" | 
+                  detalhamento_do_homicidio_doloso == "FEMINICIDIO TENTADO")
+
 femi_2024 <- SIPCV_2024 |> 
   dplyr::filter(detalhamento_do_homicidio_doloso == "FEMINICIDIO" | 
                   detalhamento_do_homicidio_doloso == "FEMINICIDIO TENTADO")
@@ -52,13 +71,14 @@ femi_2025 <- SIPCV_2025 |>
 
 # junta as bases
                 
-femi_2024_2025 <- rbind(femi_2024, femi_2025)
+femi_2023_2024_2025 <- rbind(femi_2023, femi_2024, femi_2025)
 
 
 # Tratar os dados para análise --------------------------------------------
 
 # Idade
-femi_2024_2025 <- femi_2024_2025 |>  
+
+femi_2023_2024_2025 <- femi_2023_2024_2025 |>  
   mutate(
     idade_agrupado = case_when(
       idade_data_ocorrencia < 16 ~ "12 a 15 anos",
@@ -74,7 +94,7 @@ femi_2024_2025 <- femi_2024_2025 |>
 
 # Raça/cor
 
-femi_2024_2025 <- femi_2024_2025 |>  
+femi_2023_2024_2025 <- femi_2023_2024_2025 |>  
   mutate(
     cor_limpo = case_when(
       cor_curtis %in% c("Branca", "BRANCA") ~ "Branca",
@@ -87,7 +107,7 @@ femi_2024_2025 <- femi_2024_2025 |>
 
 # Instrumento/Arma
 
-femi_2024_2025 <- femi_2024_2025 |>  
+femi_2023_2024_2025 <- femi_2023_2024_2025 |>  
   mutate(
     instrumento_limpo = case_when(
       possivel_meio_utilizado %in% c("MEIOS NAO ESPECIFICADOS", "NAO IDENTIFICADO",
@@ -108,9 +128,26 @@ femi_2024_2025 <- femi_2024_2025 |>
     )
   )
 
+# Se o instrumento era ou não arma de fogo
+
+femi_2023_2024_2025 <- femi_2023_2024_2025 |>  
+  mutate(
+    instrumento_arma_de_fogo = case_when(
+      possivel_meio_utilizado %in% c("MEIOS NAO ESPECIFICADOS", "NAO IDENTIFICADO",
+                                     "OUTROS MEIOS NAO ESPECIFICADOS", "NULL", NULL,
+                                     "OBJETO CORTANTE OU PENETRANTE", 
+                                     "ENFORCAMENTO, ESTRANGULAMENTO E SUFOCAÇAO",
+                                     "FORÇA CORPORAL", "OBJETO CONTUNDENTE")
+      ~ "Outros meios",
+      possivel_meio_utilizado %in% c("DISPARO ARMA DE FOGO DE MAO", 
+                                     "DISPARO DE ESPINGARDA, CARABINA OU ARMA DE FOGO DE MAIOR CALIBRE",
+                                     "DISPARO DE OUTRA ARMA DE FOGO E DE ARMA DE FOGO NAO ESPECIFICADA") 
+      ~ "Arma de fogo")
+  )
+
 # Tipo/local de ocorrência
 
-femi_2024_2025 <- femi_2024_2025 |>  
+femi_2023_2024_2025 <- femi_2023_2024_2025 |>  
   mutate(
   local_limpo = case_when(
     descr_tipolocal %in% c("Casa", "Residência", "Apartamento", "Casas", 
@@ -143,11 +180,11 @@ femi_2024_2025 <- femi_2024_2025 |>
 )
 
 #limpa hora 
-femi_2024_2025 <- femi_2024_2025 |> mutate(hora = str_sub(hora_ocorrencia_bo,  start = 12))
+femi_2023_2024_2025 <- femi_2023_2024_2025 |> mutate(hora = str_sub(hora_ocorrencia_bo,  start = 12))
 
-# criar uma nova variável para o turno (manhã, tarde, noite, madrugada) baseada na coluna "hora"
+# Criar uma nova variável para o turno (manhã, tarde, noite, madrugada) baseada na coluna "hora"
 
-femi_2024_2025 <- femi_2024_2025 |> mutate(
+femi_2023_2024_2025 <- femi_2023_2024_2025 |> mutate(
   periodo = case_when(
   is.na(hora) ~ NA_character_,
   hora <= "05:59" ~ "Madrugada",
@@ -158,21 +195,20 @@ femi_2024_2025 <- femi_2024_2025 |> mutate(
 )
 
 # Limpar municipios
-femi_2024_2025$nome_municipio_circ <- limpeza_municipio(femi_2024_2025$nome_municipio_circ)
+femi_2023_2024_2025$nome_municipio_circ <- limpeza_municipio(femi_2023_2024_2025$nome_municipio_circ)
 
 # Limpar DPs
-femi_2024_2025$nome_delegacia_circ <- limpeza_dp(femi_2024_2025$nome_delegacia_circ)
+femi_2023_2024_2025$nome_delegacia_circ <- limpeza_dp(femi_2023_2024_2025$nome_delegacia_circ)
 
-saveRDS(femi_2024_2025, "data-raw/femi_2024_2025.rds")
-writexl::write_xlsx(femi_2024_2025, "data-raw/femi_2024_2025.xlsx")
+saveRDS(femi_2023_2024_2025, "data-raw/femi_2023_2024_2025.rds")
+writexl::write_xlsx(femi_2023_2024_2025, "data-raw/femi_2023_2024_2025.xlsx")
 
 
 # Análise de regressão ------------------------------------------------------------------------
 
-library(tidymodels)
-
 # Variável alvo: flag_status_crime (C consumado, T tentado)
-df <- femi_2024_2025 %>%
+
+df <- femi_2023_2024_2025 %>%
   mutate(
     status_crime = factor(flag_status_crime, levels = c("T", "C")),
     y = if_else(status_crime == "C", 1L, 0L)
@@ -191,13 +227,14 @@ df_model <- df %>%
     #rubrica,
     #descr_conduta,
     #desdobramento,
-    cor_limpo,
+    #cor_limpo,
     #idade_data_ocorrencia,
-    idade_agrupado,
+    #idade_agrupado,
     #identidade_genero,
     #motivacao,
     #contexto,
-    instrumento_limpo,
+    #instrumento_limpo,
+    instrumento_arma_de_fogo,
     relacao_alcoolismo_ou_drogas_pelo_autor
   )
 
@@ -211,22 +248,8 @@ summary(fit)
 
 performance::check_collinearity(fit)
 
-# 6) Odds Ratio (OR) + IC95%
-or_table <- tidy(fit, conf.int = TRUE, exponentiate = TRUE) %>%
-  arrange(desc(abs(log(estimate))))
 
-or_table
+# 6) teste apenas para se o instrumento era arma de fogo ou não
 
-
-# AME: periodo = Manhã vs periodo = referência
-d0 <- df_model
-d1 <- df_model
-
-# "referência" aqui é o primeiro nível do fator
-ref_periodo <- levels(df_model$periodo)[1]
-
-d0$periodo <- factor(ref_periodo, levels = levels(df_model$periodo))
-d1$periodo <- factor("Manhã", levels = levels(df_model$periodo))
-
-ame_manha <- mean(p_hat(d1) - p_hat(d0), na.rm = TRUE)
-ame_manha
+fit <- glm(y ~ instrumento_arma_de_fogo, data = df_model, family = binomial())
+summary(fit)
