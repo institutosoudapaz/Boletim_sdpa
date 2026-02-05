@@ -179,6 +179,29 @@ femi_2023_2024_2025 <- femi_2023_2024_2025 |>
   )
 )
 
+# Macroregião
+
+femi_2023_2024_2025 <- femi_2023_2024_2025 |>  
+  mutate(
+    macroregiao = case_when(
+      nome_departamento_circ %in% c("DEINTER 1 - SAO JOSE DOS CAMPOS",
+                                     "DEINTER 2 - CAMPINAS", 
+                                     "DEINTER 3 - RIBEIRAO PRETO",                        
+                                     "DEINTER 7 - SOROCABA", "DEINTER 10 - ARAÇATUBA",           
+                                     "DEINTER 9 - PIRACICABA", "DEINTER 4 - BAURU",                
+                                     "DEINTER 5 - SAO JOSE DO RIO PRETO",
+                                     "DEINTER 6 - SANTOS",
+                                     "DEINTER 8 - PRESIDENTE PRUDENTE") 
+      ~ "Interior",
+
+      nome_departamento_circ %in% c("DECAP")
+      ~ "Capital",
+      nome_departamento_circ %in% c("DEMACRO") 
+      ~ "Grande São Paulo",
+      TRUE ~ "Outros"
+    )
+  )
+
 #limpa hora 
 femi_2023_2024_2025 <- femi_2023_2024_2025 |> mutate(hora = str_sub(hora_ocorrencia_bo,  start = 12))
 
@@ -202,6 +225,218 @@ femi_2023_2024_2025$nome_delegacia_circ <- limpeza_dp(femi_2023_2024_2025$nome_d
 
 saveRDS(femi_2023_2024_2025, "data-raw/femi_2023_2024_2025.rds")
 writexl::write_xlsx(femi_2023_2024_2025, "data-raw/femi_2023_2024_2025.xlsx")
+
+
+# Recortes para análises ----------------------------------------------------------------------
+
+# Feminicídios tentados e consumados por ano
+
+consumados_tentados <- femi_2023_2024_2025 |> 
+  group_by(detalhamento_do_homicidio_doloso, ano_bo) |> 
+  summarise(n()) |> 
+  ungroup() |> 
+  pivot_wider(
+    names_from  = ano_bo,
+    values_from = "n()"
+  )
+
+estado <- consumados_tentados |> 
+  summarise(
+    detalhamento_do_homicidio_doloso = "Total",
+    `2023` = sum(`2023`, na.rm = TRUE),
+    `2024` = sum(`2024`, na.rm = TRUE),
+    `2025` = sum(`2025`, na.rm = TRUE)
+  )
+
+tabela_final <- bind_rows(consumados_tentados, estado) %>%
+  mutate(
+    `2024 - 2025` = (`2025` - `2024`) / `2024`,
+    `2023 - 2025` = (`2025` - `2023`) / `2023`
+  ) %>%
+  mutate(
+    `2024 - 2025` = percent(`2024 - 2025`, accuracy = 0.1),
+    `2023 - 2025` = percent(`2023 - 2025`, accuracy = 0.1)
+  )
+
+writexl::write_xlsx(tabela_final, "consumados_tentados.xlsx")
+
+
+# Contabilizar por deinter
+
+deinter <- femi_2023_2024_2025 |> 
+  dplyr::filter(detalhamento_do_homicidio_doloso == "FEMINICIDIO") |> 
+  group_by(nome_departamento_circ, ano_bo) |> 
+  summarise(n()) |> 
+  ungroup() |> 
+  pivot_wider(
+    names_from  = ano_bo,
+    values_from = "n()"
+  )
+
+estado <- deinter |> 
+  summarise(
+    nome_departamento_circ = "Estado",
+    `2023` = sum(`2023`, na.rm = TRUE),
+    `2024` = sum(`2024`, na.rm = TRUE),
+    `2025` = sum(`2025`, na.rm = TRUE)
+  )
+
+tabela_final <- bind_rows(deinter, estado) %>%
+  mutate(
+    `2024 - 2025` = (`2025` - `2024`) / `2024`,
+    `2023 - 2025` = (`2025` - `2023`) / `2023`
+  ) %>%
+  mutate(
+    `2024 - 2025` = percent(`2024 - 2025`, accuracy = 0.1),
+    `2023 - 2025` = percent(`2023 - 2025`, accuracy = 0.1)
+  )
+
+writexl::write_xlsx(tabela_final, "tabela_variacao_deinter.xlsx")
+
+# Feminicídios consumados por macroregião - 2023 a 2025
+
+macroreg <- femi_2023_2024_2025 |> 
+  dplyr::filter(detalhamento_do_homicidio_doloso == "FEMINICIDIO") |> 
+  group_by(macroregiao, ano_bo) |> 
+  summarise(n()) |> 
+  ungroup() |> 
+  pivot_wider(
+    names_from  = ano_bo,
+    values_from = "n()"
+  )
+
+estado <- macroreg |> 
+  summarise(
+    macroregiao = "Estado",
+    `2023` = sum(`2023`, na.rm = TRUE),
+    `2024` = sum(`2024`, na.rm = TRUE),
+    `2025` = sum(`2025`, na.rm = TRUE)
+  )
+
+tabela_final <- bind_rows(macroreg, estado) %>%
+  mutate(
+    `2024 - 2025` = (`2025` - `2024`) / `2024`,
+    `2023 - 2025` = (`2025` - `2023`) / `2023`
+  ) %>%
+  mutate(
+    `2024 - 2025` = percent(`2024 - 2025`, accuracy = 0.1),
+    `2023 - 2025` = percent(`2023 - 2025`, accuracy = 0.1)
+  )
+
+# Feminicídios consumados por macroregião - 2023 a 2025
+
+macroreg <- femi_2023_2024_2025 |> 
+  dplyr::filter(detalhamento_do_homicidio_doloso == "FEMINICIDIO") |> 
+  group_by(macroregiao, ano_bo) |> 
+  summarise(n()) |> 
+  ungroup() |> 
+  pivot_wider(
+    names_from  = ano_bo,
+    values_from = "n()"
+  )
+
+estado <- macroreg |> 
+  summarise(
+    macroregiao = "Estado",
+    `2023` = sum(`2023`, na.rm = TRUE),
+    `2024` = sum(`2024`, na.rm = TRUE),
+    `2025` = sum(`2025`, na.rm = TRUE)
+  )
+
+tabela_final <- bind_rows(macroreg, estado) %>%
+  mutate(
+    `2024 - 2025` = (`2025` - `2024`) / `2024`,
+    `2023 - 2025` = (`2025` - `2023`) / `2023`
+  ) %>%
+  mutate(
+    `2024 - 2025` = percent(`2024 - 2025`, accuracy = 0.1),
+    `2023 - 2025` = percent(`2023 - 2025`, accuracy = 0.1)
+  )
+
+writexl::write_xlsx(tabela_final, "tabela_variacao_macro.xlsx")
+
+# Feminicídios consumados participação no total por macroregião - 2023 a 2025
+
+totais_estado <- tabela_final %>%
+  filter(macroregiao == "Estado") %>%
+  summarise(
+    total_2023 = `2023`,
+    total_2024 = `2024`,
+    total_2025 = `2025`
+  )
+
+tabela_percentual <- tabela_final %>%
+  mutate(
+    pct_2023 = `2023` / totais_estado$total_2023,
+    pct_2024 = `2024` / totais_estado$total_2024,
+    pct_2025 = `2025` / totais_estado$total_2025
+  ) %>%
+  transmute(
+    macroregiao,
+    `2023` = `2023`,
+    `% do total (2023)` = percent(pct_2023, accuracy = 0.1, decimal.mark = ","),
+    `2024` = `2024`,
+    `% do total (2024)` = percent(pct_2024, accuracy = 0.1, decimal.mark = ","),
+    `2025` = `2025`,
+    `% do total (2025)` = percent(pct_2025, accuracy = 0.1, decimal.mark = ",")
+  ) %>%
+  mutate(
+    macroregiao = factor(macroregiao, levels = c("Capital", "Grande São Paulo", "Interior", "Estado"))
+  ) %>%
+  arrange(macroregiao)
+
+writexl::write_xlsx(tabela_percentual, "tabela_percentual_macro.xlsx")
+
+# Feminicídios consumados variação no total por tipo local - 2023 a 2025
+
+local <- femi_2023_2024_2025 |> 
+  dplyr::filter(detalhamento_do_homicidio_doloso == "FEMINICIDIO") |> 
+  group_by(local_limpo, ano_bo) |> 
+  summarise(n()) |> 
+  ungroup() |> 
+  pivot_wider(
+    names_from  = ano_bo,
+    values_from = "n()"
+  ) |> 
+  mutate(
+    `2024 - 2025` = (`2025` - `2024`) / `2024`,
+    `2023 - 2025` = (`2025` - `2023`) / `2023`
+  ) %>%
+  mutate(
+    `2024 - 2025` = percent(`2024 - 2025`, accuracy = 0.1),
+    `2023 - 2025` = percent(`2023 - 2025`, accuracy = 0.1)
+  )
+
+# Feminicídios consumados participação no total por tipo local - 2023 a 2025
+
+tabela_percentual <- local %>%
+  mutate(
+    pct_2023 = `2023` / totais_estado$total_2023,
+    pct_2024 = `2024` / totais_estado$total_2024,
+    pct_2025 = `2025` / totais_estado$total_2025
+  ) %>%
+  transmute(
+    local_limpo,
+    `2023` = `2023`,
+    `% do total (2023)` = percent(pct_2023, accuracy = 0.1, decimal.mark = ","),
+    `2024` = `2024`,
+    `% do total (2024)` = percent(pct_2024, accuracy = 0.1, decimal.mark = ","),
+    `2025` = `2025`,
+    `% do total (2025)` = percent(pct_2025, accuracy = 0.1, decimal.mark = ",")
+  ) %>%
+  mutate(
+    local_limpo = factor(local_limpo, levels = c("Residência", 
+                                           "Via Pública", 
+                                           "Zona rural",
+                                           "Comércio",                 
+                                           "Outros","Hospital/unidade de saúde"))
+  ) %>%
+  arrange(local_limpo)
+
+tabela_percentual
+
+
+
 
 
 # Análise de regressão ------------------------------------------------------------------------
